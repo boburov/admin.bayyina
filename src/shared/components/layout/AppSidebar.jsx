@@ -193,7 +193,7 @@ const Header = () => {
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-semibold">MBSI School</span>
               <p className="flex items-center gap-1.5 text-green-500">
-                <span className="truncate text-xs">Dy By Day</span>
+                <span className="truncate text-xs">Day By Day</span>
                 <TrendingUp size={18} strokeWidth={1.5} />
               </p>
             </div>
