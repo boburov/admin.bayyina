@@ -8,6 +8,7 @@ import {
   PanelLeft,
   TrendingUp,
   ChevronRight,
+  AlertTriangle,
 } from "lucide-react";
 
 // Router
@@ -144,6 +145,26 @@ const navItems = [
       {
         title: "Buyurtmalar",
         url: "/market/orders",
+      },
+    ],
+  },
+  {
+    title: "Jarimalar",
+    url: "/penalties",
+    icon: AlertTriangle,
+    isActive: false,
+    items: [
+      {
+        title: "Jarimalar ro'yxati",
+        url: "/penalties",
+      },
+      {
+        title: "Kategoriyalar",
+        url: "/penalties/categories",
+      },
+      {
+        title: "Sozlamalar",
+        url: "/penalties/settings",
       },
     ],
   },

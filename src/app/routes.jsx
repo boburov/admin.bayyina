@@ -48,6 +48,12 @@ import MarketProductsPage from "@/features/market/pages/MarketProductsPage";
 import MarketProductEditPage from "@/features/market/pages/MarketProductEditPage";
 import MarketProductCreatePage from "@/features/market/pages/MarketProductCreatePage";
 
+// Pages — Penalties
+import PenaltiesPage from "@/features/penalties/pages/PenaltiesPage";
+import PenaltyDetailPage from "@/features/penalties/pages/PenaltyDetailPage";
+import PenaltyCategoriesPage from "@/features/penalties/pages/PenaltyCategoriesPage";
+import PenaltySettingsPage from "@/features/penalties/pages/PenaltySettingsPage";
+
 // Router
 import { Routes as RoutesWrapper, Route, Navigate } from "react-router-dom";
 
@@ -100,6 +106,12 @@ const Routes = () => {
           <Route path="/market/products/new" element={<MarketProductCreatePage />} />
           <Route path="/market/products/:productId/edit" element={<MarketProductEditPage />} />
           <Route path="/market/orders" element={<MarketOrdersPage />} />
+
+          {/* Penalties */}
+          <Route path="/penalties" element={<PenaltiesPage />} />
+          <Route path="/penalties/:penaltyId" element={<PenaltyDetailPage />} />
+          <Route path="/penalties/categories" element={<PenaltyCategoriesPage />} />
+          <Route path="/penalties/settings" element={<PenaltySettingsPage />} />
         </Route>
       </Route>
 
