@@ -52,7 +52,18 @@ const initialState = {
   deleteMarketProduct: initialModalData,
   updateMarketOrderStatus: initialModalData,
 
+  // Export / Import
   exportUsers: initialModalData,
+
+  // Penalties
+  createPenalty: initialModalData,
+  reviewPenalty: initialModalData,
+  penaltyDetail: initialModalData,
+  reducePenalty: initialModalData,
+
+
+  createPenaltyCategory: initialModalData,
+  editPenaltyCategory: initialModalData,
 };
 
 export const modalSlice = createSlice({
