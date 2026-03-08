@@ -11,6 +11,9 @@ import Button from "@/shared/components/form/button";
 import MultiSelect from "@/shared/components/form/multi-select";
 import ResponsiveModal from "@/shared/components/ui/ResponsiveModal";
 
+// Data
+import { genderOptions } from "../data/users.data";
+
 // Hooks
 import useArrayStore from "@/shared/hooks/useArrayStore";
 import useObjectState from "@/shared/hooks/useObjectState";
@@ -25,7 +28,7 @@ const Content = ({ close, isLoading, setIsLoading }) => {
   const { getCollectionData, invalidateCache } = useArrayStore("classes");
   const classes = getCollectionData();
 
-  const { username, password, firstName, lastName, role, state, setField } =
+  const { username, password, firstName, lastName, role, gender, state, setField } =
     useObjectState({
       classes: [],
       username: "",
@@ -33,6 +36,7 @@ const Content = ({ close, isLoading, setIsLoading }) => {
       lastName: "",
       firstName: "",
       role: "student",
+      gender: "",
     });
 
   const handleCreateUser = (e) => {
@@ -43,7 +47,7 @@ const Content = ({ close, isLoading, setIsLoading }) => {
     }
 
     setIsLoading(true);
-    const data = { ...state, password: password?.trim() };
+    const data = { ...state, password: password?.trim(), gender: gender || null };
 
     usersAPI
       .create(data)
@@ -108,6 +112,14 @@ const Content = ({ close, isLoading, setIsLoading }) => {
           { label: "O'quvchi", value: "student" },
           { label: "O'qituvchi", value: "teacher" },
         ]}
+      />
+
+      <Select
+        label="Jins"
+        value={gender}
+        placeholder="Jinsni tanlang"
+        onChange={(v) => setField("gender", v)}
+        options={genderOptions}
       />
       {role === "student" && (
         <MultiSelect

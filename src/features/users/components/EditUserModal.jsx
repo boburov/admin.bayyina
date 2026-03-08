@@ -6,9 +6,13 @@ import { usersAPI } from "@/shared/api/users.api";
 
 // Components
 import Input from "@/shared/components/form/input";
+import Select from "@/shared/components/form/select";
 import Button from "@/shared/components/form/button";
 import MultiSelect from "@/shared/components/form/multi-select";
 import ResponsiveModal from "@/shared/components/ui/ResponsiveModal";
+
+// Data
+import { genderOptions } from "../data/users.data";
 
 // Hooks
 import useArrayStore from "@/shared/hooks/useArrayStore";
@@ -24,10 +28,11 @@ const Content = ({ close, isLoading, setIsLoading, ...user }) => {
   const { getCollectionData, invalidateCache } = useArrayStore("classes");
   const classes = getCollectionData();
 
-  const { firstName, lastName, state, setField } = useObjectState({
+  const { firstName, lastName, gender, state, setField } = useObjectState({
     classes: user.classes?.map((c) => c._id) || [],
     lastName: user.lastName,
     firstName: user.firstName,
+    gender: user.gender || "",
   });
 
   const handleEditUser = (e) => {
@@ -68,6 +73,14 @@ const Content = ({ close, isLoading, setIsLoading, ...user }) => {
         label="Familiya"
         value={lastName}
         onChange={(v) => setField("lastName", v)}
+      />
+
+      <Select
+        label="Jins"
+        value={gender}
+        placeholder="Jinsni tanlang"
+        onChange={(v) => setField("gender", v || null)}
+        options={genderOptions}
       />
 
       {user.role === "student" && (
