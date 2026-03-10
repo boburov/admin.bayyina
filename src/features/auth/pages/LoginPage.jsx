@@ -36,7 +36,7 @@ const LoginPage = () => {
       .login(data)
       .then((response) => {
         const { token } = response.data.data;
-        localStorage.setItem("token", token);
+        localStorage.setItem("authToken", token);
         toast.success("Tizimga muvaffaqiyatli kirdingiz!");
         navigate("/dashboard");
       })

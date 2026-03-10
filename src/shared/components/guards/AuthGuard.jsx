@@ -11,7 +11,7 @@ import logoIcon from "@/shared/assets/icons/logo.svg";
 import { authAPI } from "@/features/auth/api/auth.api";
 
 const AuthGuard = () => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("authToken");
 
   const { isLoading, isError } = useQuery({
     queryKey: ["auth", "me"],
@@ -40,7 +40,7 @@ const AuthGuard = () => {
   }
 
   if (isError) {
-    localStorage.removeItem("token");
+    localStorage.removeItem("authToken");
     return <Navigate to="/login" replace />;
   }
 

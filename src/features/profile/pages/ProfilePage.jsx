@@ -29,7 +29,7 @@ const ProfilePage = () => {
     const shouldLogout = confirm("Haqiqatan ham chiqmoqchimisiz?");
     if (!shouldLogout) return;
 
-    localStorage.removeItem("token");
+    localStorage.removeItem("authToken");
     window.location.href = "/login";
   };
 

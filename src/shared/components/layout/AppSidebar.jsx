@@ -291,7 +291,7 @@ const Footer = () => {
   const isMobile = useIsMobile();
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("authToken");
     window.location.href = "/login";
   };
 
