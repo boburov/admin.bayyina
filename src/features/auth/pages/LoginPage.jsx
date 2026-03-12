@@ -20,7 +20,8 @@ import useObjectState from "@/shared/hooks/useObjectState";
 const LoginPage = () => {
   const navigate = useNavigate();
 
-  const { username, password, setField, isLoading } = useObjectState({
+  const { username, password, setField, isLoading, step } = useObjectState({
+    step: 1,
     username: "",
     password: "",
     isLoading: false,
@@ -47,6 +48,34 @@ const LoginPage = () => {
       })
       .finally(() => setField("isLoading", false));
   };
+
+  if (step === 1) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-indigo-100 to-white px-4">
+        <div className="max-w-md w-full space-y-5">
+          <h2 className="text-xl font-medium text-center">
+            Ey ismigul! Siz kim bo'lib kirmoqchisiz?
+          </h2>
+
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => setField("step", 2)}
+          >
+            Admin 🧑‍💻
+          </Button>
+
+          <Button variant="outline" className="w-full" asChild>
+            <a href="https://student.studytrack.uz">O'quvchi 🧑‍🎓</a>
+          </Button>
+
+          <Button variant="outline" className="w-full" asChild>
+            <a href="https://teacher.studytrack.uz">O'qituvchi 👨‍🏫</a>
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-indigo-100 to-white px-4">
