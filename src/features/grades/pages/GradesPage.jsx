@@ -11,16 +11,11 @@ import {
 // React
 import { useState, useEffect } from "react";
 
+// Router
+import { Link, useNavigate } from "react-router-dom";
+
 // Icons
 import { Eye, Calendar, Download } from "lucide-react";
-
-// Components
-import Card from "@/shared/components/ui/Card";
-import Input from "@/shared/components/form/input";
-import Select from "@/shared/components/form/select";
-
-// Utils
-import { getDayOfWeekUZ } from "@/shared/utils/date.utils";
 
 // Hooks
 import useArrayStore from "@/shared/hooks/useArrayStore";
@@ -28,8 +23,15 @@ import useArrayStore from "@/shared/hooks/useArrayStore";
 // API
 import { gradesAPI } from "@/shared/api/grades.api";
 import { schedulesAPI } from "@/shared/api/schedules.api";
-import Button from "@/shared/components/form/button";
-import { useNavigate } from "react-router-dom";
+
+// Components
+import Card from "@/shared/components/ui/Card";
+import Input from "@/shared/components/ui/input/Input";
+import Select from "@/shared/components/ui/select/Select";
+import Button from "@/shared/components/ui/button/Button";
+
+// Utils
+import { getDayOfWeekUZ } from "@/shared/utils/date.utils";
 
 const Grades = () => {
   // Load saved filters from localStorage
@@ -124,10 +126,7 @@ const Grades = () => {
     gradesAPI
       .getByClassAndDate(filters.classId, filters.date)
       .then((response) => {
-        // Backend now returns students with grades array
-        // No need to group manually
         const studentsWithGrades = response.data.data || [];
-
         setCollection(studentsWithGrades, null, studentsCollectionName);
       })
       .catch(() => {
@@ -171,11 +170,37 @@ const Grades = () => {
 
   return (
     <div>
+      {/* Top */}
+      <div className="flex items-center justify-between mb-4">
+        {/* Title */}
+        <h1 className="page-title">Baholar jurnali</h1>
+
+        {students.length > 0 && (
+          <div className="flex justify-end gap-4 mt-4">
+            {/* Export Button */}
+            <Button
+              onClick={handleExport}
+              disabled={!filters.classId || !filters.date}
+            >
+              <Download className="size-4" strokeWidth={1.5} />
+              Baholarni yuklash
+            </Button>
+
+            {/* Missing Grades Link */}
+            <Button variant="danger" asChild>
+              <Link to="/grades/missing">
+                <Eye className="size-4" strokeWidth={1.5} />
+                Qo'yilmagan baholar
+              </Link>
+            </Button>
+          </div>
+        )}
+      </div>
+
       {/* Filters */}
-      <Card className="grid grid-cols-1 gap-5 mb-6 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-3">
         <Select
           required
-          label="Sinf"
           value={filters.classId}
           onChange={(value) => setFilters({ ...filters, classId: value })}
           options={classes.map((cls) => ({ label: cls.name, value: cls._id }))}
@@ -183,26 +208,22 @@ const Grades = () => {
 
         <Select
           required
-          label="Fan"
           value={filters.subjectId}
           onChange={(v) => setFilters({ ...filters, subjectId: v })}
           options={[
-            { label: "Barchasi", value: "all" },
-            ...subjects.map((subject) => ({
-              label: subject.name,
-              value: subject._id,
-            })),
+            { label: "Barcha fanlar", value: "all" },
+            ...subjects.map((s) => ({ label: s?.name, value: s?._id })),
           ]}
         />
 
         <Input
           required
-          label="Sana"
           type="date"
+          name="date"
           value={filters.date}
-          onChange={(v) => setFilters({ ...filters, date: v })}
+          onChange={(e) => setFilters({ ...filters, date: e.target.value })}
         />
-      </Card>
+      </div>
 
       {/* Grades View */}
       {!filters.classId && !isLoading && (
@@ -400,30 +421,6 @@ const Grades = () => {
             </table>
           </div>
         </Card>
-      )}
-
-      {students.length > 0 && (
-        <div className="flex justify-end gap-5 mt-6">
-          {/* Export Button */}
-          <Button
-            disabled={!filters.classId || !filters.date}
-            variant="primary"
-            onClick={handleExport}
-            className="gap-3.5 px-3.5"
-          >
-            <Download className="size-4" strokeWidth={1.5} />
-            Baholarni yuklash
-          </Button>
-
-          <Button
-            variant="danger"
-            className="gap-3.5 px-3.5"
-            onClick={() => navigate("/grades/missing")}
-          >
-            <Eye className="size-4" strokeWidth={1.5} />
-            Qo'yilmagan baholar
-          </Button>
-        </div>
       )}
     </div>
   );
