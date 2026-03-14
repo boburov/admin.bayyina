@@ -32,7 +32,7 @@ const Select = ({
       {/* Trigger */}
       <SelectTrigger
         className={cn(
-          "flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-base outline-2 outline-primary disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+          "h-10 bg-white text-base outline-2 outline-primary md:text-sm",
           triggerClassName,
         )}
       >
