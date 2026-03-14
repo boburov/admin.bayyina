@@ -15,7 +15,7 @@ import { targetRoleOptions } from "../data/penalties.data";
 
 // Components
 import Card from "@/shared/components/ui/Card";
-import Button from "@/shared/components/form/button";
+import Button from "@/shared/components/ui/button/Button";
 
 // Hooks
 import useModal from "@/shared/hooks/useModal";
@@ -50,23 +50,16 @@ const PenaltyCategoriesPage = () => {
 
   return (
     <div>
-      <Card className="mb-4">
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2">
-            <List className="size-5 text-indigo-500" />
-            Jarima kategoriyalari
-          </h2>
-          <Button
-            size="md"
-            variant="primary"
-            className="px-4 text-sm"
-            onClick={() => openModal("createPenaltyCategory")}
-          >
-            <Plus className="size-4 mr-1.5" />
-            Yangi kategoriya
-          </Button>
-        </div>
-      </Card>
+      <div className="flex items-center justify-between mb-4">
+        {/* Title */}
+        <h1 className="page-title">Jarima kategoriyalari</h1>
+
+        {/* Button */}
+        <Button onClick={() => openModal("createPenaltyCategory")}>
+          <Plus />
+          Yangi kategoriya
+        </Button>
+      </div>
 
       {/* Categories list */}
       {isLoading ? (
