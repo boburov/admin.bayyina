@@ -1,15 +1,15 @@
 // Toast
 import { toast } from "sonner";
 
+// Hooks
+import useArrayStore from "@/shared/hooks/useArrayStore";
+
 // API
 import { schedulesAPI } from "@/shared/api/schedules.api";
 
 // Components
-import Button from "@/shared/components/form/button";
+import Button from "@/shared/components/ui/button/Button";
 import ResponsiveModal from "@/shared/components/ui/ResponsiveModal";
-
-// Hooks
-import useArrayStore from "@/shared/hooks/useArrayStore";
 
 const DeleteScheduleModal = () => (
   <ResponsiveModal
@@ -46,11 +46,21 @@ const Content = ({ close, isLoading, setIsLoading, ...scheduleData }) => {
       onSubmit={handleDeleteSchedule}
       className="flex flex-col-reverse gap-3.5 w-full xs:m-0 xs:flex-row xs:justify-end"
     >
-      <Button type="button" className="w-full xs:w-32" variant="neutral" onClick={close}>
+      <Button
+        type="button"
+        className="w-full xs:w-32"
+        variant="secondary"
+        onClick={close}
+      >
         Bekor qilish
       </Button>
 
-      <Button autoFocus className="w-full xs:w-32" variant="danger" disabled={isLoading}>
+      <Button
+        autoFocus
+        className="w-full xs:w-32"
+        variant="danger"
+        disabled={isLoading}
+      >
         O'chirish
         {isLoading && "..."}
       </Button>

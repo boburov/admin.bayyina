@@ -7,17 +7,18 @@ import { useState } from "react";
 // Icons
 import { Trash2 } from "lucide-react";
 
+// Hooks
+import useArrayStore from "@/shared/hooks/useArrayStore";
+
 // API
 import { schedulesAPI } from "@/shared/api/schedules.api";
 
 // Components
-import Button from "@/shared/components/form/button";
-import Select from "@/shared/components/form/select";
-import Input from "@/shared/components/form/input";
+import Button from "@/shared/components/ui/button/Button";
+import InputGroup from "@/shared/components/ui/input/InputGroup";
+import InputField from "@/shared/components/ui/input/InputField";
+import SelectField from "@/shared/components/ui/select/SelectField";
 import ResponsiveModal from "@/shared/components/ui/ResponsiveModal";
-
-// Hooks
-import useArrayStore from "@/shared/hooks/useArrayStore";
 
 const EditScheduleModal = () => (
   <ResponsiveModal name="editSchedule" title="Dars jadvalini tahrirlash">
@@ -38,7 +39,9 @@ const Content = ({
   const subjects = getCollectionData("subjects");
   const teachers = getCollectionData("teachers");
 
-  const [startingOrder, setStartingOrder] = useState(scheduleData.startingOrder || 1);
+  const [startingOrder, setStartingOrder] = useState(
+    scheduleData.startingOrder || 1,
+  );
   const [daySubjects, setDaySubjects] = useState(() => {
     if (scheduleData.subjects && scheduleData.subjects.length > 0) {
       return scheduleData.subjects.map((subj) => ({
@@ -110,13 +113,14 @@ const Content = ({
   return (
     <form onSubmit={handleEditSchedule} className="space-y-3.5">
       {/* Starting Order Input */}
-      <Input
+      <InputField
+        min={1}
+        required
         type="number"
-        label="Boshlanish tartibi (default: 1)"
         value={startingOrder}
-        onChange={(v) => setStartingOrder(v)}
-        min="1"
-        placeholder="1"
+        placeholder="1, 2, ..."
+        label="Boshlanish tartibi"
+        onChange={(e) => setStartingOrder(e.target.value)}
       />
 
       <div className="space-y-4">
@@ -135,70 +139,75 @@ const Content = ({
               )}
             </div>
 
-            <div className="grid grid-cols-2 gap-4 p-1.5">
-              <Select
+            <InputGroup className="grid-cols-2 p-1.5">
+              <SelectField
                 required
                 label="Fan"
                 value={subj.subject}
                 onChange={(v) => updateSubjectRow(index, "subject", v)}
-                options={subjects.map((s) => ({ label: s.name, value: s?._id }))}
+                options={subjects.map((s) => ({
+                  label: s?.name,
+                  value: s?._id,
+                }))}
               />
 
-              <Select
+              <SelectField
                 required
                 label="O'qituvchi"
                 value={subj.teacher}
                 onChange={(v) => updateSubjectRow(index, "teacher", v)}
                 options={teachers.map((t) => ({
-                  label: `${t.firstName} ${t.lastName}`,
                   value: t?._id,
+                  label: t?.fullName,
                 }))}
               />
 
-              <Input
+              <InputField
+                required
                 type="time"
                 label="Boshlanish vaqti"
                 value={subj.startTime}
-                onChange={(v) => updateSubjectRow(index, "startTime", v)}
+                onChange={(e) =>
+                  updateSubjectRow(index, "startTime", e.target.value)
+                }
               />
 
-              <Input
+              <InputField
+                required
                 type="time"
                 label="Tugash vaqti"
                 value={subj.endTime}
-                onChange={(v) => updateSubjectRow(index, "endTime", v)}
+                onChange={(e) =>
+                  updateSubjectRow(index, "endTime", e.target.value)
+                }
               />
-            </div>
+            </InputGroup>
           </div>
         ))}
       </div>
 
       {/* Add subject button */}
-      <button
+      <Button
         type="button"
+        variant="outline"
         onClick={addSubjectRow}
-        className="w-full px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-indigo-500 hover:text-indigo-600"
+        className="w-full border-2 border-dashed text-gray-600 hover:border-blue-500 hover:text-blue-500"
       >
         + Dars qo'shish
-      </button>
+      </Button>
 
       {/* Action buttons */}
       <div className="flex flex-col-reverse gap-3.5 w-full mt-5 xs:m-0 xs:flex-row xs:justify-end">
         <Button
           type="button"
           className="w-full xs:w-32"
-          variant="neutral"
+          variant="secondary"
           onClick={close}
         >
           Bekor qilish
         </Button>
 
-        <Button
-          autoFocus
-          className="w-full xs:w-32"
-          variant="primary"
-          disabled={isLoading}
-        >
+        <Button autoFocus className="w-full xs:w-32" disabled={isLoading}>
           Yangilash
           {isLoading && "..."}
         </Button>
