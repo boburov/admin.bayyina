@@ -1,14 +1,14 @@
 // React
 import { useEffect } from "react";
 
+// Icons
+import { BookOpen } from "lucide-react";
+
+// Router
+import { Link } from "react-router-dom";
+
 // Store
 import useAuth from "@/shared/hooks/useAuth";
-
-// Components
-import Card from "@/shared/components/ui/Card";
-
-// Icons
-import { BookOpen, GraduationCap } from "lucide-react";
 
 // Hooks
 import useArrayStore from "@/shared/hooks/useArrayStore";
@@ -19,18 +19,15 @@ import { schedulesAPI } from "@/shared/api/schedules.api";
 // Utils
 import { getDayOfWeekUZ } from "@/shared/utils/date.utils";
 
+// Components
+import Card from "@/shared/components/ui/Card";
+import Button from "@/shared/components/ui/button/Button";
+import ScheduleItem from "@/features/dashboard/components/ScheduleItem";
+
 const AllSchedulesToday = () => {
   const today = new Date();
   const { user } = useAuth();
   const dayName = getDayOfWeekUZ(today);
-  const currentMinutes = today.getHours() * 60 + today.getMinutes();
-
-  const toMinutes = (time) => {
-    if (!time) return null;
-    const [hours, minutes] = time.split(":").map(Number);
-    if (Number.isNaN(hours) || Number.isNaN(minutes)) return null;
-    return hours * 60 + minutes;
-  };
 
   const {
     initialize,
@@ -80,10 +77,16 @@ const AllSchedulesToday = () => {
 
   return (
     <div className="relative mt-4">
-      {/* Title */}
-      <h2 className="mb-4 text-xl font-semibold text-gray-900">
-        Bugungi barcha sinf dars jadvallari
-      </h2>
+      {/* Top */}
+      <div className="flex items-center justify-between mb-4">
+        {/* Title */}
+        <h2 className="section-title">Bugungi barcha sinf dars jadvallari</h2>
+
+        {/* Schedules page link */}
+        <Button asChild className="" variant="link">
+          <Link to="/schedules">Barcha dars jadvali</Link>
+        </Button>
+      </div>
 
       {/* No data */}
       {schedules.length === 0 && (
@@ -100,71 +103,9 @@ const AllSchedulesToday = () => {
 
       {/* Schedule Grid */}
       {schedules.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {schedules.map((schedule, idx) => (
-            <Card key={idx}>
-              <div className="flex items-center gap-3.5 mb-4">
-                <GraduationCap
-                  strokeWidth={1.5}
-                  className="size-5 text-indigo-600"
-                />
-                <h3 className="text-lg font-semibold text-gray-900">
-                  {schedule.class?.name}
-                </h3>
-              </div>
-
-              {/* Schedule Subjects */}
-              <div className="space-y-3">
-                {schedule.subjects?.map((subj, index) => {
-                  const displayOrder =
-                    (schedule.startingOrder || 1) +
-                    (subj.order || index + 1) -
-                    1;
-                  const startMinutes = toMinutes(subj.startTime);
-                  const endMinutes = toMinutes(subj.endTime);
-                  const isActive =
-                    startMinutes !== null &&
-                    endMinutes !== null &&
-                    currentMinutes >= startMinutes &&
-                    currentMinutes <= endMinutes;
-                  return (
-                    <div
-                      key={index}
-                      className={`p-3 rounded-lg ${
-                        isActive ? "bg-indigo-50" : "bg-gray-50"
-                      }`}
-                    >
-                      <div className="flex items-start justify-between mb-1">
-                        {/* Title */}
-                        <b className="text-sm font-medium text-gray-900">
-                          {displayOrder}. {subj.subject?.name}
-                        </b>
-
-                        {/* Teacher */}
-                        <div className="flex items-center gap-2">
-                          {isActive && (
-                            <span className="text-[10px] font-semibold text-indigo-700 bg-indigo-100 px-2 py-0.5 rounded-full">
-                              Aktiv
-                            </span>
-                          )}
-                          <p className="text-xs text-gray-600">
-                            {subj.teacher?.firstName}{" "}
-                            {subj.teacher?.lastName?.slice(0, 1) + "."}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Time */}
-                      {subj.startTime && subj.endTime && (
-                        <p className="text-xs text-gray-500">
-                          {subj.startTime} - {subj.endTime}
-                        </p>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </Card>
+            <ScheduleItem key={idx} schedule={schedule} />
           ))}
         </div>
       )}
