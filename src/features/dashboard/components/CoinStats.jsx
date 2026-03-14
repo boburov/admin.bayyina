@@ -25,10 +25,10 @@ import { formatDateUZ } from "@/shared/utils/date.utils";
 // Components
 import Card from "@/shared/components/ui/Card";
 import Counter from "@/shared/components/ui/Counter";
-import { Button } from "@/shared/components/shadcn/button";
+import Button from "@/shared/components/ui/button/Button";
 
 const CoinStats = () => {
-  const { data: stats, isLoading } = useQuery({
+  const { data: stats } = useQuery({
     queryKey: ["coins", "stats"],
     queryFn: () => coinsAPI.getStats().then((res) => res.data.data),
   });
@@ -172,7 +172,7 @@ const TopTenCoinOwner = ({ stats }) => {
       <Button
         asChild
         variant="link"
-        className="inline-block p-0 size-auto mx-auto text-sm"
+        className="inline-block py-0 size-auto mx-auto text-sm"
       >
         <Link to="/coin-settings">Tanga sozlamalari</Link>
       </Button>

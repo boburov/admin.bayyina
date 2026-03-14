@@ -13,7 +13,7 @@ import { cn } from "@/shared/utils/cn";
 // Components
 import Card from "@/shared/components/ui/Card";
 import Counter from "@/shared/components/ui/Counter";
-import { Button } from "@/shared/components/shadcn/button";
+import Button from "@/shared/components/ui/button/Button";
 
 const PenaltyStats = () => {
   const { data: stats } = useQuery({
@@ -26,21 +26,30 @@ const PenaltyStats = () => {
       <div className="col-span-2 space-y-4">
         {/* Umumiy statistika */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <Card title="Jami jarima ballar" className="flex items-center justify-between">
+          <Card
+            title="Jami jarima ballar"
+            className="flex items-center justify-between"
+          >
             <Counter
               value={stats?.totalApprovedPoints ?? 0}
               className="text-2xl font-bold text-red-500"
             />
           </Card>
 
-          <Card title="Kamaytirilgan ballar" className="flex items-center justify-between">
+          <Card
+            title="Kamaytirilgan ballar"
+            className="flex items-center justify-between"
+          >
             <Counter
               value={stats?.totalReducedPoints ?? 0}
               className="text-2xl font-bold text-green-500"
             />
           </Card>
 
-          <Card title="Kutilayotgan jarimalar" className="flex items-center justify-between">
+          <Card
+            title="Kutilayotgan jarimalar"
+            className="flex items-center justify-between"
+          >
             <Counter
               value={stats?.pendingCount ?? 0}
               className="text-2xl font-bold text-yellow-500"
@@ -75,8 +84,7 @@ const PenaltyStats = () => {
  */
 const TopTenList = ({ title, data, colorClass }) => {
   const getRankColor = (index) => {
-    if (index === 0)
-      return "size-10 bg-gradient-to-tr from-red-400 to-red-600";
+    if (index === 0) return "size-10 bg-gradient-to-tr from-red-400 to-red-600";
     if (index === 1)
       return "size-9 mx-0.5 bg-gradient-to-tr from-orange-400 to-orange-600";
     if (index === 2)
@@ -124,7 +132,7 @@ const TopTenList = ({ title, data, colorClass }) => {
       <Button
         asChild
         variant="link"
-        className="inline-block p-0 size-auto mx-auto text-sm"
+        className="inline-block py-0 size-auto mx-auto text-sm"
       >
         <Link to="/penalties">Barcha jarimalar</Link>
       </Button>
