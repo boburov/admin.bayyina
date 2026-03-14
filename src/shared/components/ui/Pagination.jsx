@@ -1,11 +1,11 @@
+// Icons
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
 // Components
-import Button from "@/shared/components/form/button";
+import Button from "@/shared/components/ui/button/Button";
 
 // React
 import { memo, useEffect, useMemo, useState } from "react";
-
-// Icons
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
 /**
  * Reusable Pagination Component
@@ -107,7 +107,7 @@ const Pagination = ({
     <div className={`flex items-center justify-center gap-3.5 ${className}`}>
       {/* Previous Button */}
       <Button
-        variant="neutral"
+        variant="secondary"
         onClick={goToPrevPage}
         disabled={!hasPrevPage}
         aria-label="Oldingi sahifa"
@@ -124,7 +124,7 @@ const Pagination = ({
           {showFirstPage && (
             <>
               <Button
-                variant="neutral"
+                variant="secondary"
                 aria-label="1-sahifa"
                 onClick={() => goToPage(1)}
                 className="size-9 px-0 md:size-11"
@@ -160,7 +160,7 @@ const Pagination = ({
               )}
 
               <Button
-                variant="neutral"
+                variant="secondary"
                 className="size-9 px-0 md:size-11"
                 aria-label={`${totalPages}-sahifa`}
                 onClick={() => goToPage(totalPages)}
@@ -181,7 +181,7 @@ const Pagination = ({
 
       {/* Next Button */}
       <Button
-        variant="neutral"
+        variant="secondary"
         onClick={goToNextPage}
         disabled={!hasNextPage}
         aria-label="Keyingi sahifa"
