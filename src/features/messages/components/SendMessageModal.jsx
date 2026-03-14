@@ -1,28 +1,26 @@
 // Toast
 import { toast } from "sonner";
 
+// Icons
+import { Upload, X } from "lucide-react";
+
+// React
+import { useEffect, useState, useRef } from "react";
+
 // API
-import { messagesAPI } from "@/shared/api/messages.api";
-import { classesAPI } from "@/shared/api/classes.api";
 import { usersAPI } from "@/shared/api/users.api";
-
-// Store
-import useAuth from "@/shared/hooks/useAuth";
-
-// Components
-import Select from "@/shared/components/form/select";
-import Button from "@/shared/components/form/button";
-import ResponsiveModal from "@/shared/components/ui/ResponsiveModal";
+import { classesAPI } from "@/shared/api/classes.api";
+import { messagesAPI } from "@/shared/api/messages.api";
 
 // Hooks
 import useArrayStore from "@/shared/hooks/useArrayStore";
 import useObjectState from "@/shared/hooks/useObjectState";
 
-// React
-import { useEffect, useState, useRef } from "react";
-
-// Icons
-import { Upload, X } from "lucide-react";
+// Components
+import Button from "@/shared/components/ui/button/Button";
+import InputGroup from "@/shared/components/ui/input/InputGroup";
+import SelectField from "@/shared/components/ui/select/SelectField";
+import ResponsiveModal from "@/shared/components/ui/ResponsiveModal";
 
 const SendMessageModal = () => (
   <ResponsiveModal name="sendMessage" title="Xabar yuborish">
@@ -31,7 +29,6 @@ const SendMessageModal = () => (
 );
 
 const Content = ({ close, isLoading, setIsLoading }) => {
-  const { user: currentUser } = useAuth();
   const { invalidateCache } = useArrayStore("messages");
   const { invalidateCache: invalidateTeacherMessages } =
     useArrayStore("teacherMessages");
@@ -49,17 +46,11 @@ const Content = ({ close, isLoading, setIsLoading }) => {
   });
 
   // Recipient type options
-  const recipientTypeOptions =
-    currentUser?.role === "owner"
-      ? [
-          { value: "all", label: "Barchaga" },
-          { value: "class", label: "Sinfga" },
-          { value: "student", label: "O'quvchiga" },
-        ]
-      : [
-          { value: "class", label: "Sinfga" },
-          { value: "student", label: "O'quvchiga" },
-        ];
+  const recipientTypeOptions = [
+    { value: "all", label: "Barchaga" },
+    { value: "class", label: "Sinfga" },
+    { value: "student", label: "O'quvchiga" },
+  ];
 
   // Load classes
   useEffect(() => {
@@ -164,7 +155,7 @@ const Content = ({ close, isLoading, setIsLoading }) => {
   };
 
   return (
-    <form onSubmit={handleSendMessage} className="space-y-4">
+    <InputGroup onSubmit={handleSendMessage} as="form">
       {/* Message Text */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1.5">
@@ -185,30 +176,29 @@ const Content = ({ close, isLoading, setIsLoading }) => {
       </div>
 
       {/* Recipient Type */}
-      <Select
+      <SelectField
         required
-        size="lg"
         label="Kimga yuborish"
         options={recipientTypeOptions}
         value={state.recipientType}
         onChange={(v) => {
-          setField("recipientType", v);
           setField("classId", "");
           setField("studentId", "");
+          setField("recipientType", v);
         }}
       />
 
-      {/* Class Selection (if recipientType is class or student with class filter) */}
+      {/* Class Selection*/}
       {(state.recipientType === "class" ||
         state.recipientType === "student") && (
-        <Select
-          size="lg"
+        <SelectField
+          required
           label="Sinf"
-          required={state.recipientType === "class"}
-          placeholder="Sinf tanlang"
           value={state.classId}
+          placeholder="Sinf tanlang"
           onChange={(v) => {
             setField("classId", v);
+
             if (state.recipientType === "student") {
               setField("studentId", "");
             }
@@ -222,12 +212,11 @@ const Content = ({ close, isLoading, setIsLoading }) => {
 
       {/* Student Selection (if recipientType is student) */}
       {state.recipientType === "student" && (
-        <Select
+        <SelectField
           required
-          size="lg"
           label="O'quvchi"
-          placeholder="O'quvchi tanlang"
           value={state.studentId}
+          placeholder="O'quvchi tanlang"
           onChange={(v) => setField("studentId", v)}
           options={students.map((s) => ({
             value: s._id,
@@ -291,24 +280,19 @@ const Content = ({ close, isLoading, setIsLoading }) => {
       <div className="flex flex-col-reverse gap-3.5 w-full mt-5 xs:m-0 xs:flex-row xs:justify-end">
         <Button
           type="button"
-          className="w-full xs:w-32"
-          variant="neutral"
           onClick={close}
+          variant="secondary"
+          className="w-full xs:w-32"
         >
           Bekor qilish
         </Button>
 
-        <Button
-          autoFocus
-          className="w-full xs:w-32"
-          variant="primary"
-          disabled={isLoading}
-        >
+        <Button autoFocus className="w-full xs:w-32" disabled={isLoading}>
           Yuborish
           {isLoading && "..."}
         </Button>
       </div>
-    </form>
+    </InputGroup>
   );
 };
 

@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 
 // Icons
 import { CheckCircle, XCircle, Clock } from "lucide-react";
-import Button from "@/shared/components/form/button";
+import Button from "@/shared/components/ui/button/Button";
 
 const MessageDetailsModal = () => (
   <ResponsiveModal name="messageDetails" title="Xabar tafsilotlari">
@@ -243,7 +243,7 @@ const Content = ({ close, ...data }) => {
         <Button
           type="button"
           className="w-full xs:w-32"
-          variant="neutral"
+          variant="secondary"
           onClick={close}
         >
           Yopish
