@@ -1,9 +1,12 @@
 // Utils
 import { cn } from "@/shared/utils/cn";
 
-const InputGroup = ({ children, className = "" }) => {
+const InputGroup = ({ children, className = "", as = "div", ...props }) => {
+  const Component = as;
   return (
-    <div className={cn("grid grid-cols-1 gap-5", className)}>{children}</div>
+    <Component className={cn("grid grid-cols-1 gap-5", className)} {...props}>
+      {children}
+    </Component>
   );
 };
 
