@@ -11,9 +11,9 @@ import { penaltiesAPI } from "@/shared/api/penalties.api";
 import { targetRoleOptions } from "../data/penalties.data";
 
 // Components
-import Input from "@/shared/components/form/input";
-import Select from "@/shared/components/form/select";
-import Button from "@/shared/components/form/button";
+import Button from "@/shared/components/ui/button/Button";
+import InputField from "@/shared/components/ui/input/InputField";
+import SelectField from "@/shared/components/ui/select/SelectField";
 import ResponsiveModal from "@/shared/components/ui/ResponsiveModal";
 
 // Hooks
@@ -58,7 +58,7 @@ const Content = ({ close }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3.5">
-      <Select
+      <SelectField
         required
         label="Rol"
         value={targetRole}
@@ -66,36 +66,31 @@ const Content = ({ close }) => {
         onChange={(v) => setField("targetRole", v)}
       />
 
-      <Input
+      <InputField
         required
         label="Sarlavha"
         value={title}
-        onChange={(v) => setField("title", v)}
+        onChange={(e) => setField("title", e.target.value)}
       />
 
-      <Input
+      <InputField
         label="Izoh"
         type="textarea"
         value={description}
-        onChange={(v) => setField("description", v)}
+        onChange={(e) => setField("description", e.target.value)}
       />
 
-      <Input
+      <InputField
+        min={1}
         required
         label="Ball"
         type="number"
-        min={1}
         value={points}
-        onChange={(v) => setField("points", v)}
+        onChange={(e) => setField("points", e.target.value)}
       />
 
-      <Button
-        type="submit"
-        variant="primary"
-        disabled={createMutation.isPending}
-        className="w-full px-4 text-sm font-medium"
-      >
-        {createMutation.isPending ? "Yaratilmoqda..." : "Yaratish"}
+      <Button disabled={createMutation.isPending}>
+        Yaratish{createMutation.isPending && "..."}
       </Button>
     </form>
   );
