@@ -1,26 +1,26 @@
 // Toast
 import { toast } from "sonner";
 
+// React
+import { useState, useEffect } from "react";
+
 // API
 import { usersAPI } from "@/shared/api/users.api";
 import { classesAPI } from "@/shared/api/classes.api";
 
-// React
-import { useState, useEffect } from "react";
+// Hooks
+import useModal from "@/shared/hooks/useModal";
+import useArrayStore from "@/shared/hooks/useArrayStore";
 
 // Router
 import { useParams, useNavigate } from "react-router-dom";
 
 // Components
 import Card from "@/shared/components/ui/Card";
-import Button from "@/shared/components/form/button";
+import Button from "@/shared/components/ui/button/Button";
 
 // Icons
 import { Users, ArrowLeft, Download } from "lucide-react";
-
-// Hooks
-import useModal from "@/shared/hooks/useModal";
-import useArrayStore from "@/shared/hooks/useArrayStore";
 
 const ClassDetail = () => {
   const { classId } = useParams();
@@ -129,24 +129,20 @@ const ClassDetail = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-1.5">
-          <Button
-            variant="outline"
-            onClick={() => navigate("/classes")}
-            className="px-3"
-          >
-            <ArrowLeft className="size-5" strokeWidth={1.5} />
+          <Button variant="ghost" onClick={() => navigate("/classes")}>
+            <ArrowLeft strokeWidth={1.5} />
           </Button>
 
           <h1 className="text-2xl font-bold text-gray-900">{classInfo.name}</h1>
         </div>
 
         {students?.length > 0 && (
-          <Button variant="primary" onClick={handleExport} className="px-3.5">
-            <Download className="size-4 mr-2" strokeWidth={1.5} />
+          <Button onClick={handleExport} className="px-3.5">
+            <Download strokeWidth={1.5} />
             Yuklash
           </Button>
         )}
