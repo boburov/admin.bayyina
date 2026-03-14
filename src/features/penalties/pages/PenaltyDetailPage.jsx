@@ -29,9 +29,9 @@ import { formatDateUZ } from "@/shared/utils/date.utils";
 
 // Components
 import Card from "@/shared/components/ui/Card";
-import Button from "@/shared/components/form/button";
-import Select from "@/shared/components/form/select";
-import Input from "@/shared/components/form/input";
+import Button from "@/shared/components/ui/button/Button";
+import Select from "@/shared/components/ui/select/Select";
+import Input from "@/shared/components/ui/input/Input";
 
 const PenaltyDetailPage = () => {
   const { penaltyId } = useParams();
