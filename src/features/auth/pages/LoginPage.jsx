@@ -1,23 +1,113 @@
 // Toast
 import { toast } from "sonner";
 
-// Images
-import { logo } from "@/shared/assets/images";
+// Utils
+import { cn } from "@/shared/utils/cn";
 
 // Router
 import { useNavigate } from "react-router-dom";
 
+// Data
+import platforms from "../data/platforms.data";
+
+// Icons
+import { Check } from "lucide-react";
+import { logoIcon } from "@/shared/assets/icons";
+
 // API
 import { authAPI } from "@/features/auth/api/auth.api";
-
-// Components
-import Card from "@/shared/components/ui/Card";
-import { Button } from "@/shared/components/shadcn/button";
 
 // Hooks
 import useObjectState from "@/shared/hooks/useObjectState";
 
+// Components
+import Button from "@/shared/components/ui/button/Button";
+import InputGroup from "@/shared/components/ui/input/InputGroup";
+import InputField from "@/shared/components/ui/input/InputField";
+import MainBackgroundPatterns from "@/shared/components/bg/MainBackgroundPatterns";
+
 const LoginPage = () => {
+  const { setField, showLoginForm, currentPlatform } = useObjectState({
+    showLoginForm: false,
+    currentPlatform: platforms.find((platform) => platform.isCurrent),
+  });
+  return (
+    <div className="w-full h-svh">
+      <div
+        className={cn(
+          "flex items-center justify-center size-full relative z-10 bg-white/50 backdrop-blur px-5 transition-transform duration-500 md:w-1/2",
+          showLoginForm ? "translate-x-0 md:translate-x-full" : "translate-x-0",
+        )}
+      >
+        {showLoginForm ? (
+          <LoginForm onShowLoginForm={() => setField("showLoginForm", false)} />
+        ) : (
+          <PlatformSelectForm
+            currentPlatform={currentPlatform}
+            onShowLoginForm={() => setField("showLoginForm", true)}
+            onPlatformChange={(p) => setField("currentPlatform", p)}
+          />
+        )}
+      </div>
+
+      {/* Background Patterns */}
+      <MainBackgroundPatterns />
+    </div>
+  );
+};
+
+const PlatformSelectForm = ({
+  onShowLoginForm,
+  currentPlatform,
+  onPlatformChange,
+}) => {
+  const handleShowLoginForm = () => {
+    if (currentPlatform.isCurrent) onShowLoginForm();
+    else window.location.href = currentPlatform.href;
+  };
+
+  return (
+    <div className="max-w-md w-full space-y-5 animate__animated animate__fadeIn">
+      {/* Title */}
+      <h2 className="text-lg font-medium text-center md:text-xl">
+        Assalomu alaykum, hurmatli foydalanuvchi! Siz platformaga kim bo'lib
+        kirmoqchisiz?
+      </h2>
+
+      {/* Platforms select */}
+      {platforms.map((platform) => {
+        const isCurrent = currentPlatform.name === platform.name;
+        return (
+          <Button
+            variant="outline"
+            key={platform.name}
+            onClick={() => onPlatformChange(platform)}
+            className={cn(
+              "relative w-full border-2",
+              isCurrent && "border-primary text-primary hover:text-primary",
+            )}
+          >
+            {platform.name}
+            <Check
+              strokeWidth={2.5}
+              className={cn(
+                "absolute right-3.5 transition-colors duration-300",
+                isCurrent ? "stroke-primary" : "stroke-transparent",
+              )}
+            />
+          </Button>
+        );
+      })}
+
+      {/* Submit button */}
+      <Button onClick={handleShowLoginForm} className="w-full">
+        Keyingi
+      </Button>
+    </div>
+  );
+};
+
+const LoginForm = ({ onShowLoginForm }) => {
   const navigate = useNavigate();
 
   const { username, password, setField, isLoading, step } = useObjectState({
@@ -49,93 +139,71 @@ const LoginPage = () => {
       .finally(() => setField("isLoading", false));
   };
 
-  if (step === 1) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-indigo-100 to-white px-4">
-        <div className="max-w-md w-full space-y-5">
-          <h2 className="text-xl font-medium text-center">
-            Ey ismigul! Siz kim bo'lib kirmoqchisiz?
-          </h2>
+  return (
+    <div className="max-w-md w-full animate__animated animate__fadeIn">
+      {/* Header */}
+      <div className="text-center mb-8 space-y-3.5">
+        {/* Title */}
+        <h2 className="flex items-center justify-center gap-3.5 text-lg font-medium text-center md:gap-5 md:text-xl">
+          <img
+            width={32}
+            height={32}
+            src={logoIcon}
+            className="size-8"
+            alt="MBSI Logo icon"
+          />
+
+          <span>Qaytganingiz bilan!</span>
+        </h2>
+
+        {/* Description */}
+        <p className="text-gray-600 mt-2">
+          Tizimga kirish uchun ma'lumotlaringizni kiriting.
+        </p>
+      </div>
+
+      {/* Form */}
+      <InputGroup as="form" onSubmit={handleSubmit}>
+        <InputField
+          required
+          id="username"
+          name="username"
+          value={username}
+          autoComplete="username"
+          label="Foydalanuvchi nomi"
+          placeholder="Faqat raqamlar va harflar"
+          onChange={(e) =>
+            setField("username", e.target.value.trim().toLowerCase())
+          }
+        />
+
+        <InputField
+          required
+          id="password"
+          label="O'ron"
+          type="password"
+          name="password"
+          value={password}
+          autoComplete="current-password"
+          onChange={(e) => setField("password", e.target.value.trim())}
+        />
+
+        {/* Action buttons */}
+        <div className="flex flex-col gap-4">
+          <Button disabled={isLoading}>
+            Tizimga kirish{isLoading && "..."}
+          </Button>
 
           <Button
-            variant="outline"
-            className="w-full"
-            onClick={() => setField("step", 2)}
+            variant="secondary"
+            disabled={isLoading}
+            onClick={onShowLoginForm}
+            className="max-md:bg-white max-md:hover:bg-white/70"
           >
-            Admin 🧑‍💻
-          </Button>
-
-          <Button variant="outline" className="w-full" asChild>
-            <a href="https://student.studytrack.uz">O'quvchi 🧑‍🎓</a>
-          </Button>
-
-          <Button variant="outline" className="w-full" asChild>
-            <a href="https://teacher.studytrack.uz">O'qituvchi 👨‍🏫</a>
+            Ortga qaytish
           </Button>
         </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-indigo-100 to-white px-4">
-      <div className="max-w-md w-full">
-        <Card className="p-8 border-none">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <img
-              width={64}
-              alt="Logo"
-              height={64}
-              src={logo}
-              className="size-16 mx-auto mb-4"
-            />
-            <h2 className="text-3xl font-bold text-gray-900">MBSI School</h2>
-            <p className="text-gray-600 mt-2">Tizimga kirish</p>
-          </div>
-
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-1.5">
-              <label htmlFor="username" className="text-sm text-gray-600">
-                Username
-              </label>
-              <input
-                required
-                id="username"
-                name="username"
-                value={username}
-                autoComplete="username"
-                className="w-full h-11 px-3 rounded-lg border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                onChange={(event) =>
-                  setField("username", event.target.value.trim().toLowerCase())
-                }
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label htmlFor="password" className="text-sm text-gray-600">
-                Parol
-              </label>
-              <input
-                required
-                minLength={6}
-                id="password"
-                name="password"
-                type="password"
-                value={password}
-                autoComplete="current-password"
-                className="w-full h-11 px-3 rounded-lg border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                onChange={(event) => setField("password", event.target.value)}
-              />
-            </div>
-
-            <Button type="submit" disabled={isLoading} className="w-full">
-              Kirish{isLoading && "..."}
-            </Button>
-          </form>
-        </Card>
-      </div>
+      </InputGroup>
     </div>
   );
 };
