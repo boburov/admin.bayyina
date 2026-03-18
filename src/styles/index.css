@@ -95,15 +95,19 @@
 
   table {
     thead {
-      @apply bg-indigo-500;
+      @apply bg-primary;
     }
 
     thead th {
-      @apply text-white uppercase text-xs font-medium;
+      @apply px-6 py-3 text-center text-white uppercase text-xs font-medium;
+    }
+
+    tbody {
+      @apply divide-y divide-gray-200;
     }
 
     tbody tr {
-      @apply last:bg-gray-100;
+      @apply bg-white last:bg-gray-100;
     }
   }
 }
