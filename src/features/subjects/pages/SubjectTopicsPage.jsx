@@ -3,8 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 // API
-import { schedulesAPI } from "@/shared/api/schedules.api";
-import { topicsAPI } from "@/shared/api/topics.api";
+import { schedulesAPI } from "@/features/schedules/api/schedules.api";
+import { topicsAPI } from "@/features/subjects/api/topics.api";
 
 // Components
 import Card from "@/shared/components/ui/Card";

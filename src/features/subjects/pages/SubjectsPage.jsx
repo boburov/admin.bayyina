@@ -3,7 +3,7 @@ import Card from "@/shared/components/ui/Card";
 import Button from "@/shared/components/form/button";
 
 // API
-import { subjectsAPI } from "@/shared/api/subjects.api";
+import { subjectsAPI } from "@/features/subjects/api/subjects.api";
 
 // Icons
 import { Plus, Edit, Trash2, Download, ChevronRight } from "lucide-react";
