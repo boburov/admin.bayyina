@@ -8,9 +8,9 @@ import { Upload, X } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 
 // API
-import { usersAPI } from "@/shared/api/users.api";
-import { classesAPI } from "@/shared/api/classes.api";
-import { messagesAPI } from "@/shared/api/messages.api";
+import { usersAPI } from "@/features/users/api/users.api";
+import { classesAPI } from "@/features/classes/api/classes.api";
+import { messagesAPI } from "@/features/messages/api/messages.api";
 
 // Hooks
 import useArrayStore from "@/shared/hooks/useArrayStore";
