@@ -1,6 +1,6 @@
 // Components
 import Card from "@/shared/components/ui/Card";
-import Button from "@/shared/components/form/button";
+import Button from "@/shared/components/ui/button/Button";
 
 // Hooks
 import useModal from "@/shared/hooks/useModal";
@@ -22,13 +22,13 @@ const RolesPage = () => {
       {/* Action Buttons */}
       <div className="flex items-center justify-between gap-3 mb-6">
         <Button onClick={() => openModal("createRole")} className="px-3.5">
-          <Plus className="size-5 mr-2" strokeWidth={1.5} />
+          <Plus strokeWidth={1.5} />
           Yangi rol
         </Button>
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {roles.map((role) => (
           <Card key={role._id}>
             {/* Top */}
