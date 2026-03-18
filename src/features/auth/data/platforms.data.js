@@ -1,17 +1,27 @@
+// Animations
+import {
+  gcapEmojiAnimation,
+  adminEmojiAnimation,
+  teacherEmojiAnimation,
+} from "@/shared/assets/animations";
+
 const platforms = [
   {
-    name: "Admin 🧑‍💻",
+    name: "Admin",
     isCurrent: true,
+    animationData: adminEmojiAnimation,
   },
   {
-    name: "O'quvchi 🧑‍🎓",
+    name: "O'qituvchi",
     isCurrent: false,
-    href: "https://student.studytrack.uz",
-  },
-  {
-    name: "O'qituvchi 👨‍🏫",
-    isCurrent: false,
+    animationData: teacherEmojiAnimation,
     href: "https://teacher.studytrack.uz",
+  },
+  {
+    name: "O'quvchi",
+    isCurrent: false,
+    animationData: gcapEmojiAnimation,
+    href: "https://student.studytrack.uz",
   },
 ];
 
