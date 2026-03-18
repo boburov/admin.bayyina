@@ -162,7 +162,7 @@ const Topics = () => {
 
       {/* Topics List */}
       {selectedSubject && (
-        <Card responsive>
+        <div>
           {loading && (
             <div className="text-center py-12">
               <p className="text-gray-500">Yuklanmoqda...</p>
@@ -191,13 +191,13 @@ const Topics = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead>
                   <tr>
-                    <th className="px-6 py-3 text-left">T/R</th>
-                    <th className="px-6 py-3 text-left">Mavzu nomi</th>
-                    <th className="px-6 py-3 text-left">Tavsif</th>
+                    <th>T/R</th>
+                    <th>Mavzu nomi</th>
+                    <th>Tavsif</th>
                   </tr>
                 </thead>
 
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody>
                   {topics.map((topic) => (
                     <tr key={topic._id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -215,7 +215,7 @@ const Topics = () => {
               </table>
             </div>
           )}
-        </Card>
+        </div>
       )}
     </div>
   );
