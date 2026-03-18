@@ -107,7 +107,7 @@ const Pagination = ({
     <div className={`flex items-center justify-center gap-3.5 ${className}`}>
       {/* Previous Button */}
       <Button
-        variant="secondary"
+        variant="outline"
         onClick={goToPrevPage}
         disabled={!hasPrevPage}
         aria-label="Oldingi sahifa"
@@ -124,7 +124,7 @@ const Pagination = ({
           {showFirstPage && (
             <>
               <Button
-                variant="secondary"
+                variant="outline"
                 aria-label="1-sahifa"
                 onClick={() => goToPage(1)}
                 className="size-9 px-0 md:size-11"
@@ -145,7 +145,7 @@ const Pagination = ({
               aria-label={`${pageNum}-sahifa`}
               onClick={() => goToPage(pageNum)}
               className="size-9 px-0 md:size-11"
-              variant={pageNum === currentPage ? "primary" : "neutral"}
+              variant={pageNum === currentPage ? "default" : "outline"}
               aria-current={pageNum === currentPage ? "page" : undefined}
             >
               {pageNum}
@@ -160,7 +160,7 @@ const Pagination = ({
               )}
 
               <Button
-                variant="secondary"
+                variant="outline"
                 className="size-9 px-0 md:size-11"
                 aria-label={`${totalPages}-sahifa`}
                 onClick={() => goToPage(totalPages)}
@@ -181,7 +181,7 @@ const Pagination = ({
 
       {/* Next Button */}
       <Button
-        variant="secondary"
+        variant="outline"
         onClick={goToNextPage}
         disabled={!hasNextPage}
         aria-label="Keyingi sahifa"
