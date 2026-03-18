@@ -2,7 +2,7 @@
 import { toast } from "sonner";
 
 // API
-import { usersAPI } from "@/shared/api/users.api";
+import { usersAPI } from "@/features/users/api/users.api";
 
 // React
 import { useState } from "react";
