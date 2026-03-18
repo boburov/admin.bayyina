@@ -14,7 +14,7 @@ import useAuth from "@/shared/hooks/useAuth";
 import useArrayStore from "@/shared/hooks/useArrayStore";
 
 // API
-import { schedulesAPI } from "@/shared/api/schedules.api";
+import { schedulesAPI } from "@/features/schedules/api/schedules.api";
 
 // Utils
 import { getDayOfWeekUZ } from "@/shared/utils/date.utils";

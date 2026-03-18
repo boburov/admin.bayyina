@@ -16,7 +16,7 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
 // API
-import { coinsAPI } from "@/shared/api/coins.api";
+import { coinsAPI } from "@/features/coin-settings/api/coins.api";
 
 // Utils
 import { cn } from "@/shared/utils/cn";

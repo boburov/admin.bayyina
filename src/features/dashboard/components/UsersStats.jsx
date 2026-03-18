@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 // API
-import { usersAPI } from "@/shared/api/users.api";
+import { usersAPI } from "@/features/users/api/users.api";
 
 // Icons
 import { Bot, Briefcase, GraduationCap } from "lucide-react";
