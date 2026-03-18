@@ -18,7 +18,7 @@ import useModal from "@/shared/hooks/useModal";
 import { useQuery } from "@tanstack/react-query";
 
 // API
-import { marketAPI } from "@/shared/api/market.api";
+import { marketAPI } from "@/features/market/api/market.api";
 
 // Utils
 import { formatUzDate } from "@/shared/utils/formatDate";

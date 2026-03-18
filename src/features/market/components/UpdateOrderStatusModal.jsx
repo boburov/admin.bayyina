@@ -8,7 +8,7 @@ import { useState } from "react";
 import useModal from "@/shared/hooks/useModal";
 
 // API
-import { marketAPI } from "@/shared/api/market.api";
+import { marketAPI } from "@/features/market/api/market.api";
 
 // Tanstack Query
 import { useMutation, useQueryClient } from "@tanstack/react-query";

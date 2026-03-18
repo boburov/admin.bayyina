@@ -8,7 +8,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // API
-import { marketAPI } from "@/shared/api/market.api";
+import { marketAPI } from "@/features/market/api/market.api";
 
 // Components
 import Card from "@/shared/components/ui/Card";

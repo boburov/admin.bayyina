@@ -1,7 +1,7 @@
 import { toast } from "sonner";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 
-import { marketAPI } from "@/shared/api/market.api";
+import { marketAPI } from "@/features/market/api/market.api";
 import Button from "@/shared/components/ui/button/Button";
 import ResponsiveModal from "@/shared/components/ui/ResponsiveModal";
 

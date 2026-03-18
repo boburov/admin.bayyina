@@ -6,7 +6,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Card from "@/shared/components/ui/Card";
 import Input from "@/shared/components/ui/input/Input";
 import Button from "@/shared/components/ui/button/Button";
-import { marketAPI } from "@/shared/api/market.api";
+import { marketAPI } from "@/features/market/api/market.api";
 
 /**
  * Formats upload size to KB/MB.

@@ -14,7 +14,7 @@ import useModal from "@/shared/hooks/useModal";
 import { useQuery } from "@tanstack/react-query";
 
 // API
-import { marketAPI } from "@/shared/api/market.api";
+import { marketAPI } from "@/features/market/api/market.api";
 
 // Components
 import Card from "@/shared/components/ui/Card";
