@@ -51,6 +51,9 @@ import MarketProductsPage from "@/features/market/pages/MarketProductsPage";
 import MarketProductEditPage from "@/features/market/pages/MarketProductEditPage";
 import MarketProductCreatePage from "@/features/market/pages/MarketProductCreatePage";
 
+// Pages — Social Networks
+import SocialNetworksPage from "@/features/social-networks/pages/SocialNetworksPage";
+
 // Pages — Penalties
 import PenaltiesPage from "@/features/penalties/pages/PenaltiesPage";
 import PenaltyDetailPage from "@/features/penalties/pages/PenaltyDetailPage";
@@ -112,6 +115,9 @@ const Routes = () => {
           <Route path="/market/products/new" element={<MarketProductCreatePage />} />
           <Route path="/market/products/:productId/edit" element={<MarketProductEditPage />} />
           <Route path="/market/orders" element={<MarketOrdersPage />} />
+
+          {/* Social Networks */}
+          <Route path="/social-networks" element={<SocialNetworksPage />} />
 
           {/* Penalties */}
           <Route path="/penalties" element={<PenaltiesPage />} />
