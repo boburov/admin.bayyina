@@ -74,6 +74,11 @@ const initialState = {
 
   // Bug Report
   bugReport: initialModalData,
+
+  // Social network
+  editSocialNetwork: initialModalData,
+  deleteSocialNetwork: initialModalData,
+  createSocialNetwork: initialModalData,
 };
 
 export const modalSlice = createSlice({
