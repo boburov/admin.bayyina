@@ -4,12 +4,12 @@ import { toast } from "sonner";
 // React
 import { useState, useEffect } from "react";
 
-// Tanstack Query
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+// Hooks
+import useObjectState from "@/shared/hooks/useObjectState";
 
 // API
-import { penaltiesAPI } from "@/features/penalties/api/penalties.api";
 import { usersAPI } from "@/features/users/api/users.api";
+import { penaltiesAPI } from "@/features/penalties/api/penalties.api";
 
 // Components
 import Combobox from "@/shared/components/form/combobox";
@@ -18,8 +18,8 @@ import InputField from "@/shared/components/ui/input/InputField";
 import SelectField from "@/shared/components/ui/select/SelectField";
 import ResponsiveModal from "@/shared/components/ui/ResponsiveModal";
 
-// Hooks
-import useObjectState from "@/shared/hooks/useObjectState";
+// Tanstack Query
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const CreatePenaltyModal = () => (
   <ResponsiveModal name="createPenalty" title="Jarima yozish">
@@ -145,7 +145,7 @@ const Content = ({ close }) => {
               onChange={(e) => setField("isCustom", e.target.checked)}
               className="rounded border-gray-300 text-indigo-500 focus:ring-indigo-500"
             />
-            Custom jarima
+            Maxsus jarima
           </label>
         </div>
       )}
@@ -178,26 +178,24 @@ const Content = ({ close }) => {
             value={points}
             onChange={(e) => setField("points", e.target.value)}
           />
-        </>
-      )}
 
-      {userId && (
-        <>
           <InputField
             label="Izoh"
             type="textarea"
             value={description}
             onChange={(e) => setField("description", e.target.value)}
           />
-
-          <InputField
-            multiple
-            type="file"
-            label="Fayllar (rasm/video/pdf)"
-            onChange={(e) => setFiles(e.target.files)}
-            accept="image/*,video/mp4,video/webm,application/pdf"
-          />
         </>
+      )}
+
+      {userId && (
+        <InputField
+          multiple
+          type="file"
+          label="Fayllar (rasm/video)"
+          accept="image/*,video/mp4,video/webm"
+          onChange={(e) => setFiles(e.target.files)}
+        />
       )}
 
       <Button variant="danger" disabled={createMutation.isPending || !userId}>
