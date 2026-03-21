@@ -51,21 +51,15 @@ const Select = ({
       <SelectContent>
         {/* Options */}
         {!isLoading &&
-          options.map((opt) =>
-            typeof opt === "object" ? (
-              <SelectItem
-                key={opt.value}
-                value={opt.value}
-                disabled={opt.disabled}
-              >
-                {opt.label}
-              </SelectItem>
-            ) : (
-              <SelectItem key={opt} value={opt}>
-                {opt}
-              </SelectItem>
-            ),
-          )}
+          options.map((opt) => (
+            <SelectItem
+              key={opt.value}
+              value={opt.value}
+              disabled={opt.disabled}
+            >
+              {opt.label}
+            </SelectItem>
+          ))}
 
         {/* Loading */}
         {isLoading && (
