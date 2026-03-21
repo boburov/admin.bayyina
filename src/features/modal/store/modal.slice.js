@@ -69,6 +69,9 @@ const initialState = {
   editRole: initialModalData,
   deleteRole: initialModalData,
 
+  // Coin Distribution
+  confirmDistribution: initialModalData,
+
   // Download App
   downloadApp: initialModalData,
 
