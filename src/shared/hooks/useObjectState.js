@@ -7,6 +7,7 @@ import { useState } from "react";
  * @returns {{state: Object, setField: Function, setFields: Function, resetState: Function}} State and helpers.
  */
 const useObjectState = (initialState = {}) => {
+  const savedInitialState = useState(initialState);
   const [state, setState] = useState(initialState);
 
   /**
@@ -29,9 +30,7 @@ const useObjectState = (initialState = {}) => {
   /**
    * Resets state back to the initial object.
    */
-  const resetState = () => {
-    setState(initialState);
-  };
+  const resetState = () => setState(savedInitialState);
 
   return { ...state, state, setField, setFields, resetState };
 };
