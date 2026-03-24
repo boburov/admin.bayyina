@@ -10,15 +10,16 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 // API
 import { penaltiesAPI } from "@/features/penalties/api/penalties.api";
 
-// Data
-import { targetRoleOptions } from "../data/penalties.data";
-
 // Components
 import Card from "@/shared/components/ui/Card";
 import Button from "@/shared/components/ui/button/Button";
 
 // Hooks
 import useModal from "@/shared/hooks/useModal";
+import useArrayStore from "@/shared/hooks/useArrayStore";
+
+// Helpers
+import { getRoleLabel } from "@/shared/helpers/role.helpers";
 
 // Modals
 import CreateCategoryModal from "../components/CreateCategoryModal";
@@ -27,6 +28,8 @@ import EditCategoryModal from "../components/EditCategoryModal";
 const PenaltyCategoriesPage = () => {
   const queryClient = useQueryClient();
   const { openModal } = useModal();
+  const { getCollectionData } = useArrayStore();
+  const roles = getCollectionData("roles") || [];
 
   const { data: categories = [], isLoading } = useQuery({
     queryKey: ["penalties", "categories"],
@@ -89,8 +92,7 @@ const PenaltyCategoriesPage = () => {
                       {cat.points} ball
                     </span>
                     <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-indigo-100 text-indigo-700">
-                      {targetRoleOptions.find((o) => o.value === cat.targetRole)
-                        ?.label ?? cat.targetRole}
+                      {getRoleLabel(cat.targetRole, roles)}
                     </span>
                   </div>
                 </div>
