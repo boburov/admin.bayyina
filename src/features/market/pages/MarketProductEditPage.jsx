@@ -4,25 +4,16 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import Card from "@/shared/components/ui/Card";
-import Input from "@/shared/components/ui/input/Input";
 import Button from "@/shared/components/ui/button/Button";
 import { marketAPI } from "@/features/market/api/market.api";
+import InputField from "@/shared/components/ui/input/InputField";
 
-/**
- * Formats upload size to KB/MB.
- * @param {number} bytes Size in bytes.
- * @returns {string} Formatted size.
- */
 const formatUploadSize = (bytes) => {
   if (!Number.isFinite(bytes) || bytes <= 0) return "0 KB";
   if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
   return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
 };
 
-/**
- * Admin edit market product page.
- * @returns {JSX.Element} Product edit page.
- */
 const MarketProductEditPage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -35,7 +26,9 @@ const MarketProductEditPage = () => {
   const { data: product, isLoading } = useQuery({
     queryKey: ["market", "admin", "product", productId],
     queryFn: () =>
-      marketAPI.getProductById(productId).then((response) => response.data.data),
+      marketAPI
+        .getProductById(productId)
+        .then((response) => response.data.data),
   });
 
   const [name, setName] = useState(undefined);
@@ -50,10 +43,18 @@ const MarketProductEditPage = () => {
       formData.append("name", String(name ?? product?.name ?? "").trim());
       formData.append("price", String(price ?? product?.price ?? ""));
       formData.append("quantity", String(quantity ?? product?.quantity ?? ""));
-      formData.append("description", String(description ?? product?.description ?? "").trim());
-      formData.append("isActive", String(isActive ?? product?.isActive ?? true));
+      formData.append(
+        "description",
+        String(description ?? product?.description ?? "").trim(),
+      );
+      formData.append(
+        "isActive",
+        String(isActive ?? product?.isActive ?? true),
+      );
       formData.append("removeImageIds", removeImageIds.join(","));
-      Array.from(newImages || []).forEach((file) => formData.append("images", file));
+      Array.from(newImages || []).forEach((file) =>
+        formData.append("images", file),
+      );
 
       return marketAPI.updateProduct(productId, formData, {
         onUploadProgress: (event) => {
@@ -65,8 +66,12 @@ const MarketProductEditPage = () => {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["market", "admin", "products"] });
-      queryClient.invalidateQueries({ queryKey: ["market", "admin", "product", productId] });
+      queryClient.invalidateQueries({
+        queryKey: ["market", "admin", "products"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["market", "admin", "product", productId],
+      });
       toast.success("Mahsulot yangilandi");
       navigate("/market/products");
     },
@@ -100,50 +105,53 @@ const MarketProductEditPage = () => {
   }
 
   return (
-    <Card title="Mahsulotni tahrirlash" className="max-w-3xl">
+    <Card title="Mahsulotni tahrirlash" className="max-w-3xl space-y-4">
       <form onSubmit={submit} className="space-y-4">
-        <Input
+        <InputField
           required
           label="Nomi"
           value={name ?? product.name ?? ""}
-          onChange={(value) => setName(value)}
+          onChange={(e) => setName(e.target.value)}
         />
 
         <div className="grid md:grid-cols-2 gap-4">
-          <Input
+          <InputField
             required
             min={1}
             type="number"
             label="Narxi (coin)"
+            onChange={(e) => setPrice(e.target.value)}
             value={price ?? String(product.price ?? "")}
-            onChange={(value) => setPrice(value)}
           />
 
-          <Input
+          <InputField
             required
             min={0}
             type="number"
             label="Soni"
+            onChange={(e) => setQuantity(e.target.value)}
             value={quantity ?? String(product.quantity ?? "")}
-            onChange={(value) => setQuantity(value)}
           />
         </div>
 
-        <Input
+        <InputField
           type="textarea"
           label="Tavsif"
+          onChange={(e) => setDescription(e.target.value)}
           value={description ?? product.description ?? ""}
-          onChange={(value) => setDescription(value)}
         />
 
         <div className="flex items-center gap-2">
           <input
-            id="marketProductActive"
             type="checkbox"
+            id="marketProductActive"
             checked={Boolean(isActive ?? product.isActive)}
             onChange={(event) => setIsActive(event.target.checked)}
           />
-          <label htmlFor="marketProductActive" className="text-sm text-gray-700">
+          <label
+            htmlFor="marketProductActive"
+            className="text-sm text-gray-700"
+          >
             Mahsulot faol holatda bo'lsin
           </label>
         </div>
@@ -152,7 +160,8 @@ const MarketProductEditPage = () => {
           <p className="text-sm font-medium text-gray-700">Joriy rasmlar</p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {(product.images || []).map((image) => {
-              const imageUrl = image?.variants?.sm?.url || image?.variants?.original?.url;
+              const imageUrl =
+                image?.variants?.sm?.url || image?.variants?.original?.url;
               const marked = removeImageIds.includes(image._id);
 
               return (
@@ -175,7 +184,9 @@ const MarketProductEditPage = () => {
                         if (event.target.checked) {
                           setRemoveImageIds((prev) => [...prev, image._id]);
                         } else {
-                          setRemoveImageIds((prev) => prev.filter((id) => id !== image._id));
+                          setRemoveImageIds((prev) =>
+                            prev.filter((id) => id !== image._id),
+                          );
                         }
                       }}
                     />
@@ -188,7 +199,9 @@ const MarketProductEditPage = () => {
         </div>
 
         <div className="space-y-1.5">
-          <label className="ml-1 text-sm font-medium text-gray-700">Yangi rasmlar</label>
+          <label className="ml-1 text-sm font-medium text-gray-700">
+            Yangi rasmlar
+          </label>
           <input
             multiple
             type="file"
@@ -196,14 +209,17 @@ const MarketProductEditPage = () => {
             onChange={(event) => setNewImages(event.target.files)}
             className="w-full border border-gray-300 rounded-lg px-3 py-2"
           />
-          <p className="text-xs text-gray-500">Umumiy rasm soni 1-3 ta oralig'ida bo'lishi kerak</p>
+          <p className="text-xs text-gray-500">
+            Umumiy rasm soni 1-3 ta oralig'ida bo'lishi kerak
+          </p>
         </div>
 
         {updateMutation.isPending && (
           <div className="rounded-lg border border-blue-100 bg-blue-50 p-3 text-sm text-blue-700">
             <p className="font-medium">Yuklanmoqda: {upload.percent}%</p>
             <p>
-              {formatUploadSize(upload.loaded)} / {formatUploadSize(upload.total || upload.loaded)}
+              {formatUploadSize(upload.loaded)} /{" "}
+              {formatUploadSize(upload.total || upload.loaded)}
             </p>
           </div>
         )}
