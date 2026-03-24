@@ -1,4 +1,5 @@
 import appleLogo from "../assets/icons/apple-logo.svg";
+import apkFileIcon from "../assets/icons/apk-file.svg";
 import windowsLogo from "../assets/icons/windows-logo.svg";
 import playMarketLogo from "../assets/icons/play-market-logo.svg";
 
@@ -10,6 +11,14 @@ export const downloadPlatforms = [
     icon: windowsLogo,
     sublabel: "Kompyuter uchun",
     url: "https://mbsi.fra1.cdn.digitaloceanspaces.com/apps/MBSI%20School%20Setup%201.0.0.exe",
+  },
+  {
+    disabled: true,
+    id: "file",
+    label: "Fayl orqali",
+    icon: apkFileIcon,
+    sublabel: "Android uchun",
+    url: "https://play.google.com",
   },
   {
     disabled: true,
