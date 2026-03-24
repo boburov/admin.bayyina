@@ -17,30 +17,41 @@ import { penaltiesAPI } from "@/features/penalties/api/penalties.api";
 import Card from "@/shared/components/ui/Card";
 import Button from "@/shared/components/ui/button/Button";
 
+// Hooks
+import useArrayStore from "@/shared/hooks/useArrayStore";
+
 const PenaltySettingsPage = () => {
   const queryClient = useQueryClient();
+  const { getCollectionData } = useArrayStore();
+  const roles = getCollectionData("roles") || [];
+
+  // Owner va developer'dan tashqari rollar
+  const fineRoles = roles.filter(
+    (r) => r.value !== "owner" && r.value !== "developer",
+  );
 
   const { data: settings, isLoading } = useQuery({
     queryKey: ["penalties", "settings"],
     queryFn: () => penaltiesAPI.getSettings().then((res) => res.data.data),
   });
 
-  const [form, setForm] = useState({
-    studentFineAmount: 0,
-    teacherFineAmount: 0,
-  });
+  // fineAmounts: { student: N, teacher: N, ... }
+  const [fineAmounts, setFineAmounts] = useState({});
 
   useEffect(() => {
-    if (settings) {
-      setForm({
-        studentFineAmount: settings.studentFineAmount,
-        teacherFineAmount: settings.teacherFineAmount,
-      });
+    if (settings && fineRoles.length > 0) {
+      const amounts = {};
+      for (const role of fineRoles) {
+        // fineAmounts backend'dan object sifatida keladi (Map JSON'da object)
+        amounts[role.value] = settings.fineAmounts?.[role.value] ?? 0;
+      }
+      setFineAmounts(amounts);
     }
-  }, [settings]);
+  }, [settings, roles.length]);
 
   const saveMutation = useMutation({
-    mutationFn: () => penaltiesAPI.updateSettings(form),
+    mutationFn: () =>
+      penaltiesAPI.updateSettings({ fineAmounts }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["penalties", "settings"] });
       toast.success("Sozlamalar saqlandi");
@@ -83,62 +94,43 @@ const PenaltySettingsPage = () => {
             </p>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              O'quvchi uchun jarima miqdori (so'm)
-            </label>
-            <p className="text-xs text-gray-500 mb-2">
-              12 ball yetganda o'quvchi to'lashi kerak bo'lgan jarima miqdori
+          {fineRoles.length === 0 ? (
+            <p className="text-sm text-gray-500 text-center py-4">
+              Rollar yuklanmoqda...
             </p>
-            <input
-              type="number"
-              min="0"
-              value={form.studentFineAmount}
-              onChange={(e) =>
-                setForm((f) => ({
-                  ...f,
-                  studentFineAmount: Number(e.target.value),
-                }))
-              }
-              className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
-            />
-            {form.studentFineAmount > 0 && (
-              <p className="text-xs text-gray-400 mt-1">
-                {formatAmount(form.studentFineAmount)} so'm
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              O'qituvchi uchun jarima miqdori (so'm)
-            </label>
-            <p className="text-xs text-gray-500 mb-2">
-              12 ball yetganda o'qituvchi to'lashi kerak bo'lgan jarima miqdori
-            </p>
-            <input
-              type="number"
-              min="0"
-              value={form.teacherFineAmount}
-              onChange={(e) =>
-                setForm((f) => ({
-                  ...f,
-                  teacherFineAmount: Number(e.target.value),
-                }))
-              }
-              className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
-            />
-            {form.teacherFineAmount > 0 && (
-              <p className="text-xs text-gray-400 mt-1">
-                {formatAmount(form.teacherFineAmount)} so'm
-              </p>
-            )}
-          </div>
+          ) : (
+            fineRoles.map((role) => (
+              <div key={role.value}>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {role.name} uchun jarima miqdori (so'm)
+                </label>
+                <p className="text-xs text-gray-500 mb-2">
+                  12 ball yetganda to'lashi kerak bo'lgan jarima miqdori
+                </p>
+                <input
+                  type="number"
+                  min="0"
+                  value={fineAmounts[role.value] ?? 0}
+                  onChange={(e) =>
+                    setFineAmounts((prev) => ({
+                      ...prev,
+                      [role.value]: Number(e.target.value),
+                    }))
+                  }
+                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                />
+                {(fineAmounts[role.value] ?? 0) > 0 && (
+                  <p className="text-xs text-gray-400 mt-1">
+                    {formatAmount(fineAmounts[role.value])} so'm
+                  </p>
+                )}
+              </div>
+            ))
+          )}
 
           <Button
-            
             onClick={() => saveMutation.mutate()}
-            disabled={saveMutation.isPending}
+            disabled={saveMutation.isPending || fineRoles.length === 0}
             className="w-full px-4 text-sm font-medium"
           >
             {saveMutation.isPending ? "Saqlanmoqda..." : "Saqlash"}
