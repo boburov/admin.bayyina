@@ -15,11 +15,20 @@ import Card from "@/shared/components/ui/Card";
 import Counter from "@/shared/components/ui/Counter";
 import Button from "@/shared/components/ui/button/Button";
 
+// Hooks
+import useArrayStore from "@/shared/hooks/useArrayStore";
+
+// Helpers
+import { getRoleLabel } from "@/shared/helpers/role.helpers";
+
 const PenaltyStats = () => {
   const { data: stats } = useQuery({
     queryKey: ["penalties", "stats"],
     queryFn: () => penaltiesAPI.getStats().then((res) => res.data.data),
   });
+
+  const { getCollectionData } = useArrayStore();
+  const roles = getCollectionData("roles") || [];
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
@@ -57,32 +66,25 @@ const PenaltyStats = () => {
           </Card>
         </div>
 
-        {/* Top 10 o'quvchilar */}
+        {/* Top 10 foydalanuvchilar (barcha rollar) */}
         <TopTenList
-          title="Top 10 jarima olgan o'quvchilar"
-          data={stats?.topStudents || []}
-          colorClass="text-red-600"
+          title="Top 10 jarima olgan foydalanuvchilar"
+          data={stats?.topUsers || []}
+          roles={roles}
         />
       </div>
 
-      {/* Top 10 o'qituvchilar */}
       <TopTenList
-        title="Top 10 jarima olgan o'qituvchilar"
-        data={stats?.topTeachers || []}
+        roles={roles}
+        title="Top 10 jarima olgan o'quvchilar"
+        data={stats?.topStudents || []}
         colorClass="text-orange-600"
       />
     </div>
   );
 };
 
-/**
- * Top 10 ro'yxat komponenti
- * @param {Object} props
- * @param {string} props.title - Ro'yxat sarlavhasi
- * @param {Array} props.data - Foydalanuvchilar ro'yxati
- * @param {string} props.colorClass - Ball rangi uchun Tailwind klassi
- */
-const TopTenList = ({ title, data, colorClass }) => {
+const TopTenList = ({ title, data, roles = [] }) => {
   const getRankColor = (index) => {
     if (index === 0) return "size-10 bg-gradient-to-tr from-red-400 to-red-600";
     if (index === 1)
@@ -100,6 +102,7 @@ const TopTenList = ({ title, data, colorClass }) => {
             Ma'lumot yo'q
           </p>
         )}
+
         {data.map((user, index) => (
           <div
             key={user._id}
@@ -117,13 +120,22 @@ const TopTenList = ({ title, data, colorClass }) => {
               >
                 {index + 1}
               </div>
-              <p className="text-sm font-medium text-gray-800">
-                {user.fullName}
-              </p>
+
+              <div>
+                <p className="text-sm font-medium text-gray-800">
+                  {user.fullName ||
+                    `${user.firstName} ${user.lastName || ""}`.trim()}
+                </p>
+
+                <p className="text-xs leading-[8px] text-gray-400 translate-y-1">
+                  {getRoleLabel(user.role, roles)}
+                </p>
+              </div>
             </div>
+
             <Counter
               value={user?.penaltyPoints || 0}
-              className={cn("text-sm font-semibold", colorClass)}
+              className="text-sm font-semibold text-red-600"
             />
           </div>
         ))}
