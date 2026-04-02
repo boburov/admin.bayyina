@@ -1,6 +1,18 @@
 // Router
 import { Link } from "react-router-dom";
 
+// Recharts
+import {
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  LineChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Legend,
+} from "recharts";
+
 // Tanstack Query
 import { useQuery } from "@tanstack/react-query";
 
@@ -9,6 +21,7 @@ import { penaltiesAPI } from "@/features/penalties/api/penalties.api";
 
 // Utils
 import { cn } from "@/shared/utils/cn";
+import { formatDateUZ } from "@/shared/utils/date.utils";
 
 // Components
 import Card from "@/shared/components/ui/Card";
@@ -67,11 +80,96 @@ const PenaltyStats = () => {
         </div>
 
         {/* Top 10 foydalanuvchilar (barcha rollar) */}
-        <TopTenList
-          title="Top 10 jarima olgan foydalanuvchilar"
-          data={stats?.topUsers || []}
-          roles={roles}
-        />
+        <div className="grid grid-cols-2 gap-4">
+          <TopTenList
+            title="Top 10 jarima olgan foydalanuvchilar"
+            data={stats?.topUsers || []}
+            roles={roles}
+          />
+
+          {/* Penalty Stats Chart */}
+          <Card
+            title="So'nggi 30 kunlik jarimalar statistikasi"
+            className="min-h-80 space-y-4"
+          >
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart
+                data={stats?.dailyTrend || []}
+                margin={{ left: -32, bottom: 40 }}
+              >
+                <defs>
+                  <linearGradient id="colorPenalty" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.15} />
+                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient
+                    id="colorReduction"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop offset="5%" stopColor="#22c55e" stopOpacity={0.15} />
+                    <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid
+                  vertical={false}
+                  stroke="#E5E7EB"
+                  strokeDasharray="3 3"
+                />
+                <XAxis
+                  dy={10}
+                  dataKey="date"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 11, fill: "#9CA3AF" }}
+                  tickFormatter={(val) => formatDateUZ(val, { hideYear: true })}
+                  interval={4}
+                />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 11, fill: "#9CA3AF" }}
+                />
+                <Tooltip
+                  labelStyle={{
+                    color: "#6B7280",
+                    fontSize: "13px",
+                    marginBottom: "2px",
+                  }}
+                  contentStyle={{
+                    borderRadius: "12px",
+                    border: "1px solid #E5E7EB",
+                    boxShadow: "0 2px 6px -1px rgb(0 0 0 / 0.1)",
+                  }}
+                  labelFormatter={formatDateUZ}
+                />
+                <Legend
+                  wrapperStyle={{ fontSize: "12px", paddingTop: "8px" }}
+                />
+                <Line
+                  name="Berilgan jarimalar"
+                  type="monotone"
+                  dataKey="penaltyPoints"
+                  stroke="#ef4444"
+                  strokeWidth={2}
+                  dot={false}
+                  activeDot={{ r: 4 }}
+                />
+                <Line
+                  name="Ayirilgan jarimalar"
+                  type="monotone"
+                  dataKey="reductionPoints"
+                  stroke="#22c55e"
+                  strokeWidth={2}
+                  dot={false}
+                  activeDot={{ r: 4 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </Card>
+        </div>
       </div>
 
       <TopTenList
@@ -108,7 +206,7 @@ const TopTenList = ({ title, data, roles = [] }) => {
             key={user._id}
             className={cn(
               "flex items-center justify-between py-2",
-              index === 0 ? "sticky top-0 bg-white" : "",
+              index === 0 ? "sticky top-0 bg-white z-10" : "z-0",
             )}
           >
             <div className="flex items-center gap-2.5">
