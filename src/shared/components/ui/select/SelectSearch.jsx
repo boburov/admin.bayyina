@@ -67,7 +67,10 @@ const SelectSearch = ({
           className="justify-between font-normal px-3 hover:bg-white"
         >
           <span
-            className={selectedOption?.label ? "text-black" : "text-gray-500"}
+            className={cn(
+              "line-clamp-1",
+              selectedOption?.label ? "text-black" : "text-gray-500",
+            )}
           >
             {selectedOption?.label || props.placeholder}
           </span>
