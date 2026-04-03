@@ -82,6 +82,12 @@ const initialState = {
   editSocialNetwork: initialModalData,
   deleteSocialNetwork: initialModalData,
   createSocialNetwork: initialModalData,
+
+  // Task
+  stopTask: initialModalData,
+  reviewTask: initialModalData,
+  createTask: initialModalData,
+  extendDeadline: initialModalData,
 };
 
 export const modalSlice = createSlice({
