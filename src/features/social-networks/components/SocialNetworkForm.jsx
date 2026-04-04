@@ -120,7 +120,7 @@ const SocialNetworkForm = ({
           type="checkbox"
           checked={isActive}
           onChange={(e) => setField("isActive", e.target.checked)}
-          className="size-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
+          className="size-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
         />
         <label htmlFor="isActive" className="text-sm text-gray-700">
           Aktiv
