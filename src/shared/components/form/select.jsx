@@ -42,7 +42,7 @@ const Select = ({
 
   const defaultClasses = cn(
     border ? "border border-gray-300" : "-outline-offset-1",
-    "w-full focus:outline-indigo-500"
+    "w-full focus:outline-blue-500"
   );
 
   const handleChange = (value) => onChange?.(value);

@@ -42,7 +42,7 @@ const Input = ({
 
   const defaultClasses = cn(
     border ? "border border-gray-300" : "-outline-offset-1",
-    "w-full focus:outline-indigo-500",
+    "w-full focus:outline-blue-500",
   );
 
   const handleChange = (e) => {
@@ -160,7 +160,7 @@ const Input = ({
           htmlFor={name}
           className="ml-1 text-sm font-medium text-gray-700"
         >
-          {label} {required && <span className="text-indigo-500">*</span>}
+          {label} {required && <span className="text-blue-500">*</span>}
         </label>
       )}
 

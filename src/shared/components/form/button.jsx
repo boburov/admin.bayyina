@@ -11,8 +11,8 @@ const Button = ({
   const variants = {
     neutral: "bg-gray-100 hover:bg-gray-200 disabled:!bg-gray-100",
     danger: "bg-red-500 text-white hover:bg-red-600 disabled:!bg-red-500",
-    primary: "bg-indigo-500 text-white hover:bg-indigo-600 disabled:!bg-indigo-500",
-    lightindigo: `bg-indigo-100 text-indigo-500 hover:bg-indigo-200 disabled:!bg-indigo-100`,
+    primary: "bg-blue-500 text-white hover:bg-blue-600 disabled:!bg-blue-500",
+    lightblue: `bg-blue-100 text-blue-500 hover:bg-blue-200 disabled:!bg-blue-100`,
   };
 
   const sizeClasses = {

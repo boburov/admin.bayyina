@@ -98,7 +98,7 @@ const Combobox = ({
               sizeClasses[size],
               variantClasses[variant],
               border ? "border border-gray-300" : "",
-              "focus:outline-indigo-500 disabled:cursor-not-allowed disabled:opacity-50",
+              "focus:outline-blue-500 disabled:cursor-not-allowed disabled:opacity-50",
               triggerClassName
             )}
           >
@@ -140,7 +140,7 @@ const Combobox = ({
                     <Check
                       className={cn(
                         "h-4 w-4 shrink-0",
-                        value === option.value ? "opacity-100 text-indigo-600" : "opacity-0"
+                        value === option.value ? "opacity-100 text-blue-600" : "opacity-0"
                       )}
                     />
                     {option.label}
