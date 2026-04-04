@@ -52,7 +52,7 @@ const RolesPage = () => {
                 <div className="flex gap-3.5">
                   <button
                     onClick={() => openModal("editRole", role)}
-                    className="text-indigo-600 hover:text-indigo-900"
+                    className="text-blue-600 hover:text-blue-900"
                   >
                     <Edit className="size-5" strokeWidth={1.5} />
                   </button>
