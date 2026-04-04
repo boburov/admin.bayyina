@@ -305,7 +305,7 @@ const Users = () => {
                       {/* Edit */}
                       <button
                         onClick={() => openModal("editUser", user)}
-                        className="text-indigo-600 hover:text-indigo-900"
+                        className="text-blue-600 hover:text-blue-900"
                       >
                         <Edit className="size-5" strokeWidth={1.5} />
                       </button>
