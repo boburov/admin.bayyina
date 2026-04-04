@@ -64,7 +64,7 @@ const Subjects = () => {
               <h3>
                 <Link
                   to={`/subjects/${subject._id}/topics`}
-                  className="flex items-center gap-1.5 text-lg font-semibold text-gray-900 transition-colors duration-200 hover:text-indigo-600"
+                  className="flex items-center gap-1.5 text-lg font-semibold text-gray-900 transition-colors duration-200 hover:text-blue-600"
                 >
                   {subject.name}
                   <ChevronRight className="size-5" strokeWidth={1.5} />
@@ -76,7 +76,7 @@ const Subjects = () => {
                 {/* Edit */}
                 <button
                   onClick={() => openModal("editSubject", subject)}
-                  className="text-indigo-600 hover:text-indigo-900"
+                  className="text-blue-600 hover:text-blue-900"
                 >
                   <Edit className="size-5" strokeWidth={1.5} />
                 </button>

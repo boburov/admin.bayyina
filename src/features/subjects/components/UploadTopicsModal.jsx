@@ -211,8 +211,8 @@ const Content = ({ close, isLoading, setIsLoading }) => {
             onClick={() => fileInputRef.current?.click()}
             className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
               isDragging
-                ? "border-indigo-500 bg-indigo-50"
-                : "border-gray-300 hover:border-indigo-400 hover:bg-gray-50"
+                ? "border-blue-500 bg-blue-50"
+                : "border-gray-300 hover:border-blue-400 hover:bg-gray-50"
             }`}
           >
             <FileSpreadsheet
@@ -222,7 +222,7 @@ const Content = ({ close, isLoading, setIsLoading }) => {
             <p className="text-sm text-gray-600 mb-1">
               Excel faylni bu yerga tashlang yoki
             </p>
-            <p className="text-sm font-medium text-indigo-600">
+            <p className="text-sm font-medium text-blue-600">
               Faylni tanlash uchun bosing
             </p>
             <p className="text-xs text-gray-500 mt-2">
