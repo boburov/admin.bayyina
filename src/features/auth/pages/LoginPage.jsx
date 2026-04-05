@@ -208,7 +208,7 @@ const LoginForm = ({ onShowLoginForm }) => {
         <InputField
           required
           id="password"
-          label="O'ron"
+          label="Parol"
           type="password"
           name="password"
           value={password}
@@ -223,7 +223,7 @@ const LoginForm = ({ onShowLoginForm }) => {
           </Button>
 
           <Button
-            variant="secondary"
+            variant="outline"
             disabled={isLoading}
             onClick={onShowLoginForm}
             className="max-md:bg-white max-md:hover:bg-white/70"
