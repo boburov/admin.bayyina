@@ -18,14 +18,14 @@ const AppHeader = () => {
 
       {/* Logo */}
       <div className="flex items-center gap-3">
-        <img
+        {/* <img
           width={24}
           height={24}
           src={logoIcon}
           className="size-6"
-          alt="MBSI School logo svg"
-        />
-        <span className="font-medium">MBSI School</span>
+          alt="Bayyina School logo svg"
+        /> */}
+        <span className="font-medium">Bayyina School</span>
       </div>
 
       {/* Profile */}

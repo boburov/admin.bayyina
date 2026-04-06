@@ -243,18 +243,18 @@ const Header = () => {
             onClick={() => toggleSidebar()}
             className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
           >
-            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-tr from-blue-400 to-blue-700">
-              <img
+            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-tr from-yellow-400 to-yellow-700">
+              {/* <img
                 width={20}
                 height={20}
                 className="size-4 mt-0.5"
                 src={whiteLogoIcon}
-                alt="MBSI School white variant Logo icon svg"
-              />
+                alt="Bayyina School white variant Logo icon svg"
+              /> */}
             </div>
 
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">MBSI School</span>
+              <span className="truncate font-semibold">Bayyina School</span>
               <p className="flex items-center gap-1.5 text-green-500">
                 <span className="truncate text-xs">Day By Day</span>
                 <TrendingUp size={18} strokeWidth={1.5} />

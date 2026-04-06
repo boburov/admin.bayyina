@@ -10,7 +10,7 @@ export const downloadPlatforms = [
     label: "Windows",
     icon: windowsLogo,
     sublabel: "Kompyuter uchun",
-    url: "https://mbsi.fra1.cdn.digitaloceanspaces.com/apps/MBSI%20School%20Setup%201.0.0.exe",
+    url: "https://Bayyina.fra1.cdn.digitaloceanspaces.com/apps/Bayyina%20School%20Setup%201.0.0.exe",
   },
   {
     disabled: true,

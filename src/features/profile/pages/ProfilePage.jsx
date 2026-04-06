@@ -22,7 +22,7 @@ const ProfilePage = () => {
     data: profile,
   } = useQuery({
     queryKey: ["auth", "me"],
-    queryFn: () => authAPI.getMe().then((res) => res.data.data),
+    queryFn: () => authAPI.getMe().then((res) => res.data.user),
   });
 
   const handleLogout = () => {

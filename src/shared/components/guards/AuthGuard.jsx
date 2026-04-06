@@ -15,7 +15,7 @@ const AuthGuard = () => {
 
   const { isLoading, isError } = useQuery({
     queryKey: ["auth", "me"],
-    queryFn: () => authAPI.getMe().then((res) => res.data.data),
+    queryFn: () => authAPI.getMe().then((res) => res.data.user),
     enabled: Boolean(token),
     staleTime: 5 * 60 * 1000,
     retry: false,
@@ -33,7 +33,7 @@ const AuthGuard = () => {
           height={64}
           src={logoIcon}
           className="size-16"
-          alt="MBSI logo icon svg"
+          alt="Bayyina logo icon svg"
         />
       </div>
     );

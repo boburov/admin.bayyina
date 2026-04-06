@@ -136,9 +136,9 @@ const PlatformSelectForm = ({
 const LoginForm = ({ onShowLoginForm }) => {
   const navigate = useNavigate();
 
-  const { username, password, setField, isLoading, step } = useObjectState({
+  const { phone, password, setField, isLoading, step } = useObjectState({
     step: 1,
-    username: "",
+    phone: "",
     password: "",
     isLoading: false,
   });
@@ -147,13 +147,16 @@ const LoginForm = ({ onShowLoginForm }) => {
     e.preventDefault();
     setField("isLoading", true);
 
-    const data = { username, password: password?.trim() };
+    const data = {
+      phone: Number(phone), // string → number
+      password: password?.trim(),
+    };
 
     authAPI
       .login(data)
       .then((response) => {
         // Save token to localStorage
-        const { token } = response.data.data;
+        const { token } = response.data;
         localStorage.setItem("authToken", token);
 
         // Navigate to dashboard
@@ -163,6 +166,7 @@ const LoginForm = ({ onShowLoginForm }) => {
         toast.error(
           error.response?.data?.message || "Tizimga kirishda xatolik",
         );
+        console.log(error);
       })
       .finally(() => setField("isLoading", false));
   };
@@ -178,7 +182,7 @@ const LoginForm = ({ onShowLoginForm }) => {
             height={32}
             src={logoIcon}
             className="size-8"
-            alt="MBSI Logo icon"
+            alt="Bayyinago icon"
           />
 
           <span>Qaytganingiz bilan!</span>
@@ -194,14 +198,14 @@ const LoginForm = ({ onShowLoginForm }) => {
       <InputGroup as="form" onSubmit={handleSubmit}>
         <InputField
           required
-          id="username"
-          name="username"
-          value={username}
-          autoComplete="username"
-          label="Foydalanuvchi nomi"
-          placeholder="Faqat raqamlar va harflar"
+          id="phone"
+          name="phone"
+          value={phone}
+          autoComplete="phone"
+          label="Telefon Raqam"
+          placeholder="Faqat raqamlar"
           onChange={(e) =>
-            setField("username", e.target.value.trim().toLowerCase())
+            setField("phone", e.target.value.trim().toLowerCase())
           }
         />
 

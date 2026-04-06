@@ -1,7 +1,8 @@
 import http from "@/shared/api/http";
 
 export const authAPI = {
-  register: (data) => http.post("auth/register", data),
   login: (data) => http.post("auth/login", data),
-  getMe: () => http.get("auth/me"),
+  sendOtp: (data) => http.post("auth/send-otp", data),
+  verifyOtp: (data) => http.post("auth/verify-otp", data),
+  getMe: () => http.get("auth/profile"),
 };

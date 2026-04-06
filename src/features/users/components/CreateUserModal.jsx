@@ -4,18 +4,19 @@ import { toast } from "sonner";
 // API
 import { usersAPI } from "@/features/users/api/users.api";
 
+// Tanstack Query
+import { useQueryClient } from "@tanstack/react-query";
+
 // Components
 import Input from "@/shared/components/form/input";
 import Select from "@/shared/components/form/select";
 import Button from "@/shared/components/form/button";
-import MultiSelect from "@/shared/components/form/multi-select";
 import ResponsiveModal from "@/shared/components/ui/ResponsiveModal";
 
 // Data
-import { genderOptions } from "../data/users.data";
+import { genderOptions, roleOptions, sourceOptions } from "../data/users.data";
 
 // Hooks
-import useArrayStore from "@/shared/hooks/useArrayStore";
 import useObjectState from "@/shared/hooks/useObjectState";
 
 const CreateUserModal = () => (
@@ -25,38 +26,38 @@ const CreateUserModal = () => (
 );
 
 const Content = ({ close, isLoading, setIsLoading }) => {
-  const { getCollectionData, invalidateCache } = useArrayStore("classes");
-  const classes = getCollectionData();
+  const queryClient = useQueryClient();
 
-  const { getCollectionData: getRolesData } = useArrayStore("roles");
-  const roles = getRolesData().filter((r) => r.value !== "owner");
-
-  const { username, password, firstName, lastName, role, gender, state, setField } =
+  const { phone, password, firstName, lastName, role, gender, source, setField } =
     useObjectState({
-      classes: [],
-      username: "",
+      phone: "",
       password: "",
       lastName: "",
       firstName: "",
       role: "student",
       gender: "",
+      source: "",
     });
 
   const handleCreateUser = (e) => {
     e.preventDefault();
-
-    if (role === "student" && (!state.classes || state.classes.length === 0)) {
-      return toast.warning("Kamida bitta sinf tanlanishi kerak");
-    }
-
     setIsLoading(true);
-    const data = { ...state, password: password?.trim(), gender: gender || null };
+
+    const data = {
+      phone: Number(phone),
+      password: password?.trim(),
+      firstName: firstName?.trim(),
+      lastName: lastName?.trim(),
+      role,
+      gender: gender || null,
+      source: source || null,
+    };
 
     usersAPI
       .create(data)
       .then(() => {
         close();
-        invalidateCache("users");
+        queryClient.invalidateQueries({ queryKey: ["users"] });
         toast.success("Foydalanuvchi yaratildi");
       })
       .catch((err) => {
@@ -87,12 +88,13 @@ const Content = ({ close, isLoading, setIsLoading }) => {
 
       <Input
         required
-        name="username"
-        label="Username"
-        value={username}
+        name="phone"
+        label="Telefon raqam"
+        value={phone}
+        type="tel"
         autoComplete="off"
-        className="[&>input]:lowercase"
-        onChange={(v) => setField("username", v?.trim())}
+        placeholder="998901234567"
+        onChange={(v) => setField("phone", v?.trim())}
       />
 
       <Input
@@ -111,7 +113,7 @@ const Content = ({ close, isLoading, setIsLoading }) => {
         label="Rol"
         value={role}
         onChange={(v) => setField("role", v)}
-        options={roles.map((r) => ({ label: r.name, value: r.value }))}
+        options={roleOptions}
       />
 
       <Select
@@ -121,16 +123,14 @@ const Content = ({ close, isLoading, setIsLoading }) => {
         onChange={(v) => setField("gender", v)}
         options={genderOptions}
       />
-      {role === "student" && (
-        <MultiSelect
-          required
-          label="Sinflar"
-          value={state.classes}
-          placeholder="Sinflarni tanlang..."
-          onChange={(v) => setField("classes", v)}
-          options={classes.map((cls) => ({ label: cls.name, value: cls._id }))}
-        />
-      )}
+
+      <Select
+        label="Qayerdan eshitdi"
+        value={source}
+        placeholder="Manbani tanlang"
+        onChange={(v) => setField("source", v)}
+        options={sourceOptions}
+      />
 
       <div className="flex flex-col-reverse gap-3.5 w-full mt-5 xs:m-0 xs:flex-row xs:justify-end">
         <Button

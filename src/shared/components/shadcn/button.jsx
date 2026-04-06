@@ -16,7 +16,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-text-primary-foreground hover:bg-primary/90 focus-visible:outline-white focus-visible:-outline-offset-4 focus-visible:outline focus-visible:!outline-2",
+          "bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:outline-white focus-visible:-outline-offset-4 focus-visible:outline focus-visible:!outline-2",
         danger:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90 focus-visible:outline-white focus-visible:-outline-offset-4 focus-visible:outline focus-visible:!outline-2",
         outline:
