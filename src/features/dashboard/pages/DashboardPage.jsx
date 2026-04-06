@@ -70,7 +70,7 @@ const Dashboard = () => {
       <AllSchedulesToday />
 
       {/* Download App Modal */}
-      <DownloadAppModal />
+      {/* <DownloadAppModal /> */}
     </div>
   );
 };

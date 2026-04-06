@@ -1,17 +1,30 @@
 // Icons
 import {
   Home,
-  Hash,
-  Store,
   LogOut,
+  Users,
+  BarChart2,
+  BookMarked,
+  Calendar,
   BookOpen,
+  School,
+  Atom,
+  ShoppingBag,
+  ShoppingCart,
+  ClipboardList,
+  AlertTriangle,
+  Tag,
+  Settings,
   Settings2,
+  BadgeDollarSign,
+  Shield,
+  CalendarOff,
+  Monitor,
+  MessageSquare,
+  Share2,
   PanelLeft,
   TrendingUp,
   ChevronRight,
-  ClipboardList,
-  AlertTriangle,
-  BadgeDollarSign,
 } from "lucide-react";
 
 // Router
@@ -27,24 +40,16 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarContent,
-  SidebarMenuSub,
   SidebarTrigger,
   SidebarMenuItem,
-  SidebarGroupLabel,
   SidebarMenuButton,
-  SidebarMenuSubItem,
-  SidebarMenuSubButton,
 } from "@/shared/components/shadcn/sidebar";
-
-// Collapsible
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/shared/components/shadcn/collapsible";
 
 // Tanstack Query
 import { useQuery } from "@tanstack/react-query";
+
+// logo
+import logo from "../../assets/icons/logo.svg";
 
 // Dropdown Menu
 import {
@@ -56,160 +61,35 @@ import {
   DropdownMenuSeparator,
 } from "@/shared/components/shadcn/dropdown-menu";
 
-// Custom icons
-import { whiteLogoIcon } from "@/shared/assets/icons";
-
 // API
 import { authAPI } from "@/features/auth/api/auth.api";
 
 // Hooks
 import { useIsMobile } from "@/shared/hooks/useMobile";
 
-// Navigation items
+// Navigation items — flat list
 const navItems = [
-  {
-    title: "Asosiy",
-    url: "/",
-    icon: Home,
-    isActive: true,
-    items: [
-      {
-        title: "Bosh sahifa",
-        url: "/",
-      },
-      {
-        title: "Foydalanuvchilar",
-        url: "/users",
-      },
-      {
-        title: "Statistika",
-        url: "/statistics",
-      },
-    ],
-  },
-  {
-    title: "Ta'lim",
-    url: "/classes",
-    icon: BookOpen,
-    isActive: false,
-    items: [
-      {
-        title: "Baholar jurnali",
-        url: "/grades",
-      },
-      {
-        title: "Dars jadvali",
-        url: "/schedules",
-      },
-      {
-        title: "Dars mavzulari",
-        url: "/topics",
-      },
-      {
-        title: "Sinflar",
-        url: "/classes",
-      },
-      {
-        title: "Fanlar",
-        url: "/subjects",
-      },
-    ],
-  },
-  {
-    title: "Do'kon",
-    icon: Store,
-    isActive: false,
-    items: [
-      {
-        title: "Mahsulotlar",
-        url: "/market/products",
-      },
-      {
-        title: "Buyurtmalar",
-        url: "/market/orders",
-      },
-    ],
-  },
-  {
-    title: "Topshiriqlar",
-    icon: ClipboardList,
-    isActive: false,
-    items: [
-      {
-        title: "Topshiriqlar ro'yxati",
-        url: "/tasks",
-      },
-    ],
-  },
-  {
-    title: "Jarimalar",
-    icon: AlertTriangle,
-    isActive: false,
-    items: [
-      {
-        title: "Jarimalar ro'yxati",
-        url: "/penalties",
-      },
-      {
-        title: "Kategoriyalar",
-        url: "/penalties/categories",
-      },
-      {
-        title: "Sozlamalar",
-        url: "/penalties/settings",
-      },
-    ],
-  },
-  {
-    title: "Tangalar",
-    icon: BadgeDollarSign,
-    isActive: false,
-    items: [
-      {
-        title: "Tarqatish/Olish",
-        url: "/coin-distribution",
-      },
-      {
-        title: "Sozlamalar",
-        url: "/coin-settings",
-      },
-    ],
-  },
-  {
-    title: "Boshqaruv",
-    url: "/users",
-    icon: Settings2,
-    isActive: false,
-    items: [
-      {
-        title: "Rollar",
-        url: "/roles",
-      },
-      {
-        title: "Dam olish kunlari",
-        url: "/holidays",
-      },
-      {
-        title: "Monitorlar",
-        url: "/monitors",
-      },
-    ],
-  },
-  {
-    title: "Ijtimoiy tarmoqlar",
-    icon: Hash,
-    isActive: false,
-    items: [
-      {
-        title: "Xabarlar",
-        url: "/messages",
-      },
-      {
-        title: "Ijtimoiy tarmoqlar",
-        url: "/social-networks",
-      },
-    ],
-  },
+  { title: "Bosh sahifa", url: "/", icon: Home },
+  { title: "Foydalanuvchilar", url: "/users", icon: Users },
+  { title: "Statistika", url: "/statistics", icon: BarChart2 },
+  // { title: "Baholar jurnali", url: "/grades", icon: BookMarked },
+  // { title: "Dars jadvali", url: "/schedules", icon: Calendar },
+  { title: "O'tuvchilar", url: "/topics", icon: BookOpen },
+  { title: "Guruhlar", url: "/classes", icon: School },
+  // { title: "Fanlar", url: "/subjects", icon: Atom },
+  // { title: "Mahsulotlar", url: "/market/products", icon: ShoppingBag },
+  // { title: "Buyurtmalar", url: "/market/orders", icon: ShoppingCart },
+  // { title: "Topshiriqlar", url: "/tasks", icon: ClipboardList },
+  // { title: "Jarimalar", url: "/penalties", icon: AlertTriangle },
+  // { title: "Jarima kategoriyalar", url: "/penalties/categories", icon: Tag },
+  // { title: "Jarima sozlamalar", url: "/penalties/settings", icon: Settings },
+  // { title: "Tanga tarqatish", url: "/coin-distribution", icon: BadgeDollarSign },
+  // { title: "Tanga sozlamalar", url: "/coin-settings", icon: Settings2 },
+  // { title: "Rollar", url: "/roles", icon: Shield },
+  // { title: "Dam olish kunlari", url: "/holidays", icon: CalendarOff },
+  // { title: "Monitorlar", url: "/monitors", icon: Monitor },
+  { title: "Xabarlar", url: "/messages", icon: MessageSquare },
+  { title: "Ijtimoiy tarmoqlar", url: "/social-networks", icon: Share2 },
 ];
 
 const AppSidebar = ({ ...props }) => {
@@ -235,7 +115,6 @@ const Header = () => {
 
   return (
     <SidebarHeader>
-      {/* Logo */}
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton
@@ -243,20 +122,16 @@ const Header = () => {
             onClick={() => toggleSidebar()}
             className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
           >
-            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-tr from-yellow-400 to-yellow-700">
-              {/* <img
-                width={20}
-                height={20}
-                className="size-4 mt-0.5"
-                src={whiteLogoIcon}
-                alt="Bayyina School white variant Logo icon svg"
-              /> */}
-            </div>
+            <img
+              src={logo}
+              alt="logo"
+              className="aspect-square size-8 rounded-md object-cover"
+            />
 
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-semibold">Bayyina School</span>
               <p className="flex items-center gap-1.5 text-green-500">
-                <span className="truncate text-xs">Day By Day</span>
+                <span className="truncate text-xs">kunlik</span>
                 <TrendingUp size={18} strokeWidth={1.5} />
               </p>
             </div>
@@ -265,7 +140,6 @@ const Header = () => {
         </SidebarMenuItem>
       </SidebarMenu>
 
-      {/* Collapse Button */}
       {!open && <SidebarTrigger className="size-8" />}
     </SidebarHeader>
   );
@@ -275,46 +149,20 @@ const Main = () => {
   return (
     <SidebarContent>
       <SidebarGroup>
-        <SidebarGroupLabel>Platforma</SidebarGroupLabel>
         <SidebarMenu>
           {navItems.map((item) => (
-            <Collapsible
-              asChild
-              key={item.title}
-              defaultOpen={item.isActive}
-              className="group/collapsible"
-            >
-              <SidebarMenuItem>
-                {/* Collapsible Trigger */}
-                <CollapsibleTrigger asChild>
-                  <SidebarMenuButton
-                    tooltip={item.title}
-                    className="h-auto py-2.5"
-                  >
-                    {item.icon && <item.icon strokeWidth={1.5} />}
-                    <span>{item.title}</span>
-                    <ChevronRight
-                      size={20}
-                      strokeWidth={1.5}
-                      className="!size-5 ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
-                    />
-                  </SidebarMenuButton>
-                </CollapsibleTrigger>
-
-                {/* Collapsible Content */}
-                <CollapsibleContent>
-                  <SidebarMenuSub>
-                    {item.items?.map((subItem) => (
-                      <SidebarMenuSubItem key={subItem.title}>
-                        <SidebarMenuSubButton className="h-auto py-2" asChild>
-                          <Link to={subItem.url}>{subItem.title}</Link>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    ))}
-                  </SidebarMenuSub>
-                </CollapsibleContent>
-              </SidebarMenuItem>
-            </Collapsible>
+            <SidebarMenuItem key={item.url}>
+              <SidebarMenuButton
+                asChild
+                tooltip={item.title}
+                className="h-auto py-2.5"
+              >
+                <Link to={item.url}>
+                  <item.icon strokeWidth={1.5} />
+                  <span>{item.title}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
           ))}
         </SidebarMenu>
       </SidebarGroup>
@@ -347,17 +195,15 @@ const Footer = () => {
                 size="lg"
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               >
-                {/* Avatar */}
                 <div className="flex items-center justify-center size-8 shrink-0 bg-background rounded-lg">
                   {user?.firstName?.[0]}
                 </div>
 
-                {/* User Info */}
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">
-                    {user.firstName}
+                    {user?.firstName}
                   </span>
-                  <span className="truncate text-xs">{user.username}</span>
+                  <span className="truncate text-xs">{user?.username}</span>
                 </div>
 
                 <ChevronRight
@@ -374,21 +220,17 @@ const Footer = () => {
               side={isMobile ? "bottom" : "right"}
               className="w-[--radix-dropdown-menu-trigger-width] min-w-56"
             >
-              {/* Profile */}
               <DropdownMenuLabel className="!p-0 font-normal">
                 <div className="flex items-center gap-2 text-left text-sm">
-                  {/* Avatar */}
                   <div className="flex items-center justify-center size-8 shrink-0 bg-background rounded-md">
                     {user?.firstName?.[0]}
                   </div>
-
-                  {/* User Info */}
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-medium">
-                      {user.firstName}
+                      {user?.firstName}
                     </span>
                     <span className="truncate text-xs opacity-70">
-                      {user.username}
+                      {user?.username}
                     </span>
                   </div>
                 </div>
