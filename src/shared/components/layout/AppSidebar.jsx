@@ -123,14 +123,14 @@ const Header = () => {
             className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
           >
             <img
-              src={logo}
+              src="{logo}"
               alt="logo"
-              className="aspect-square size-8 rounded-md object-cover"
+              className="aspect-square size-8 rounded-md object-cover bg-white"
             />
 
-            <div className="grid flex-1 text-left text-sm leading-tight">
+            <div className="grid flex-1 gap-0.5 text-left text-sm leading-tight">
               <span className="truncate font-semibold">Bayyina School</span>
-              <p className="flex items-center gap-1.5 text-green-500">
+              <p className="w-1/2 flex items-center justify-center gap-1.5 bg-green-200 rounded-xl text-green-700">
                 <span className="truncate text-xs">kunlik</span>
                 <TrendingUp size={18} strokeWidth={1.5} />
               </p>
@@ -153,6 +153,7 @@ const Main = () => {
           {navItems.map((item) => (
             <SidebarMenuItem key={item.url}>
               <SidebarMenuButton
+                barMenuButton
                 asChild
                 tooltip={item.title}
                 className="h-auto py-2.5"
@@ -181,7 +182,7 @@ const Footer = () => {
   const isMobile = useIsMobile();
 
   const handleLogout = () => {
-    localStorage.removeItem("authToken");
+    localStorage.removeItem("token");
     window.location.href = "/login";
   };
 
@@ -195,7 +196,7 @@ const Footer = () => {
                 size="lg"
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               >
-                <div className="flex items-center justify-center size-8 shrink-0 bg-background rounded-lg">
+                <div className="flex items-center justify-center size-8 shrink-0 bg-sidebar-accent text-sidebar-accent-foreground rounded-lg font-semibold">
                   {user?.firstName?.[0]}
                 </div>
 
@@ -222,7 +223,7 @@ const Footer = () => {
             >
               <DropdownMenuLabel className="!p-0 font-normal">
                 <div className="flex items-center gap-2 text-left text-sm">
-                  <div className="flex items-center justify-center size-8 shrink-0 bg-background rounded-md">
+                  <div className="flex items-center justify-center size-8 shrink-0 bg-sidebar-accent text-sidebar-accent-foreground rounded-md font-semibold">
                     {user?.firstName?.[0]}
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight">

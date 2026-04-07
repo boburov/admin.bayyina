@@ -157,7 +157,7 @@ const LoginForm = ({ onShowLoginForm }) => {
       .then((response) => {
         // Save token to localStorage
         const { token } = response.data;
-        localStorage.setItem("authToken", token);
+        localStorage.setItem("token", token);
 
         // Navigate to dashboard
         navigate("/dashboard");

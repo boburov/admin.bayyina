@@ -9,15 +9,15 @@ const useAuth = () => {
   const { data: user, isLoading } = useQuery({
     queryKey: ["auth", "me"],
     queryFn: () => authAPI.getMe().then((res) => res.data.data),
-    enabled: Boolean(localStorage.getItem("authToken")),
+    enabled: Boolean(localStorage.getItem("token")),
     staleTime: 5 * 60 * 1000,
     retry: false,
   });
 
-  const isAuthenticated = Boolean(localStorage.getItem("authToken")) && Boolean(user);
+  const isAuthenticated = Boolean(localStorage.getItem("token")) && Boolean(user);
 
   const logout = () => {
-    localStorage.removeItem("authToken");
+    localStorage.removeItem("token");
     queryClient.clear();
     navigate("/login");
   };
