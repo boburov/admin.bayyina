@@ -47,7 +47,7 @@ const Classes = () => {
       <div className="flex items-center justify-between gap-3 mb-4">
         <Button onClick={() => openModal("createClass")} className="px-3.5">
           <Plus strokeWidth={1.5} />
-          Yangi sinf
+          Yangi Guruh
         </Button>
 
         <Button onClick={handleExport} className="px-3.5">

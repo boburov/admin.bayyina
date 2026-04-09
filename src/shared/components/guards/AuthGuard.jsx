@@ -14,7 +14,7 @@ const AuthGuard = () => {
   const token = localStorage.getItem("token");
 
   const { isLoading, isError } = useQuery({
-    queryKey: ["auth", "me"],
+    queryKey: ["auth", "profile"],
     queryFn: () => authAPI.getMe().then((res) => res.data.user),
     enabled: Boolean(token),
     staleTime: 5 * 60 * 1000,

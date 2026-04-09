@@ -57,7 +57,7 @@ const BugReport = () => {
 
 const BugReportForm = ({ close, isLoading, setIsLoading }) => {
   const { data: user } = useQuery({
-    queryKey: ["auth", "me"],
+    queryKey: ["auth", "profile"],
     queryFn: () => authAPI.getMe().then((res) => res.data.data),
   });
 

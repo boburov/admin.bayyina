@@ -7,7 +7,7 @@ const useAuth = () => {
   const navigate = useNavigate();
 
   const { data: user, isLoading } = useQuery({
-    queryKey: ["auth", "me"],
+    queryKey: ["auth", "profile"],
     queryFn: () => authAPI.getMe().then((res) => res.data.data),
     enabled: Boolean(localStorage.getItem("token")),
     staleTime: 5 * 60 * 1000,

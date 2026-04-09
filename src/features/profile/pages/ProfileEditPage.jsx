@@ -26,7 +26,7 @@ const ProfileEditPage = () => {
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["auth", "me"],
+    queryKey: ["auth", "profile"],
     queryFn: () => authAPI.getMe().then((res) => res.data.data),
   });
 
@@ -41,7 +41,7 @@ const ProfileEditPage = () => {
   const updateMutation = useMutation({
     mutationFn: (payload) => usersAPI.updateProfile(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+      queryClient.invalidateQueries({ queryKey: ["auth", "profile"] });
       navigate("/profile");
     },
   });

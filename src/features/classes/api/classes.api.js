@@ -1,12 +1,12 @@
 import http from "@/shared/api/http";
 
 export const classesAPI = {
-  getAll: () => http.get("/classes"),
-  getOne: (id) => http.get(`/classes/${id}`),
-  create: (data) => http.post("/classes", data),
-  update: (id, data) => http.put(`/classes/${id}`, data),
-  delete: (id) => http.delete(`/classes/${id}`),
+  getAll: () => http.get("/groups"),
+  getOne: (id) => http.get(`/groups/${id}`),
+  create: (data) => http.post("/groups", data),
+  update: (id, data) => http.put(`/groups/${id}`, data),
+  delete: (id) => http.delete(`/groups/${id}`),
   exportStudents: (id) =>
-    http.get(`/classes/${id}/export`, { responseType: "blob" }),
-  exportAll: () => http.get("/classes/export", { responseType: "blob" }),
+    http.get(`/groups/${id}/export`, { responseType: "blob" }),
+  exportAll: () => http.get("/groups/export", { responseType: "blob" }),
 };

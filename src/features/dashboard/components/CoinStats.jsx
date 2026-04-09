@@ -37,7 +37,7 @@ const CoinStats = () => {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
       <div className="col-span-2 space-y-4">
         {/* Total coin */}
-        <Card
+        {/* <Card
           title="Umumiy tarqatilgan tangalar"
           className="flex items-center justify-between"
         >
@@ -45,12 +45,12 @@ const CoinStats = () => {
             value={stats?.totalCoinsDistributed ?? 0}
             className="text-2xl font-bold text-blue-500"
           />
-        </Card>
+        </Card> */}
 
         {/* Line Chart */}
         <Card
           className="col-span-2 h-80 space-y-2.5"
-          title="So'nggi 30 kunda tarqatilgan tangalar"
+          title="So'nggi 30 kundagi O'quvchilar"
         >
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
@@ -130,7 +130,7 @@ const TopTenCoinOwner = ({ stats }) => {
 
   return (
     <Card
-      title="Top 10 tanga egalari"
+      title="Top 10 ta guruhlar"
       className="flex flex-col gap-1.5 xs:gap-3.5"
     >
       {/* Main  */}

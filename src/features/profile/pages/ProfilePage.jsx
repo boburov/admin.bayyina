@@ -21,7 +21,7 @@ const ProfilePage = () => {
     isLoading,
     data: profile,
   } = useQuery({
-    queryKey: ["auth", "me"],
+    queryKey: ["auth", "profile"],
     queryFn: () => authAPI.getMe().then((res) => res.data.user),
   });
 

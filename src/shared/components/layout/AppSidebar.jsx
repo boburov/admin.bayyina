@@ -174,7 +174,7 @@ const Main = () => {
 const Footer = () => {
   const { data: user } = useQuery({
     retry: false,
-    queryKey: ["auth", "me"],
+    queryKey: ["auth", "profile"],
     staleTime: 5 * 60 * 1000,
     queryFn: () => authAPI.getMe().then((res) => res.data.data),
   });

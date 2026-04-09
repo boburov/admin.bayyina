@@ -14,7 +14,6 @@ import CoinStats from "../components/CoinStats";
 import UsersStats from "../components/UsersStats";
 import HolidayInfo from "../components/HolidayInfo";
 import PenaltyStats from "../components/PenaltyStats";
-import DownloadAppModal from "../components/DownloadAppModal";
 import AllSchedulesToday from "../components/AllSchedulesToday";
 
 // Utils
@@ -64,7 +63,7 @@ const Dashboard = () => {
       <CoinStats />
 
       {/* Penalty Statistics - Owner only */}
-      <PenaltyStats />
+      {/* <PenaltyStats /> */}
 
       {/* Today's Schedules */}
       <AllSchedulesToday />

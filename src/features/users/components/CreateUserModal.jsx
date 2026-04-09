@@ -28,31 +28,43 @@ const CreateUserModal = () => (
 const Content = ({ close, isLoading, setIsLoading }) => {
   const queryClient = useQueryClient();
 
-  const { phone, password, firstName, lastName, role, gender, source, setField } =
-    useObjectState({
-      phone: "",
-      password: "",
-      lastName: "",
-      firstName: "",
-      role: "student",
-      gender: "",
-      source: "",
-    });
+  const {
+    phone,
+    password,
+    firstName,
+    lastName,
+    role,
+    gender,
+    source,
+    age,
+    setField,
+  } = useObjectState({
+    phone: "",
+    password: "",
+    lastName: "",
+    firstName: "",
+    role: "student",
+    gender: "",
+    source: "",
+    age: "",
+  });
 
   const handleCreateUser = (e) => {
     e.preventDefault();
     setIsLoading(true);
 
     const data = {
-      phone: Number(phone),
+      phone: Number(phone.replace(/\D/g, "")),
       password: password?.trim(),
       firstName: firstName?.trim(),
       lastName: lastName?.trim(),
       role,
       gender: gender || null,
       source: source || null,
+      age: age ? Number(age) : null,
     };
 
+    console.log(data);
     usersAPI
       .create(data)
       .then(() => {
@@ -114,6 +126,15 @@ const Content = ({ close, isLoading, setIsLoading }) => {
         value={role}
         onChange={(v) => setField("role", v)}
         options={roleOptions}
+      />
+
+      <Input
+        label="Yosh"
+        name="age"
+        type="number"
+        value={age}
+        autoComplete="off"
+        onChange={(v) => setField("age", v)}
       />
 
       <Select
