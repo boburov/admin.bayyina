@@ -13,7 +13,7 @@ import InputField from "@/shared/components/ui/input/InputField";
 import ResponsiveModal from "@/shared/components/ui/ResponsiveModal";
 
 const CreateGroupModal = () => (
-  <ResponsiveModal name="createGroup" title="Yangi guruh">
+  <ResponsiveModal name="createClass" title="Yangi guruh">
     <Content />
   </ResponsiveModal>
 );
@@ -97,7 +97,7 @@ const Content = ({ close, isLoading, setIsLoading }) => {
 
       {/* Teacher selector */}
       <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-medium text-secondary">
+        <label className="text-sm font-medium">
           O'qituvchi <span className="text-danger">*</span>
         </label>
         <div className="relative" ref={dropdownRef}>
