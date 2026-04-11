@@ -229,7 +229,7 @@ const Sidebar = React.forwardRef(
         data-state={state}
         data-variant={variant}
         data-collapsible={state === "collapsed" ? collapsible : ""}
-        className="group pr-2 peer hidden text-sidebar-foreground md:block"
+        className="group peer hidden text-sidebar-foreground md:block"
       >
         {/* This is what handles the sidebar gap on desktop */}
         <div
@@ -244,10 +244,10 @@ const Sidebar = React.forwardRef(
         />
         <div
           className={cn(
-            "fixed inset-y-2 z-10 hidden h-[calc(100svh-16px)] w-[--sidebar-width] transition-[left,right,width] duration-200 ease-linear md:flex",
+            "fixed inset-y-0 z-10 hidden h-svh w-[--sidebar-width] transition-[left,right,width] duration-200 ease-linear md:flex",
             side === "left"
-              ? "left-2 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]"
-              : "right-2 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
+              ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]"
+              : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
             // Adjust the padding for floating and inset variants.
             variant === "floating" || variant === "inset"
               ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4)_+2px)]"
@@ -258,7 +258,7 @@ const Sidebar = React.forwardRef(
         >
           <div
             data-sidebar="sidebar"
-            className="flex h-full w-full flex-col bg-primary rounded-2xl group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow"
+            className="flex h-full w-full flex-col bg-primary group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow"
           >
             {children}
           </div>
