@@ -60,6 +60,7 @@ const UsersPage = () => {
   });
 
   const users = data?.users ?? [];
+  console.log(users);
 
   const getGenderLabel = (gender) =>
     genderOptions.find((g) => g.value === gender)?.label ?? "-";

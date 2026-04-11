@@ -58,7 +58,7 @@ const BugReport = () => {
 const BugReportForm = ({ close, isLoading, setIsLoading }) => {
   const { data: user } = useQuery({
     queryKey: ["auth", "profile"],
-    queryFn: () => authAPI.getMe().then((res) => res.data.data),
+    queryFn: () => authAPI.getMe().then((res) => res.data.data ?? null),
   });
 
   const location = useLocation();

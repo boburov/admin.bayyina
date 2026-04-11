@@ -145,7 +145,7 @@ const Footer = () => {
     retry: false,
     queryKey: ["auth", "profile"],
     staleTime: 5 * 60 * 1000,
-    queryFn: () => authAPI.getMe().then((res) => res.data.data),
+    queryFn: () => authAPI.getMe().then((res) => res.data.data ?? null),
   });
 
   const isMobile = useIsMobile();

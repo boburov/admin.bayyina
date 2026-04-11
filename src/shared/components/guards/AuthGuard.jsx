@@ -15,7 +15,7 @@ const AuthGuard = () => {
 
   const { isLoading, isError } = useQuery({
     queryKey: ["auth", "profile"],
-    queryFn: () => authAPI.getMe().then((res) => res.data.user),
+    queryFn: () => authAPI.getMe().then((res) => res.data.user ?? null),
     enabled: Boolean(token),
     staleTime: 5 * 60 * 1000,
     retry: false,
