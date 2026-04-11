@@ -33,12 +33,8 @@ import DeleteUserModal from "@/features/users/components/DeleteUserModal";
 import ExportUsersModal from "@/features/users/components/ExportUsersModal";
 import CreateClassModal from "@/features/classes/components/CreateClassModal";
 import DeleteClassModal from "@/features/classes/components/DeleteClassModal";
-import EditSubjectModal from "@/features/subjects/components/EditSubjectModal";
 import SendMessageModal from "@/features/messages/components/SendMessageModal";
 import EditScheduleModal from "@/features/schedules/components/EditScheduleModal";
-import UploadTopicsModal from "@/features/subjects/components/UploadTopicsModal";
-import CreateSubjectModal from "@/features/subjects/components/CreateSubjectModal";
-import DeleteSubjectModal from "@/features/subjects/components/DeleteSubjectModal";
 import DeleteProductModal from "@/features/market/components/DeleteProductModal";
 import MessageDetailsModal from "@/features/messages/components/MessageDetailsModal";
 import CreateScheduleModal from "@/features/schedules/components/CreateScheduleModal";
@@ -87,11 +83,6 @@ const DashboardLayout = () => {
       <CreateClassModal />
       <DeleteClassModal />
 
-      {/* Subject Modals */}
-      <EditSubjectModal />
-      <CreateSubjectModal />
-      <DeleteSubjectModal />
-
       {/* Schedule Modals */}
       <EditScheduleModal />
       <CreateScheduleModal />
@@ -100,9 +91,6 @@ const DashboardLayout = () => {
       {/* Message Modals */}
       <SendMessageModal />
       <MessageDetailsModal />
-
-      {/* Topic Modals */}
-      <UploadTopicsModal />
 
       {/* Market */}
       <DeleteProductModal />

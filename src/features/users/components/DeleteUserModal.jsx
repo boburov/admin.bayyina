@@ -4,12 +4,12 @@ import { toast } from "sonner";
 // API
 import { usersAPI } from "@/features/users/api/users.api";
 
+// TanStack Query
+import { useQueryClient } from "@tanstack/react-query";
+
 // Components
 import Button from "@/shared/components/form/button";
 import ResponsiveModal from "@/shared/components/ui/ResponsiveModal";
-
-// Hooks
-import useArrayStore from "@/shared/hooks/useArrayStore";
 
 const DeleteUserModal = () => (
   <ResponsiveModal
@@ -22,7 +22,7 @@ const DeleteUserModal = () => (
 );
 
 const Content = ({ close, isLoading, setIsLoading, ...user }) => {
-  const { invalidateCache } = useArrayStore("users");
+  const queryClient = useQueryClient();
 
   const handleDeleteUser = (e) => {
     e.preventDefault();
@@ -32,7 +32,7 @@ const Content = ({ close, isLoading, setIsLoading, ...user }) => {
       .delete(user._id)
       .then(() => {
         close();
-        invalidateCache();
+        queryClient.invalidateQueries({ queryKey: ["users"] });
         toast.success("Foydalanuvchi o'chirildi");
       })
       .catch((err) => {

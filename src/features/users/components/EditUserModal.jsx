@@ -4,6 +4,9 @@ import { toast } from "sonner";
 // API
 import { usersAPI } from "@/features/users/api/users.api";
 
+// TanStack Query
+import { useQueryClient } from "@tanstack/react-query";
+
 // Components
 import Input from "@/shared/components/form/input";
 import Select from "@/shared/components/form/select";
@@ -25,7 +28,8 @@ const EditUserModal = () => (
 );
 
 const Content = ({ close, isLoading, setIsLoading, ...user }) => {
-  const { getCollectionData, invalidateCache } = useArrayStore("classes");
+  const queryClient = useQueryClient();
+  const { getCollectionData } = useArrayStore("classes");
   const classes = getCollectionData();
 
   const { firstName, lastName, gender, state, setField } = useObjectState({
@@ -48,7 +52,7 @@ const Content = ({ close, isLoading, setIsLoading, ...user }) => {
       .update(user._id, state)
       .then(() => {
         close();
-        invalidateCache("users");
+        queryClient.invalidateQueries({ queryKey: ["users"] });
         toast.success("Foydalanuvchi tahrirlandi");
       })
       .catch((err) => {

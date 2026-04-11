@@ -17,7 +17,7 @@ import { useSearchParams } from "react-router-dom";
 import { formatUzDate } from "@/shared/utils/formatDate";
 
 // Data
-import { genderOptions } from "../data/users.data";
+import { genderOptions } from "../../users/data/users.data";
 
 // Hooks
 import useModal from "@/shared/hooks/useModal";
@@ -32,7 +32,7 @@ import { useCallback } from "react";
 // Icons
 import { Plus, Edit, Trash2, Key, Eye, Download, Users } from "lucide-react";
 
-const UsersPage = () => {
+const Teachers = () => {
   const { user: currentUser } = useAuth();
   const { openModal } = useModal();
 
@@ -50,10 +50,10 @@ const UsersPage = () => {
   );
 
   const { data, isLoading } = useQuery({
-    queryKey: ["users", "students", { page: currentPage }],
+    queryKey: ["users", "teachers", { page: currentPage }],
     queryFn: () =>
       usersAPI
-        .getStudents({ page: currentPage, limit: 20 })
+        .getTeachers({ page: currentPage, limit: 20 })
         .then((res) => res.data),
     keepPreviousData: true,
     onError: ({ message }) => toast.error(message || "Nimadir xato ketdi"),
@@ -106,7 +106,7 @@ const UsersPage = () => {
                   <td colSpan={7} className="py-16 text-center">
                     <div className="flex flex-col items-center gap-2 text-gray-400">
                       <Users className="size-10 opacity-30" strokeWidth={1.5} />
-                      <p className="text-sm">O'quvchilar topilmadi</p>
+                      <p className="text-sm">O'qituvchilar topilmadi</p>
                     </div>
                   </td>
                 </tr>
@@ -222,4 +222,4 @@ const UsersPage = () => {
   );
 };
 
-export default UsersPage;
+export default Teachers;
