@@ -4,8 +4,9 @@ import { toast } from "sonner";
 // API
 import { classesAPI } from "@/features/classes/api/classes.api";
 
+// TanStack Query
+import { useQueryClient } from "@tanstack/react-query";
 // Hooks
-import useArrayStore from "@/shared/hooks/useArrayStore";
 import useObjectState from "@/shared/hooks/useObjectState";
 
 // Components
@@ -20,7 +21,7 @@ const EditClassModal = () => (
 );
 
 const Content = ({ close, isLoading, setIsLoading, ...classData }) => {
-  const { invalidateCache } = useArrayStore("classes");
+  const queryClient = useQueryClient();
 
   const { name, setField } = useObjectState({
     name: classData.name || "",
@@ -34,8 +35,8 @@ const Content = ({ close, isLoading, setIsLoading, ...classData }) => {
       .update(classData._id, { name })
       .then(() => {
         close();
-        invalidateCache();
-        toast.success("Sinf tahrirlandi");
+        queryClient.invalidateQueries({ queryKey: ["classes"] });
+        toast.success("Guruh tahrirlandi");
       })
       .catch((err) => {
         toast.error(err.response?.data?.message || "Xatolik yuz berdi");

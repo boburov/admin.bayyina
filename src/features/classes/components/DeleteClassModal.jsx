@@ -4,8 +4,8 @@ import { toast } from "sonner";
 // API
 import { classesAPI } from "@/features/classes/api/classes.api";
 
-// Hooks
-import useArrayStore from "@/shared/hooks/useArrayStore";
+// TanStack Query
+import { useQueryClient } from "@tanstack/react-query";
 
 // Components
 import Button from "@/shared/components/ui/button/Button";
@@ -22,7 +22,7 @@ const DeleteClassModal = () => (
 );
 
 const Content = ({ close, isLoading, setIsLoading, ...classData }) => {
-  const { invalidateCache } = useArrayStore("classes");
+  const queryClient = useQueryClient();
 
   const handleDeleteClass = (e) => {
     e.preventDefault();
@@ -32,8 +32,8 @@ const Content = ({ close, isLoading, setIsLoading, ...classData }) => {
       .delete(classData._id)
       .then(() => {
         close();
-        invalidateCache();
-        toast.success("Sinf o'chirildi");
+        queryClient.invalidateQueries({ queryKey: ["classes"] });
+        toast.success("Guruh o'chirildi");
       })
       .catch((err) => {
         toast.error(err.response?.data?.message || "Xatolik yuz berdi");

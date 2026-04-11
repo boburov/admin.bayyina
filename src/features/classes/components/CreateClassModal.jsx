@@ -3,56 +3,66 @@ import { toast } from "sonner";
 // API
 import { classesAPI } from "@/features/classes/api/classes.api";
 import { usersAPI } from "@/features/users/api/users.api";
+// TanStack Query
+import { useQuery } from "@tanstack/react-query";
+// TanStack Query
+import { useQueryClient } from "@tanstack/react-query";
 // Hooks
-import { useEffect, useRef, useState } from "react";
-import useArrayStore from "@/shared/hooks/useArrayStore";
+import { useRef, useState } from "react";
 import useObjectState from "@/shared/hooks/useObjectState";
 // Components
 import Button from "@/shared/components/ui/button/Button";
 import InputField from "@/shared/components/ui/input/InputField";
 import ResponsiveModal from "@/shared/components/ui/ResponsiveModal";
+// Data
+import { daysOptions } from "../data/classes.data";
+// Icons
+import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 
 const CreateGroupModal = () => (
-  <ResponsiveModal name="createClass" title="Yangi guruh">
+  <ResponsiveModal name="createClass" title="Yangi guruh" className="sm:min-h-[520px]">
     <Content />
   </ResponsiveModal>
 );
 
 const Content = ({ close, isLoading, setIsLoading }) => {
-  const { invalidateCache } = useArrayStore("classes");
+  const queryClient = useQueryClient();
   const { name, price, setField } = useObjectState({ name: "", price: "" });
 
-  // Teacher state
-  const [teachers, setTeachers] = useState([]);
-  const [teachersLoading, setTeachersLoading] = useState(true);
-  const [search, setSearch] = useState("");
   const [selectedTeacher, setSelectedTeacher] = useState(null);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
+  const [selectedDays, setSelectedDays] = useState([]);
+  const [time, setTime] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const debounceRef = useRef(null);
 
-  // Fetch teachers once on mount
-  useEffect(() => {
-    usersAPI
-      .getTeachers({ limit: 100 })
-      .then((res) => setTeachers(res.data?.users || []))
-      .catch(() => toast.error("O'qituvchilar yuklanmadi"))
-      .finally(() => setTeachersLoading(false));
-  }, []);
+  const toggleDay = (value) => {
+    setSelectedDays((prev) =>
+      prev.includes(value) ? prev.filter((d) => d !== value) : [...prev, value],
+    );
+  };
 
-  // Close dropdown on outside click
-  useEffect(() => {
-    const handler = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
+  const handleSearchChange = (value) => {
+    setSearchInput(value);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setSearch(value.trim());
+      setPage(1);
+    }, 500);
+  };
 
-  const filtered = teachers.filter((t) =>
-    `${t.firstName} ${t.lastName}`.toLowerCase().includes(search.toLowerCase()),
-  );
+  const { data, isLoading: teachersLoading } = useQuery({
+    queryKey: ["teachers", { page, search }],
+    queryFn: () =>
+      usersAPI
+        .getTeachers({ page, limit: 5, search: search || undefined })
+        .then((res) => res.data),
+    keepPreviousData: true,
+  });
+
+  const teachers = data?.users ?? [];
+  const totalPages = data?.totalPages ?? 1;
 
   const handleCreateGroup = (e) => {
     e.preventDefault();
@@ -60,12 +70,25 @@ const Content = ({ close, isLoading, setIsLoading }) => {
       toast.error("O'qituvchini tanlang");
       return;
     }
+    if (selectedDays.length === 0) {
+      toast.error("Kamida bitta kun tanlang");
+      return;
+    }
+    if (!time) {
+      toast.error("Dars boshlanish vaqtini kiriting");
+      return;
+    }
     setIsLoading(true);
     classesAPI
-      .create({ name, price: Number(price), teacher: selectedTeacher._id })
+      .create({
+        name,
+        price: Number(price),
+        teacher: selectedTeacher._id,
+        schedule: { days: selectedDays, time },
+      })
       .then(() => {
         close();
-        invalidateCache();
+        queryClient.invalidateQueries({ queryKey: ["classes"] });
         toast.success("Guruh yaratildi");
       })
       .catch((err) => {
@@ -95,110 +118,145 @@ const Content = ({ close, isLoading, setIsLoading }) => {
         onChange={(e) => setField("price", e.target.value)}
       />
 
+      {/* Schedule days */}
+      <div className="flex flex-col gap-1.5">
+        <label className="text-sm font-medium">
+          Dars kunlari <span className="text-danger">*</span>
+        </label>
+        <div className="flex flex-wrap gap-2">
+          {daysOptions.map((day) => {
+            const isActive = selectedDays.includes(day.value);
+            return (
+              <button
+                key={day.value}
+                type="button"
+                onClick={() => toggleDay(day.value)}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
+                  isActive
+                    ? "bg-background-info border-info text-info"
+                    : "bg-background-secondary border-border-secondary text-secondary hover:border-border-primary"
+                }`}
+              >
+                {day.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Start time */}
+      <div className="flex flex-col gap-1.5">
+        <label className="text-sm font-medium">
+          Boshlanish vaqti <span className="text-danger">*</span>
+        </label>
+        <input
+          type="time"
+          value={time}
+          onChange={(e) => setTime(e.target.value)}
+          className="w-full px-3 py-2 text-sm border border-border-secondary rounded-lg bg-background-secondary outline-none focus:border-border-primary transition-colors text-primary"
+        />
+      </div>
+
       {/* Teacher selector */}
       <div className="flex flex-col gap-1.5">
         <label className="text-sm font-medium">
           O'qituvchi <span className="text-danger">*</span>
         </label>
-        <div className="relative" ref={dropdownRef}>
-          <button
-            type="button"
-            onClick={() => setDropdownOpen((v) => !v)}
-            className="w-full flex items-center justify-between px-3 py-2 border border-border-secondary rounded-lg text-sm bg-background-secondary"
-          >
-            {selectedTeacher ? (
-              <span className="text-primary">
-                {selectedTeacher.firstName} {selectedTeacher.lastName}
-              </span>
+
+        <div className="border border-border-secondary rounded-lg overflow-hidden bg-background-primary">
+          {/* Search */}
+          <div className="flex items-center gap-2 px-3 py-2 border-b border-border-secondary">
+            <Search className="size-4 text-secondary shrink-0" strokeWidth={1.5} />
+            <input
+              value={searchInput}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              placeholder="O'qituvchi qidirish..."
+              className="flex-1 text-sm bg-transparent outline-none text-primary placeholder:text-secondary"
+            />
+          </div>
+
+          {/* List */}
+          <div className="divide-y divide-border-tertiary">
+            {teachersLoading ? (
+              <div className="flex justify-center py-6">
+                <div className="w-5 h-5 border-2 border-border-secondary border-t-secondary rounded-full animate-spin" />
+              </div>
+            ) : teachers.length === 0 ? (
+              <p className="text-sm text-secondary text-center py-6">
+                O'qituvchi topilmadi
+              </p>
             ) : (
-              <span className="text-secondary">O'qituvchi tanlang</span>
+              teachers.map((teacher) => {
+                const isSelected = selectedTeacher?._id === teacher._id;
+                return (
+                  <button
+                    key={teacher._id}
+                    type="button"
+                    onClick={() => setSelectedTeacher(isSelected ? null : teacher)}
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors ${
+                      isSelected
+                        ? "bg-background-info"
+                        : "hover:bg-background-secondary"
+                    }`}
+                  >
+                    {/* Avatar */}
+                    <div className="w-8 h-8 rounded-full bg-background-tertiary flex items-center justify-center text-xs font-semibold text-secondary shrink-0">
+                      {teacher.firstName[0]}
+                      {teacher.lastName[0]}
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-primary truncate">
+                        {teacher.firstName} {teacher.lastName}
+                      </p>
+                      <p className="text-xs text-secondary">+{teacher.phone}</p>
+                    </div>
+
+                    {isSelected && (
+                      <svg
+                        className="w-4 h-4 text-info shrink-0"
+                        viewBox="0 0 16 16"
+                        fill="none"
+                      >
+                        <path
+                          d="M3 8L6.5 11.5L13 5"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    )}
+                  </button>
+                );
+              })
             )}
-            <svg
-              className={`w-4 h-4 text-secondary transition-transform ${dropdownOpen ? "rotate-180" : ""}`}
-              viewBox="0 0 14 14"
-              fill="none"
-            >
-              <path
-                d="M3 5L7 9L11 5"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
+          </div>
 
-          {dropdownOpen && (
-            <div className="absolute z-20 w-full mt-1 border border-border-secondary rounded-lg bg-background-primary shadow-sm overflow-hidden">
-              {/* Search */}
-              <div className="p-2 border-b border-border-tertiary">
-                <input
-                  autoFocus
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Qidirish..."
-                  className="w-full px-2.5 py-1.5 text-sm border border-border-tertiary rounded-md bg-background-primary outline-none"
-                />
-              </div>
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between px-3 py-2 border-t border-border-secondary">
+              <button
+                type="button"
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="p-1 rounded text-secondary hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronLeft className="size-4" strokeWidth={1.5} />
+              </button>
 
-              {/* List */}
-              <div className="max-h-48 overflow-y-auto">
-                {teachersLoading ? (
-                  <div className="flex justify-center py-4">
-                    <div className="w-5 h-5 border-2 border-border-secondary border-t-secondary rounded-full animate-spin" />
-                  </div>
-                ) : filtered.length === 0 ? (
-                  <p className="text-sm text-secondary text-center py-3">
-                    Topilmadi
-                  </p>
-                ) : (
-                  filtered.map((teacher) => (
-                    <button
-                      key={teacher._id}
-                      type="button"
-                      onClick={() => {
-                        setSelectedTeacher(teacher);
-                        setDropdownOpen(false);
-                        setSearch("");
-                      }}
-                      className={`w-full flex items-center gap-2.5 px-3 py-2 text-left hover:bg-background-secondary transition-colors ${
-                        selectedTeacher?._id === teacher._id
-                          ? "bg-background-info"
-                          : ""
-                      }`}
-                    >
-                      {/* Avatar */}
-                      <div className="w-8 h-8 rounded-full bg-background-tertiary flex items-center justify-center text-xs font-medium text-secondary flex-shrink-0">
-                        {teacher.firstName[0]}
-                        {teacher.lastName[0]}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm text-primary truncate">
-                          {teacher.firstName} {teacher.lastName}
-                        </p>
-                        <p className="text-xs text-secondary">
-                          +{teacher.phone}
-                        </p>
-                      </div>
-                      {selectedTeacher?._id === teacher._id && (
-                        <svg
-                          className="w-4 h-4 text-info flex-shrink-0"
-                          viewBox="0 0 16 16"
-                          fill="none"
-                        >
-                          <path
-                            d="M3 8L6.5 11.5L13 5"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      )}
-                    </button>
-                  ))
-                )}
-              </div>
+              <span className="text-xs text-secondary">
+                {page} / {totalPages}
+              </span>
+
+              <button
+                type="button"
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                className="p-1 rounded text-secondary hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronRight className="size-4" strokeWidth={1.5} />
+              </button>
             </div>
           )}
         </div>
