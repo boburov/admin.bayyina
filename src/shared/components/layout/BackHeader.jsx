@@ -17,7 +17,7 @@ const BackHeader = ({ className = "", href = "-1", title = "Sarlavha" }) => {
   return (
     <header
       className={cn(
-        "flex items-center sticky inset-x-0 top-0 bg-white h-16 shadow-sm",
+        "flex items-center sticky inset-x-0 top-0 bg-white h-14 border-b border-border",
         className,
       )}
     >

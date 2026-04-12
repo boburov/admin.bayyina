@@ -36,12 +36,13 @@ const Classes = () => {
   const { openModal } = useModal();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["classes"],
+    queryKey: ["admin-groups"],
     queryFn: () => classesAPI.getAll().then((res) => res.data),
     onError: () => toast.error("Guruhlar yuklanmadi"),
   });
 
   const groups = data?.groups ?? [];
+  console.log(groups);
 
   const getDayLabel = (value) =>
     daysOptions.find((d) => d.value === value)?.label ?? value;
@@ -92,7 +93,7 @@ const Classes = () => {
       )}
 
       {/* Grid */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {groups.map((group) => (
           <Card key={group._id}>
             {/* Top row — name + actions */}
@@ -134,7 +135,10 @@ const Classes = () => {
             {/* Schedule */}
             {group.schedule && (
               <div className="flex items-center gap-1.5 mb-3">
-                <Clock className="size-4 shrink-0 text-gray-400" strokeWidth={1.5} />
+                <Clock
+                  className="size-4 shrink-0 text-gray-400"
+                  strokeWidth={1.5}
+                />
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <div className="flex gap-1">
                     {group.schedule.days.map((day) => (

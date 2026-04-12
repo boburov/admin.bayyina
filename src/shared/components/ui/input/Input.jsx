@@ -4,7 +4,7 @@ import * as React from "react";
 import { cn } from "@/shared/utils/cn.js";
 
 export const inputBaseClasses =
-  "flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-base outline-2 outline-primary disabled:cursor-not-allowed disabled:opacity-50 md:text-sm";
+  "flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-base outline-none focus:border-primary disabled:cursor-not-allowed disabled:opacity-50 md:text-sm transition-colors";
 
 /**
  * Reusable styled input component with consistent styling across the application.

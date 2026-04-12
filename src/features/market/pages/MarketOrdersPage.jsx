@@ -77,7 +77,7 @@ const MarketOrdersPage = () => {
             Buyurtmalar mavjud emas
           </div>
         ) : (
-          <div className="overflow-x-auto rounded-lg">
+          <div className="overflow-x-auto rounded-lg border border-border bg-white">
             <table className="min-w-full">
               <thead>
                 <tr>

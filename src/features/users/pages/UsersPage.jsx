@@ -88,7 +88,7 @@ const UsersPage = () => {
 
       {/* Table Wrapper */}
       <div>
-        <div className="rounded-lg overflow-x-auto">
+        <div className="rounded-lg overflow-x-auto border border-border bg-white">
           <table>
             <thead>
               <tr>

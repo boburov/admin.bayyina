@@ -27,6 +27,8 @@ import SocialNetworksPage from "@/features/social-networks/pages/SocialNetworksP
 // Router
 import { Routes as RoutesWrapper, Route, Navigate } from "react-router-dom";
 import Teachers from "@/features/teachers/pages/TeacherPage";
+import PaymentsPage from "@/features/payments/PaymentsPage";
+import Messages from "@/features/messages/pages/MessagesPage";
 
 const Routes = () => {
   return (
@@ -53,6 +55,12 @@ const Routes = () => {
 
           {/* Statistics */}
           <Route path="/statistics" element={<StatisticsPage />} />
+
+          {/* Payments */}
+          <Route path="/payments" element={<PaymentsPage />} />
+
+          {/* Messages */}
+          <Route path="/messages" element={<Messages />} />
 
           {/* Social Networks */}
           <Route path="/social-networks" element={<SocialNetworksPage />} />

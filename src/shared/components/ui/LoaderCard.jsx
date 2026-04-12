@@ -34,7 +34,7 @@ const LoaderCard = ({
     return (
       <div
         className={cn(
-          "flex flex-col items-center justify-center gap-3.5 bg-white p-4 rounded-2xl xs:p-5",
+          "flex flex-col items-center justify-center gap-3.5 bg-white p-4 rounded-lg border border-border xs:p-5",
           className,
         )}
         {...props}
@@ -49,7 +49,7 @@ const LoaderCard = ({
   return (
     <div
       className={cn(
-        "flex items-center justify-center gap-3.5 bg-white p-4 rounded-2xl xs:p-5",
+        "flex items-center justify-center gap-3.5 bg-white p-4 rounded-lg border border-border xs:p-5",
         className,
       )}
       {...props}

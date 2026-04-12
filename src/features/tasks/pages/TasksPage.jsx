@@ -129,7 +129,7 @@ const TasksPage = () => {
           <p className="text-sm text-gray-500">Topshiriqlar topilmadi</p>
         </Card>
       ) : (
-        <div className="overflow-x-auto rounded-lg">
+        <div className="overflow-x-auto rounded-lg border border-border bg-white">
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-100">

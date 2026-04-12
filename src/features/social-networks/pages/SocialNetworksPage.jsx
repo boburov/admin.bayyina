@@ -83,7 +83,7 @@ const SocialNetworksPage = () => {
           <p className="text-gray-500">Ijtimoiy tarmoqlar mavjud emas</p>
         </Card>
       ) : (
-        <div className="rounded-lg overflow-x-auto">
+        <div className="rounded-lg overflow-x-auto border border-border bg-white">
           <table className="min-w-full">
             <thead>
               <tr>

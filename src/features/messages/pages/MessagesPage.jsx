@@ -273,7 +273,7 @@ const Messages = () => {
 
       {/* Table */}
       <div>
-        <div className="rounded-lg overflow-x-auto">
+        <div className="rounded-lg overflow-x-auto border border-border bg-white">
           <table>
             {/* Thead */}
             <thead>

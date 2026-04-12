@@ -4,35 +4,35 @@
 
 @layer base {
   :root {
-    --background: 30 25% 96%; /* soft cream */
-    --foreground: 25 30% 15%; /* deep brown text */
+    --background: 220 20% 97%; /* neutral light gray #F4F5F7 */
+    --foreground: 220 15% 13%; /* near-black #1D2027 */
 
-    --card: 30 20% 100%;
-    --card-foreground: 25 30% 15%;
+    --card: 0 0% 100%; /* pure white */
+    --card-foreground: 220 15% 13%;
 
-    --popover: 30 20% 100%;
-    --popover-foreground: 25 30% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 15% 13%;
 
-    --primary: 22 55% 30%;
-    --primary-foreground: 30 40% 98%;
+    --primary: 22 55% 30%; /* brand accent — keep */
+    --primary-foreground: 0 0% 98%;
 
-    --secondary: 30 25% 90%; /* light beige */
-    --secondary-foreground: 25 30% 20%;
+    --secondary: 220 14% 95%; /* neutral light */
+    --secondary-foreground: 220 9% 20%;
 
-    --muted: 30 20% 92%;
-    --muted-foreground: 25 15% 45%;
+    --muted: 220 14% 95%;
+    --muted-foreground: 220 9% 46%;
 
-    --accent: 35 30% 85%; /* warm accent */
-    --accent-foreground: 25 30% 20%;
+    --accent: 220 13% 92%; /* neutral hover surface */
+    --accent-foreground: 220 15% 13%;
 
-    --destructive: 0 60% 45%;
-    --destructive-foreground: 30 40% 98%;
+    --destructive: 0 72% 42%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 30 15% 85%;
-    --input: 30 15% 85%;
-    --ring: 25 45% 35%;
+    --border: 220 13% 88%; /* #E2E4E9 — clean neutral border */
+    --input: 220 13% 88%;
+    --ring: 22 55% 30%;
 
-    --radius: 0.5rem;
+    --radius: 0.5rem; /* 8px */
 
     /* charts */
     --chart-1: 25 60% 45%;
@@ -41,18 +41,18 @@
     --chart-4: 40 60% 60%;
     --chart-5: 20 70% 55%;
 
-    /* sidebar */
+    /* sidebar — stays warm to match bg-primary brand color */
     --sidebar-background: 25 30% 15%;
-    --sidebar-foreground: 30 40% 95%;
+    --sidebar-foreground: 0 0% 92%;
 
-    --sidebar-primary: 30 40% 95%;
+    --sidebar-primary: 0 0% 92%;
     --sidebar-primary-foreground: 25 30% 15%;
 
-    --sidebar-accent: 25 25% 25%;
-    --sidebar-accent-foreground: 30 40% 95%;
+    --sidebar-accent: 25 25% 22%;
+    --sidebar-accent-foreground: 0 0% 92%;
 
-    --sidebar-border: 25 20% 25%;
-    --sidebar-ring: 35 60% 55%;
+    --sidebar-border: 25 20% 22%;
+    --sidebar-ring: 22 55% 55%;
   }
   .dark {
     --background: 222.2 84% 4.9%;
@@ -110,19 +110,23 @@
 
   table {
     thead {
-      @apply bg-primary;
+      @apply bg-primary border-b border-primary/80;
     }
 
     thead th {
-      @apply px-6 py-3 text-center text-white uppercase text-xs font-medium;
+      @apply px-6 py-3 text-center text-white uppercase text-xs font-semibold tracking-wide;
     }
 
     tbody {
-      @apply divide-y divide-gray-200;
+      @apply divide-y divide-border;
     }
 
     tbody tr {
-      @apply bg-white;
+      @apply bg-white transition-colors hover:bg-muted/40;
+    }
+
+    tbody td {
+      @apply px-6 py-3.5 text-sm text-foreground;
     }
   }
 }
@@ -135,14 +139,19 @@
 
 @layer components {
   .page-title {
-    @apply text-lg font-semibold md:leading-normal md:text-[22px];
+    @apply text-lg font-semibold leading-tight md:text-xl text-foreground;
   }
 
   .section-title {
-    @apply font-semibold xs:text-lg md:text-xl;
+    @apply text-base font-semibold text-foreground xs:text-lg;
+  }
+
+  /* Reusable table wrapper — border + overflow */
+  .table-wrapper {
+    @apply rounded-lg border border-border overflow-x-auto bg-white;
   }
 }
 
 .bottom-navigation {
-  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.1);
+  border: 1px solid hsl(220 13% 88%);
 }

@@ -88,7 +88,7 @@ const Holidays = () => {
         </Card>
       ) : (
         <div>
-          <div className="rounded-lg overflow-x-auto">
+          <div className="rounded-lg overflow-x-auto border border-border bg-white">
             <table className="min-w-full divide-y divide-gray-200">
               {/* Thead */}
               <thead>

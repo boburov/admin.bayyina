@@ -11,19 +11,19 @@ import { Slot } from "@radix-ui/react-slot";
 import { cva } from "class-variance-authority";
 
 const buttonVariants = cva(
-  "flex items-center justify-center gap-3 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-2 focus-visible:outline-primary focus-visible:-outline-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "flex items-center justify-center gap-3 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-0 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:outline-white focus-visible:-outline-offset-4 focus-visible:outline focus-visible:!outline-2",
+          "bg-primary text-primary-foreground hover:bg-primary/85",
         danger:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90 focus-visible:outline-white focus-visible:-outline-offset-4 focus-visible:outline focus-visible:!outline-2",
+          "bg-destructive text-destructive-foreground hover:bg-destructive/85",
         outline:
-          "border border-input bg-white hover:bg-accent hover:text-accent-foreground focus-visible:outline-offset-0",
+          "border border-border bg-white text-foreground hover:bg-accent hover:text-foreground",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
+          "bg-secondary text-secondary-foreground border border-border hover:bg-accent",
+        ghost: "hover:bg-accent hover:text-foreground",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {

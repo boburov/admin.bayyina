@@ -9,6 +9,8 @@ import {
   PanelLeft,
   TrendingUp,
   ChevronRight,
+  Wallet,
+  Mail,
 } from "lucide-react";
 
 // Router
@@ -58,6 +60,8 @@ const navItems = [
   { title: "O'qtuvchilar", url: "/teachers", icon: Users },
   { title: "Statistika", url: "/statistics", icon: BarChart2 },
   { title: "Guruhlar", url: "/classes", icon: School },
+  { title: "To'lovlar", url: "/payments", icon: Wallet },
+  { title: "Xabar Yuborish", url: "/messages", icon: Mail },
   { title: "Ijtimoiy tarmoqlar", url: "/social-networks", icon: Share2 },
 ];
 
@@ -99,8 +103,8 @@ const Header = () => {
 
             <div className="grid flex-1 gap-0.5 text-left text-sm leading-tight">
               <span className="truncate font-semibold">Bayyina School</span>
-              <p className="w-1/2 flex items-center justify-center gap-1.5 bg-green-200 rounded-xl text-green-700">
-                <span className="truncate text-xs">kunlik</span>
+              <p className="inline-flex items-center gap-1 bg-green-500/20 rounded px-1.5 py-0.5 text-green-400">
+                <span className="truncate text-xs font-medium">kunlik</span>
                 <TrendingUp size={18} strokeWidth={1.5} />
               </p>
             </div>

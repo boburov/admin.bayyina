@@ -35,7 +35,6 @@ import { Plus, Edit, Trash2, Key, Eye, Download, Users } from "lucide-react";
 const Teachers = () => {
   const { user: currentUser } = useAuth();
   const { openModal } = useModal();
-
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = parseInt(searchParams.get("page") || "1", 10);
 
@@ -60,7 +59,7 @@ const Teachers = () => {
   });
 
   const users = data?.users ?? [];
-
+  console.log(users);
   const getGenderLabel = (gender) =>
     genderOptions.find((g) => g.value === gender)?.label ?? "-";
 
@@ -87,7 +86,7 @@ const Teachers = () => {
 
       {/* Table Wrapper */}
       <div>
-        <div className="rounded-lg overflow-x-auto">
+        <div className="rounded-lg overflow-x-auto border border-border bg-white">
           <table>
             <thead>
               <tr>

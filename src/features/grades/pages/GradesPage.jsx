@@ -259,7 +259,7 @@ const Grades = () => {
       {/* Grades */}
       {students.length > 0 && (
         <div>
-          <div className="rounded-lg overflow-x-auto">
+          <div className="rounded-lg overflow-x-auto border border-border bg-white">
             <table>
               {/* Thead */}
               <thead>
