@@ -13,7 +13,6 @@ import Card from "@/shared/components/ui/Card";
 import CoinStats from "../components/CoinStats";
 import UsersStats from "../components/UsersStats";
 import HolidayInfo from "../components/HolidayInfo";
-import PenaltyStats from "../components/PenaltyStats";
 import AllSchedulesToday from "../components/AllSchedulesToday";
 
 // Utils
@@ -41,16 +40,6 @@ const Dashboard = () => {
           </h2>
         </Card>
 
-        {/* Download button
-        <button
-          onClick={() => openModal("downloadApp")}
-          className="flex items-center gap-4 h-auto bg-blue-100 text-blue-500 rounded-xl pl-4 overflow-hidden font-medium text-sm"
-        >
-          Ilovani yuklab olish
-          <span className="flex items-center justify-center bg-blue-500 text-white h-full px-4">
-            <Download className="size-5" strokeWidth={1.5} />
-          </span>
-        </button> */}
       </div>
 
       {/* Holiday Info */}

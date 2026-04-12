@@ -20,7 +20,11 @@ import { daysOptions } from "../data/classes.data";
 import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 
 const CreateGroupModal = () => (
-  <ResponsiveModal name="createClass" title="Yangi guruh" className="sm:min-h-[520px]">
+  <ResponsiveModal
+    name="createClass"
+    title="Yangi guruh"
+    className="sm:min-h-[520px]"
+  >
     <Content />
   </ResponsiveModal>
 );
@@ -134,7 +138,7 @@ const Content = ({ close, isLoading, setIsLoading }) => {
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
                   isActive
                     ? "bg-background-info border-info text-info"
-                    : "bg-background-secondary border-border-secondary text-secondary hover:border-border-primary"
+                    : "bg-background-secondary border-border-secondary text-secondary-text hover:border-border-primary"
                 }`}
               >
                 {day.label}
@@ -166,12 +170,15 @@ const Content = ({ close, isLoading, setIsLoading }) => {
         <div className="border border-border-secondary rounded-lg overflow-hidden bg-background-primary">
           {/* Search */}
           <div className="flex items-center gap-2 px-3 py-2 border-b border-border-secondary">
-            <Search className="size-4 text-secondary shrink-0" strokeWidth={1.5} />
+            <Search
+              className="size-4 text-secondary-text shrink-0"
+              strokeWidth={1.5}
+            />
             <input
               value={searchInput}
               onChange={(e) => handleSearchChange(e.target.value)}
               placeholder="O'qituvchi qidirish..."
-              className="flex-1 text-sm bg-transparent outline-none text-primary placeholder:text-secondary"
+              className="flex-1 text-sm bg-transparent outline-none text-primary placeholder:text-secondary-text"
             />
           </div>
 
@@ -182,7 +189,7 @@ const Content = ({ close, isLoading, setIsLoading }) => {
                 <div className="w-5 h-5 border-2 border-border-secondary border-t-secondary rounded-full animate-spin" />
               </div>
             ) : teachers.length === 0 ? (
-              <p className="text-sm text-secondary text-center py-6">
+              <p className="text-sm text-secondary-text text-center py-6">
                 O'qituvchi topilmadi
               </p>
             ) : (
@@ -192,7 +199,9 @@ const Content = ({ close, isLoading, setIsLoading }) => {
                   <button
                     key={teacher._id}
                     type="button"
-                    onClick={() => setSelectedTeacher(isSelected ? null : teacher)}
+                    onClick={() =>
+                      setSelectedTeacher(isSelected ? null : teacher)
+                    }
                     className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors ${
                       isSelected
                         ? "bg-background-info"
@@ -200,7 +209,7 @@ const Content = ({ close, isLoading, setIsLoading }) => {
                     }`}
                   >
                     {/* Avatar */}
-                    <div className="w-8 h-8 rounded-full bg-background-tertiary flex items-center justify-center text-xs font-semibold text-secondary shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-background-tertiary flex items-center justify-center text-xs font-semibold text-secondary-text shrink-0">
                       {teacher.firstName[0]}
                       {teacher.lastName[0]}
                     </div>
@@ -209,7 +218,9 @@ const Content = ({ close, isLoading, setIsLoading }) => {
                       <p className="text-sm font-medium text-primary truncate">
                         {teacher.firstName} {teacher.lastName}
                       </p>
-                      <p className="text-xs text-secondary">+{teacher.phone}</p>
+                      <p className="text-xs text-secondary-text">
+                        +{teacher.phone}
+                      </p>
                     </div>
 
                     {isSelected && (
@@ -240,12 +251,12 @@ const Content = ({ close, isLoading, setIsLoading }) => {
                 type="button"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="p-1 rounded text-secondary hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="p-1 rounded text-secondary-text hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >
                 <ChevronLeft className="size-4" strokeWidth={1.5} />
               </button>
 
-              <span className="text-xs text-secondary">
+              <span className="text-xs text-secondary-text">
                 {page} / {totalPages}
               </span>
 
@@ -253,7 +264,7 @@ const Content = ({ close, isLoading, setIsLoading }) => {
                 type="button"
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="p-1 rounded text-secondary hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="p-1 rounded text-secondary-text hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >
                 <ChevronRight className="size-4" strokeWidth={1.5} />
               </button>

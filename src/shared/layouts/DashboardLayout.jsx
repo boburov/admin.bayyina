@@ -9,7 +9,6 @@ import { usersAPI } from "@/features/users/api/users.api";
 import { rolesAPI } from "@/features/roles/api/roles.api";
 import { classesAPI } from "@/features/classes/api/classes.api";
 import { holidaysAPI } from "@/features/holidays/api/holidays.api";
-import { subjectsAPI } from "@/features/subjects/api/subjects.api";
 
 // Hooks
 import useAuth from "@/shared/hooks/useAuth";
@@ -34,18 +33,10 @@ import ExportUsersModal from "@/features/users/components/ExportUsersModal";
 import CreateClassModal from "@/features/classes/components/CreateClassModal";
 import DeleteClassModal from "@/features/classes/components/DeleteClassModal";
 import SendMessageModal from "@/features/messages/components/SendMessageModal";
-import EditScheduleModal from "@/features/schedules/components/EditScheduleModal";
-import DeleteProductModal from "@/features/market/components/DeleteProductModal";
 import MessageDetailsModal from "@/features/messages/components/MessageDetailsModal";
-import CreateScheduleModal from "@/features/schedules/components/CreateScheduleModal";
-import DeleteScheduleModal from "@/features/schedules/components/DeleteScheduleModal";
 import ViewUserPasswordModal from "@/features/users/components/ViewUserPasswordModal";
 import ResetUserPasswordModal from "@/features/users/components/ResetUserPasswordModal";
-import UpdateOrderStatusModal from "@/features/market/components/UpdateOrderStatusModal";
 import StudentStatisticsModal from "@/features/statistics/components/StudentStatisticsModal";
-import CreateRoleModal from "@/features/roles/components/CreateRoleModal";
-import EditRoleModal from "@/features/roles/components/EditRoleModal";
-import DeleteRoleModal from "@/features/roles/components/DeleteRoleModal";
 import BugReport from "../components/layout/BugReport";
 
 const DashboardLayout = () => {
@@ -83,23 +74,9 @@ const DashboardLayout = () => {
       <CreateClassModal />
       <DeleteClassModal />
 
-      {/* Schedule Modals */}
-      <EditScheduleModal />
-      <CreateScheduleModal />
-      <DeleteScheduleModal />
-
       {/* Message Modals */}
       <SendMessageModal />
       <MessageDetailsModal />
-
-      {/* Market */}
-      <DeleteProductModal />
-      <UpdateOrderStatusModal />
-
-      {/* Roles */}
-      <CreateRoleModal />
-      <EditRoleModal />
-      <DeleteRoleModal />
 
       {/* Stats */}
       <StudentStatisticsModal />
@@ -122,7 +99,6 @@ const actions = () => {
   const isOwner = user?.role === "owner";
   const roles = getCollectionData("roles");
   const classes = getCollectionData("classes");
-  const subjects = getCollectionData("subjects");
   const teachers = getCollectionData("teachers");
 
   const { addEntity, hasEntity } = useObjectStore("holidayCheck");
@@ -131,7 +107,6 @@ const actions = () => {
   useEffect(() => {
     if (!hasCollection("roles")) initialize(false, "roles");
     if (!hasCollection("classes")) initialize(false, "classes");
-    if (!hasCollection("subjects")) initialize(false, "subjects");
     if (!hasCollection("teachers")) initialize(false, "teachers");
   }, [initialize, hasCollection]);
 
@@ -161,19 +136,6 @@ const actions = () => {
       });
   };
 
-  const fetchSubjects = () => {
-    setCollectionLoadingState(true, "subjects");
-
-    subjectsAPI
-      .getAll()
-      .then((res) => {
-        setCollection(res.data.data, null, "subjects");
-      })
-      .catch(() => {
-        setCollectionErrorState(true, "subjects");
-      });
-  };
-
   const fetchTeachers = () => {
     setCollectionLoadingState(true, "teachers");
 
@@ -199,10 +161,9 @@ const actions = () => {
   useEffect(() => {
     !roles?.length && isOwner && fetchRoles();
     !classes?.length && fetchClasses();
-    !subjects?.length && fetchSubjects();
     !teachers?.length && isOwner && fetchTeachers();
     if (!hasEntity("today")) checkTodayHoliday();
-  }, [roles?.length, classes?.length, subjects?.length, teachers?.length]);
+  }, [roles?.length, classes?.length, teachers?.length]);
 };
 
 export default DashboardLayout;

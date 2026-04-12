@@ -16,7 +16,8 @@
     --primary: 22 55% 30%; /* brand accent — keep */
     --primary-foreground: 0 0% 98%;
 
-    --secondary: 220 14% 95%; /* neutral light */
+    --secondary: 220 114% 95%;
+    --secondary-text: 220 114% 5%;
     --secondary-foreground: 220 9% 20%;
 
     --muted: 220 14% 95%;

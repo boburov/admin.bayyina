@@ -42,7 +42,6 @@ const Classes = () => {
   });
 
   const groups = data?.groups ?? [];
-  console.log(groups);
 
   const getDayLabel = (value) =>
     daysOptions.find((d) => d.value === value)?.label ?? value;

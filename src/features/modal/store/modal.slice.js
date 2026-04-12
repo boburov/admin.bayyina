@@ -88,6 +88,9 @@ const initialState = {
   reviewTask: initialModalData,
   createTask: initialModalData,
   extendDeadline: initialModalData,
+
+  // Payments
+  createPayment: initialModalData,
 };
 
 export const modalSlice = createSlice({

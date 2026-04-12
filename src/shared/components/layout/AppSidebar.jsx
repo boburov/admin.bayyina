@@ -5,7 +5,6 @@ import {
   Users,
   BarChart2,
   School,
-  Share2,
   PanelLeft,
   TrendingUp,
   ChevronRight,
@@ -62,7 +61,6 @@ const navItems = [
   { title: "Guruhlar", url: "/classes", icon: School },
   { title: "To'lovlar", url: "/payments", icon: Wallet },
   { title: "Xabar Yuborish", url: "/messages", icon: Mail },
-  { title: "Ijtimoiy tarmoqlar", url: "/social-networks", icon: Share2 },
 ];
 
 const AppSidebar = ({ ...props }) => {

@@ -21,14 +21,12 @@ import ClassDetailPage from "@/features/classes/pages/ClassDetailPage";
 // Pages — Statistics
 import StatisticsPage from "@/features/statistics/pages/StatisticsPage";
 
-// Pages — Social Networks
-import SocialNetworksPage from "@/features/social-networks/pages/SocialNetworksPage";
-
 // Router
 import { Routes as RoutesWrapper, Route, Navigate } from "react-router-dom";
 import Teachers from "@/features/teachers/pages/TeacherPage";
 import PaymentsPage from "@/features/payments/PaymentsPage";
 import Messages from "@/features/messages/pages/MessagesPage";
+import Dashboard from "@/features/dashboard/pages/DashboardPage";
 
 const Routes = () => {
   return (
@@ -56,14 +54,13 @@ const Routes = () => {
           {/* Statistics */}
           <Route path="/statistics" element={<StatisticsPage />} />
 
+          <Route path="/dashboard" element={<Dashboard />} />
+
           {/* Payments */}
           <Route path="/payments" element={<PaymentsPage />} />
 
           {/* Messages */}
           <Route path="/messages" element={<Messages />} />
-
-          {/* Social Networks */}
-          <Route path="/social-networks" element={<SocialNetworksPage />} />
         </Route>
       </Route>
 
