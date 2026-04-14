@@ -51,11 +51,10 @@ const Statistics = () => {
     classesAPI
       .getAll()
       .then((res) => {
-        if (res.data.success) {
-          setClasses(res.data.data || []);
-          if (res.data.data && res.data.data.length > 0) {
-            setSelectedClass(res.data.data[0]._id);
-          }
+        const groups = res.data.groups || [];
+        setClasses(groups);
+        if (groups.length > 0) {
+          setSelectedClass(groups[0]._id);
         }
       })
       .catch(() => {

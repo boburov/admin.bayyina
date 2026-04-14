@@ -36,7 +36,7 @@ const Dashboard = () => {
           <Lottie className="size-6 sm:size-7" animationData={animation} />
 
           <h2 className="text-xl leading-none font-bold text-gray-900">
-            Xush kelibsiz, {user?.fullName}!
+            Xush kelibsiz, {user?.firstName}!
           </h2>
         </Card>
 

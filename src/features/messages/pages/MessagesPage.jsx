@@ -11,6 +11,7 @@ import { useSearchParams } from "react-router-dom";
 
 // Helpers
 import { getRoleLabel } from "@/shared/helpers/role.helpers";
+import { formatUzDate } from "@/shared/utils/formatDate";
 
 // Hooks
 import useModal from "@/shared/hooks/useModal";
@@ -172,21 +173,21 @@ const Messages = () => {
   ]);
 
   useEffect(() => {
-    // Load teachers
+    // Load teachers — GET /users returns { users: [...] }
     usersAPI
       .getAll({ role: "teacher", limit: 200 })
       .then((res) => {
-        setTeachers(res.data.data || []);
+        setTeachers(res.data.users || []);
       })
       .catch(() => {
         toast.error("O'qituvchilarni yuklashda xato");
       });
 
-    // Load classes
+    // Load classes — GET /groups returns { groups: [...] }
     classesAPI
       .getAll()
       .then((res) => {
-        setClasses(res.data.data || []);
+        setClasses(res.data.groups || []);
       })
       .catch(() => {
         toast.error("Sinflarni yuklashda xato");
@@ -354,18 +355,11 @@ const Messages = () => {
                     {/* Date */}
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-500">
-                        {new Date(message.createdAt).toLocaleDateString(
-                          "uz-UZ",
-                        )}
+                        {formatUzDate(message.createdAt)}
                       </div>
                       <div className="text-xs text-gray-400">
-                        {new Date(message.createdAt).toLocaleTimeString(
-                          "uz-UZ",
-                          {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          },
-                        )}
+                        {new Date(message.createdAt).getHours().toString().padStart(2, "0")}:
+                        {new Date(message.createdAt).getMinutes().toString().padStart(2, "0")}
                       </div>
                     </td>
 
