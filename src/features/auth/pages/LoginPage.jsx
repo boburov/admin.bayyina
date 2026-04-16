@@ -1,9 +1,6 @@
 // Toast
 import { toast } from "sonner";
 
-// Lottie
-import Lottie from "lottie-react";
-
 // Utils
 import { cn } from "@/shared/utils/cn";
 
@@ -14,23 +11,13 @@ import { useNavigate } from "react-router-dom";
 import platforms from "../data/platforms.data";
 
 // Icons
-import { Check } from "lucide-react";
-import { logoIcon } from "@/shared/assets/icons";
+import { Check, GraduationCap, Phone, Lock, Eye, EyeOff, ChevronLeft } from "lucide-react";
 
 // API
 import { authAPI } from "@/features/auth/api/auth.api";
 
 // Hooks
 import useObjectState from "@/shared/hooks/useObjectState";
-
-// Animations
-import { lockWithKeyEmojiAnimation } from "@/shared/assets/animations";
-
-// Components
-import Button from "@/shared/components/ui/button/Button";
-import InputGroup from "@/shared/components/ui/input/InputGroup";
-import InputField from "@/shared/components/ui/input/InputField";
-import MainBackgroundPatterns from "@/shared/components/bg/MainBackgroundPatterns";
 
 const LoginPage = () => {
   const { setField, showLoginForm, currentPlatform } = useObjectState({
@@ -39,45 +26,36 @@ const LoginPage = () => {
   });
 
   return (
-    <div className="flex w-full h-svh">
-      {/* Form */}
-      <div
-        className={cn(
-          "flex items-center justify-center size-full relative z-10 bg-white/50 backdrop-blur px-5 transition-transform duration-500 md:w-1/2",
-          showLoginForm ? "translate-x-0 md:translate-x-full" : "translate-x-0",
-        )}
-      >
-        {showLoginForm ? (
-          <LoginForm onShowLoginForm={() => setField("showLoginForm", false)} />
-        ) : (
-          <PlatformSelectForm
-            currentPlatform={currentPlatform}
-            onShowLoginForm={() => setField("showLoginForm", true)}
-            onPlatformChange={(p) => setField("currentPlatform", p)}
-          />
-        )}
-      </div>
+    <div className="min-h-svh flex items-center justify-center bg-white px-4 py-12">
+      <div className="w-full max-w-sm">
+        {/* Brand */}
+        <div className="flex flex-col items-center gap-3 mb-8">
+          <div className="flex items-center justify-center w-10 h-10 bg-[#7c5c3e]">
+            <GraduationCap size={20} className="text-white" />
+          </div>
+          <div className="text-center">
+            <h1 className="text-lg font-semibold text-gray-900">Bayyina</h1>
+            <p className="text-sm text-gray-400 mt-0.5">Boshqaruv paneli</p>
+          </div>
+        </div>
 
-      {/* Animation Data */}
-      <div
-        className={cn(
-          "hidden items-center justify-center w-1/2 h-full transition-transform duration-500 md:flex",
-          showLoginForm ? "-translate-x-full" : "translate-x-0",
-        )}
-      >
-        <Lottie
-          className="size-64 animate__animated animate__fadeIn"
-          key={showLoginForm ? "loginForm" : currentPlatform.name}
-          animationData={
-            showLoginForm
-              ? lockWithKeyEmojiAnimation
-              : currentPlatform.animationData
-          }
-        />
-      </div>
+        {/* Form area */}
+        <div className="border border-gray-200 bg-white px-6 py-7">
+          {showLoginForm ? (
+            <LoginForm onShowLoginForm={() => setField("showLoginForm", false)} />
+          ) : (
+            <PlatformSelectForm
+              currentPlatform={currentPlatform}
+              onShowLoginForm={() => setField("showLoginForm", true)}
+              onPlatformChange={(p) => setField("currentPlatform", p)}
+            />
+          )}
+        </div>
 
-      {/* Background Patterns */}
-      <MainBackgroundPatterns />
+        <p className="text-center text-xs text-gray-400 mt-5">
+          © {new Date().getFullYear()} Bayyina Ta'lim Markazi
+        </p>
+      </div>
     </div>
   );
 };
@@ -93,42 +71,38 @@ const PlatformSelectForm = ({
   };
 
   return (
-    <div className="max-w-md w-full space-y-5 animate__animated animate__fadeIn">
-      {/* Title */}
-      <h2 className="text-lg font-medium text-center md:text-xl">
-        Assalomu alaykum, hurmatli foydalanuvchi! Siz platformaga kim bo'lib
-        kirmoqchisiz?
+    <div className="space-y-4">
+      <h2 className="text-sm font-semibold text-gray-700 mb-5">
+        Kim sifatida kirasiz?
       </h2>
 
-      {/* Platforms select */}
       {platforms.map((platform) => {
         const isCurrent = currentPlatform.name === platform.name;
         return (
-          <Button
-            variant="outline"
+          <button
             key={platform.name}
+            type="button"
             onClick={() => onPlatformChange(platform)}
             className={cn(
-              "relative w-full border-2",
-              isCurrent && "border-primary text-primary hover:text-primary",
+              "relative w-full flex items-center justify-between px-4 py-3 text-sm font-medium border transition-colors",
+              isCurrent
+                ? "border-[#7c5c3e] text-[#7c5c3e] bg-[#fdf8f5]"
+                : "border-gray-200 text-gray-600 bg-white hover:bg-gray-50",
             )}
           >
             {platform.name}
-            <Check
-              strokeWidth={2.5}
-              className={cn(
-                "absolute right-3.5 transition-colors duration-300",
-                isCurrent ? "stroke-primary" : "stroke-transparent",
-              )}
-            />
-          </Button>
+            {isCurrent && <Check size={14} className="text-[#7c5c3e]" />}
+          </button>
         );
       })}
 
-      {/* Submit button */}
-      <Button onClick={handleShowLoginForm} className="w-full">
+      <button
+        type="button"
+        onClick={handleShowLoginForm}
+        className="w-full h-10 bg-[#7c5c3e] text-white text-sm font-medium hover:bg-[#6b4f34] transition-colors mt-2"
+      >
         Keyingi
-      </Button>
+      </button>
     </div>
   );
 };
@@ -136,11 +110,11 @@ const PlatformSelectForm = ({
 const LoginForm = ({ onShowLoginForm }) => {
   const navigate = useNavigate();
 
-  const { phone, password, setField, isLoading, step } = useObjectState({
-    step: 1,
+  const { phone, password, setField, isLoading, showPassword } = useObjectState({
     phone: "",
     password: "",
     isLoading: false,
+    showPassword: false,
   });
 
   const handleSubmit = (e) => {
@@ -148,94 +122,98 @@ const LoginForm = ({ onShowLoginForm }) => {
     setField("isLoading", true);
 
     const data = {
-      phone: Number(phone), // string → number
+      phone: Number(phone),
       password: password?.trim(),
     };
 
     authAPI
       .login(data)
       .then((response) => {
-        // Save token to localStorage
         const { token } = response.data;
         localStorage.setItem("token", token);
-
-        // Navigate to dashboard
         navigate("/dashboard");
       })
       .catch((error) => {
         toast.error(
           error.response?.data?.message || "Tizimga kirishda xatolik",
         );
-        console.log(error);
       })
       .finally(() => setField("isLoading", false));
   };
 
   return (
-    <div className="max-w-md w-full animate__animated animate__fadeIn">
-      {/* Header */}
-      <div className="text-center mb-8 space-y-3.5">
-        {/* Title */}
-        <h2 className="flex items-center justify-center gap-3.5 text-lg font-medium text-center md:gap-5 md:text-xl">
-          <img
-            width={32}
-            height={32}
-            src={logoIcon}
-            className="size-8"
-            alt="Bayyinago icon"
-          />
-
-          <span>Qaytganingiz bilan!</span>
-        </h2>
-
-        {/* Description */}
-        <p className="text-gray-600 mt-2">
-          Tizimga kirish uchun ma'lumotlaringizni kiriting.
-        </p>
+    <div className="space-y-4">
+      <div className="flex items-center gap-2 mb-5">
+        <button
+          type="button"
+          onClick={onShowLoginForm}
+          className="flex items-center justify-center w-7 h-7 border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors"
+        >
+          <ChevronLeft size={14} />
+        </button>
+        <h2 className="text-sm font-semibold text-gray-700">Tizimga kirish</h2>
       </div>
 
-      {/* Form */}
-      <InputGroup as="form" onSubmit={handleSubmit}>
-        <InputField
-          required
-          id="phone"
-          name="phone"
-          value={phone}
-          autoComplete="phone"
-          label="Telefon Raqam"
-          placeholder="Faqat raqamlar"
-          onChange={(e) =>
-            setField("phone", e.target.value.trim().toLowerCase())
-          }
-        />
-
-        <InputField
-          required
-          id="password"
-          label="Parol"
-          type="password"
-          name="password"
-          value={password}
-          autoComplete="current-password"
-          onChange={(e) => setField("password", e.target.value.trim())}
-        />
-
-        {/* Action buttons */}
-        <div className="flex flex-col gap-4">
-          <Button disabled={isLoading}>
-            Tizimga kirish{isLoading && "..."}
-          </Button>
-
-          <Button
-            variant="outline"
-            disabled={isLoading}
-            onClick={onShowLoginForm}
-            className="max-md:bg-white max-md:hover:bg-white/70"
-          >
-            Ortga qaytish
-          </Button>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Phone */}
+        <div className="space-y-1.5">
+          <label htmlFor="phone" className="text-sm font-medium text-gray-700">
+            Telefon raqam
+          </label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+              <Phone size={14} />
+            </span>
+            <input
+              id="phone"
+              type="text"
+              inputMode="numeric"
+              autoComplete="tel"
+              required
+              value={phone}
+              placeholder="Faqat raqamlar"
+              onChange={(e) => setField("phone", e.target.value.trim())}
+              className="w-full h-10 pl-9 pr-3 rounded-sm border border-gray-300 bg-white text-sm text-gray-900 placeholder:text-gray-400 outline-none focus:border-[#7c5c3e] transition-colors"
+            />
+          </div>
         </div>
-      </InputGroup>
+
+        {/* Password */}
+        <div className="space-y-1.5">
+          <label htmlFor="login-password" className="text-sm font-medium text-gray-700">
+            Parol
+          </label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+              <Lock size={14} />
+            </span>
+            <input
+              id="login-password"
+              type={showPassword ? "text" : "password"}
+              autoComplete="current-password"
+              required
+              value={password}
+              onChange={(e) => setField("password", e.target.value.trim())}
+              className="w-full h-10 pl-9 pr-10 rounded-sm border border-gray-300 bg-white text-sm text-gray-900 placeholder:text-gray-400 outline-none focus:border-[#7c5c3e] transition-colors"
+            />
+            <button
+              type="button"
+              onClick={() => setField("showPassword", !showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+            </button>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full h-10 bg-[#7c5c3e] text-white text-sm font-medium hover:bg-[#6b4f34] transition-colors disabled:opacity-60 disabled:cursor-not-allowed mt-1"
+        >
+          {isLoading ? "Kirish..." : "Kirish"}
+        </button>
+      </form>
     </div>
   );
 };

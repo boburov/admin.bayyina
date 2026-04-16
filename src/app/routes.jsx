@@ -21,12 +21,14 @@ import ClassDetailPage from "@/features/classes/pages/ClassDetailPage";
 // Pages — Statistics
 import StatisticsPage from "@/features/statistics/pages/StatisticsPage";
 
+// Pages — Leads
+import LeadsPage from "@/features/leads/pages/LeadsPage";
+
 // Router
 import { Routes as RoutesWrapper, Route, Navigate } from "react-router-dom";
 import Teachers from "@/features/teachers/pages/TeacherPage";
 import PaymentsPage from "@/features/payments/PaymentsPage";
-import Messages from "@/features/messages/pages/MessagesPage";
-import Dashboard from "@/features/dashboard/pages/DashboardPage";
+import NotificationsPage from "@/features/notifications/pages/NotificationsPage";
 
 const Routes = () => {
   return (
@@ -54,13 +56,16 @@ const Routes = () => {
           {/* Statistics */}
           <Route path="/statistics" element={<StatisticsPage />} />
 
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
 
           {/* Payments */}
           <Route path="/payments" element={<PaymentsPage />} />
 
-          {/* Messages */}
-          <Route path="/messages" element={<Messages />} />
+          {/* Leads */}
+          <Route path="/leads" element={<LeadsPage />} />
+
+          {/* Notifications */}
+          <Route path="/notifications" element={<NotificationsPage />} />
         </Route>
       </Route>
 

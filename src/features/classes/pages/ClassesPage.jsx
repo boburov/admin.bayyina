@@ -71,6 +71,11 @@ const Classes = () => {
 
   return (
     <div>
+      {/* Page header */}
+      <div className="mb-5 pb-4 border-b border-border">
+        <h1 className="page-title">Guruhlar</h1>
+      </div>
+
       {/* Action Buttons */}
       <div className="flex items-center justify-between gap-3 mb-4">
         <Button onClick={() => openModal("createClass")} className="px-3.5">
@@ -78,7 +83,7 @@ const Classes = () => {
           Yangi guruh
         </Button>
 
-        <Button onClick={handleExport} className="px-3.5">
+        <Button variant="neutral" onClick={handleExport} className="px-3.5" title="Excel yuklash">
           <Download strokeWidth={1.5} />
         </Button>
       </div>
@@ -99,7 +104,7 @@ const Classes = () => {
             <div className="flex justify-between items-start mb-3">
               <Link
                 to={`/classes/${group._id}`}
-                className="flex items-center gap-1 text-base font-semibold text-gray-900 hover:text-blue-600 transition-colors"
+                className="flex items-center gap-1 text-sm font-semibold text-gray-900 hover:text-[#7c5c3e] transition-colors"
               >
                 {group.name}
                 <ChevronRight className="size-4 shrink-0" strokeWidth={1.5} />
@@ -108,13 +113,13 @@ const Classes = () => {
               <div className="flex gap-3 shrink-0">
                 <button
                   onClick={() => openModal("editClass", group)}
-                  className="text-blue-600 hover:text-blue-900"
+                  className="text-gray-400 hover:text-[#7c5c3e] transition-colors"
                 >
                   <Edit className="size-4" strokeWidth={1.5} />
                 </button>
                 <button
                   onClick={() => openModal("deleteClass", group)}
-                  className="text-red-600 hover:text-red-900"
+                  className="text-gray-400 hover:text-red-600 transition-colors"
                 >
                   <Trash2 className="size-4" strokeWidth={1.5} />
                 </button>
@@ -143,7 +148,7 @@ const Classes = () => {
                     {group.schedule.days.map((day) => (
                       <span
                         key={day}
-                        className="px-1.5 py-0.5 text-xs font-medium rounded bg-blue-50 text-blue-600"
+                        className="px-1.5 py-0.5 text-xs font-medium border border-stone-200 text-stone-500 bg-stone-50"
                       >
                         {getDayLabel(day)}
                       </span>

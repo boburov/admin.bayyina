@@ -11,25 +11,25 @@ import { Slot } from "@radix-ui/react-slot";
 import { cva } from "class-variance-authority";
 
 const buttonVariants = cva(
-  "flex items-center justify-center gap-3 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-0 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "flex items-center justify-center gap-2 whitespace-nowrap rounded-sm text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#7c5c3e] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/85",
+        default: "bg-[#7c5c3e] text-white hover:bg-[#6b4f34]",
         danger:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/85",
+          "bg-white text-red-600 border border-red-200 hover:bg-red-50",
         outline:
-          "border border-border bg-white text-foreground hover:bg-accent hover:text-foreground",
+          "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50",
         secondary:
-          "bg-secondary text-secondary-text-foreground border border-border hover:bg-accent",
-        ghost: "hover:bg-accent hover:text-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+          "bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200",
+        ghost: "text-gray-600 hover:bg-gray-100 hover:text-gray-900",
+        link: "text-[#7c5c3e] underline-offset-4 hover:underline",
       },
       size: {
-        sm: "h-9 px-3",
-        lg: "h-11 px-8",
-        icon: "size-10",
-        default: "h-10 px-4 py-2",
+        sm: "h-8 px-3 text-xs",
+        lg: "h-10 px-5",
+        icon: "size-9",
+        default: "h-9 px-4 py-2",
       },
     },
     defaultVariants: { variant: "default", size: "default" },

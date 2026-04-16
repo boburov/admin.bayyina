@@ -4,36 +4,36 @@
 
 @layer base {
   :root {
-    --background: 220 20% 97%; /* neutral light gray #F4F5F7 */
-    --foreground: 220 15% 13%; /* near-black #1D2027 */
+    --background: 0 0% 100%;           /* pure white */
+    --foreground: 220 15% 13%;         /* near-black */
 
-    --card: 0 0% 100%; /* pure white */
+    --card: 0 0% 100%;
     --card-foreground: 220 15% 13%;
 
     --popover: 0 0% 100%;
     --popover-foreground: 220 15% 13%;
 
-    --primary: 22 55% 30%; /* brand accent — keep */
+    --primary: 22 30% 36%;             /* brown #7c5c3e */
     --primary-foreground: 0 0% 98%;
 
-    --secondary: 220 114% 95%;
-    --secondary-text: 220 114% 5%;
+    --secondary: 220 14% 96%;
+    --secondary-text: 220 9% 20%;
     --secondary-foreground: 220 9% 20%;
 
-    --muted: 220 14% 95%;
+    --muted: 220 14% 96%;
     --muted-foreground: 220 9% 46%;
 
-    --accent: 220 13% 92%; /* neutral hover surface */
+    --accent: 220 13% 95%;
     --accent-foreground: 220 15% 13%;
 
     --destructive: 0 72% 42%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 220 13% 88%; /* #E2E4E9 — clean neutral border */
-    --input: 220 13% 88%;
-    --ring: 22 55% 30%;
+    --border: 220 13% 90%;             /* #E4E6EA */
+    --input: 220 13% 90%;
+    --ring: 22 30% 36%;
 
-    --radius: 0.5rem; /* 8px */
+    --radius: 2px;                     /* very small radius */
 
     /* charts */
     --chart-1: 25 60% 45%;
@@ -42,63 +42,60 @@
     --chart-4: 40 60% 60%;
     --chart-5: 20 70% 55%;
 
-    /* sidebar — stays warm to match bg-primary brand color */
+    /* sidebar — warm dark */
     --sidebar-background: 25 30% 15%;
     --sidebar-foreground: 0 0% 92%;
-
     --sidebar-primary: 0 0% 92%;
     --sidebar-primary-foreground: 25 30% 15%;
-
     --sidebar-accent: 25 25% 22%;
     --sidebar-accent-foreground: 0 0% 92%;
-
-    --sidebar-border: 25 20% 22%;
+    --sidebar-border: 25 20% 20%;
     --sidebar-ring: 22 55% 55%;
   }
+
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 222 47% 8%;
     --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
+    --card: 222 47% 11%;
     --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
+    --popover: 222 47% 11%;
     --popover-foreground: 210 40% 98%;
     --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
+    --primary-foreground: 222 47% 11%;
+    --secondary: 217 33% 18%;
     --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
+    --muted: 217 33% 18%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 217 33% 18%;
     --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --border: 217 33% 18%;
+    --input: 217 33% 18%;
+    --ring: 213 27% 84%;
     --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-foreground: 240 5% 96%;
+    --sidebar-primary: 224 76% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 0 0% 100%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5% 96%;
     --sidebar-border: 0 0% 100%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: 217 91% 60%;
   }
 }
 
 @layer base {
+  * {
+    box-shadow: none !important;
+  }
+
   body {
-    @apply bg-background font-sans;
+    @apply bg-background font-sans text-foreground;
   }
 
   input,
   select {
-    @apply h-11;
+    @apply h-10;
   }
 
   ol li * {
@@ -109,26 +106,24 @@
     @apply min-w-[934px] lg:min-w-full;
   }
 
-  table {
-    thead {
-      @apply bg-primary border-b border-primary/80;
-    }
+  table thead {
+    @apply bg-[#7c5c3e] border-b border-[#6b4f34];
+  }
 
-    thead th {
-      @apply px-6 py-3 text-center text-white uppercase text-xs font-semibold tracking-wide;
-    }
+  table thead th {
+    @apply px-5 py-3 text-center text-white uppercase text-xs font-semibold tracking-wide;
+  }
 
-    tbody {
-      @apply divide-y divide-border;
-    }
+  table tbody {
+    @apply divide-y divide-border;
+  }
 
-    tbody tr {
-      @apply bg-white transition-colors hover:bg-muted/40;
-    }
+  table tbody tr {
+    @apply bg-white transition-colors hover:bg-gray-50;
+  }
 
-    tbody td {
-      @apply px-6 py-3.5 text-sm text-foreground;
-    }
+  table tbody td {
+    @apply px-5 py-3 text-sm text-foreground;
   }
 }
 
@@ -140,19 +135,19 @@
 
 @layer components {
   .page-title {
-    @apply text-lg font-semibold leading-tight md:text-xl text-foreground;
+    @apply text-base font-semibold leading-tight md:text-lg text-foreground;
   }
 
   .section-title {
-    @apply text-base font-semibold text-foreground xs:text-lg;
+    @apply text-sm font-semibold text-foreground xs:text-base;
   }
 
-  /* Reusable table wrapper — border + overflow */
+  /* Reusable table wrapper */
   .table-wrapper {
-    @apply rounded-lg border border-border overflow-x-auto bg-white;
+    @apply border border-border overflow-x-auto bg-white;
   }
 }
 
 .bottom-navigation {
-  border: 1px solid hsl(220 13% 88%);
+  border: 1px solid hsl(220 13% 90%);
 }

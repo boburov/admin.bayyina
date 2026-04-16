@@ -5,17 +5,40 @@ import {
   Users,
   BarChart2,
   School,
-  PanelLeft,
   TrendingUp,
-  ChevronRight,
+  ChevronUp,
   Wallet,
-  Mail,
+  UserPlus,
+  GraduationCap,
+  Bell,
 } from "lucide-react";
 
 // Router
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
-// Sidebar
+// Tanstack Query
+import { useQuery } from "@tanstack/react-query";
+
+// API
+import { authAPI } from "@/features/auth/api/auth.api";
+
+// Utils
+import { cn } from "@/shared/utils/cn";
+
+// Hooks
+import { useIsMobile } from "@/shared/hooks/useMobile";
+
+// Dropdown Menu
+import {
+  DropdownMenu,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuSeparator,
+} from "@/shared/components/shadcn/dropdown-menu";
+
+// Sidebar (shadcn primitives — keep for provider/inset)
 import {
   Sidebar,
   useSidebar,
@@ -30,52 +53,24 @@ import {
   SidebarMenuButton,
 } from "@/shared/components/shadcn/sidebar";
 
-// Tanstack Query
-import { useQuery } from "@tanstack/react-query";
-
-// logo
-import logo from "../../assets/icons/logo.svg";
-
-// Dropdown Menu
-import {
-  DropdownMenu,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuSeparator,
-} from "@/shared/components/shadcn/dropdown-menu";
-
-// API
-import { authAPI } from "@/features/auth/api/auth.api";
-
-// Hooks
-import { useIsMobile } from "@/shared/hooks/useMobile";
-
-// Navigation items — flat list
+// Navigation items
 const navItems = [
-  { title: "Bosh sahifa", url: "/", icon: Home },
-  { title: "O'quvchilar", url: "/users", icon: Users },
-  { title: "O'qtuvchilar", url: "/teachers", icon: Users },
-  { title: "Statistika", url: "/statistics", icon: BarChart2 },
-  { title: "Guruhlar", url: "/classes", icon: School },
-  { title: "To'lovlar", url: "/payments", icon: Wallet },
-  { title: "Xabar Yuborish", url: "/messages", icon: Mail },
+  { title: "Bosh sahifa",    url: "/",            icon: Home      },
+  { title: "Leadlar",        url: "/leads",        icon: UserPlus  },
+  { title: "O'quvchilar",    url: "/users",        icon: Users     },
+  { title: "O'qituvchilar",  url: "/teachers",     icon: Users     },
+  { title: "Statistika",     url: "/statistics",   icon: BarChart2 },
+  { title: "Guruhlar",       url: "/classes",      icon: School    },
+  { title: "To'lovlar",      url: "/payments",     icon: Wallet    },
+  { title: "Xabarnomalar",  url: "/notifications",  icon: Bell      },
 ];
 
 const AppSidebar = ({ ...props }) => {
   return (
     <Sidebar collapsible="icon" {...props}>
-      {/* Header */}
       <Header />
-
-      {/* Content */}
       <Main />
-
-      {/* Footer */}
       <Footer />
-
-      {/* Rail (Vertical divider) */}
       <SidebarRail />
     </Sidebar>
   );
@@ -85,57 +80,63 @@ const Header = () => {
   const { toggleSidebar, open } = useSidebar();
 
   return (
-    <SidebarHeader>
+    <SidebarHeader className="border-b border-sidebar-border">
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton
             size="lg"
             onClick={() => toggleSidebar()}
-            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+            className="data-[state=open]:bg-sidebar-accent"
           >
-            <img
-              src="{logo}"
-              alt="logo"
-              className="aspect-square size-8 rounded-md object-cover bg-white"
-            />
-
-            <div className="grid flex-1 gap-0.5 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">Bayyina School</span>
-              <p className="inline-flex items-center gap-1 bg-green-500/20 rounded px-1.5 py-0.5 text-green-400">
-                <span className="truncate text-xs font-medium">kunlik</span>
-                <TrendingUp size={18} strokeWidth={1.5} />
-              </p>
+            <div className="flex items-center justify-center size-7 bg-[#7c5c3e] shrink-0">
+              <GraduationCap size={14} className="text-white" />
             </div>
-            <PanelLeft className="ml-auto" size={24} strokeWidth={1.5} />
+            <div className="grid flex-1 gap-0.5 text-left text-sm leading-tight">
+              <span className="truncate font-semibold text-sidebar-foreground">Bayyina School</span>
+              <span className="truncate text-xs text-sidebar-foreground/60">Admin paneli</span>
+            </div>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
-
-      {!open && <SidebarTrigger className="size-8" />}
+      {!open && <SidebarTrigger className="size-7" />}
     </SidebarHeader>
   );
 };
 
 const Main = () => {
+  const location = useLocation();
+
   return (
     <SidebarContent>
       <SidebarGroup>
         <SidebarMenu>
-          {navItems.map((item) => (
-            <SidebarMenuItem key={item.url}>
-              <SidebarMenuButton
-                barMenuButton
-                asChild
-                tooltip={item.title}
-                className="h-auto py-2.5"
-              >
-                <Link to={item.url}>
-                  <item.icon strokeWidth={1.5} />
-                  <span>{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
+          {navItems.map((item) => {
+            const isActive =
+              item.url === "/"
+                ? location.pathname === "/"
+                : location.pathname.startsWith(item.url);
+
+            return (
+              <SidebarMenuItem key={item.url}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive}
+                  tooltip={item.title}
+                  className={cn(
+                    "h-auto py-2 transition-colors !text-white hover:!text-white hover:!bg-white/10",
+                    isActive
+                      ? "border-l-2 border-white/60 !bg-white/10 pl-[calc(0.75rem-2px)]"
+                      : "border-l-2 border-transparent",
+                  )}
+                >
+                  <Link to={item.url}>
+                    <item.icon size={15} strokeWidth={isActive ? 2 : 1.5} />
+                    <span className="text-sm">{item.title}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            );
+          })}
         </SidebarMenu>
       </SidebarGroup>
     </SidebarContent>
@@ -158,31 +159,27 @@ const Footer = () => {
   };
 
   return (
-    <SidebarFooter>
+    <SidebarFooter className="border-t border-sidebar-border">
       <SidebarMenu>
         <SidebarMenuItem>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <SidebarMenuButton
                 size="lg"
-                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                className="data-[state=open]:bg-sidebar-accent"
               >
-                <div className="flex items-center justify-center size-8 shrink-0 bg-sidebar-accent text-sidebar-accent-foreground rounded-lg font-semibold">
+                <div className="flex items-center justify-center size-7 shrink-0 bg-[#7c5c3e] text-white text-xs font-semibold">
                   {user?.firstName?.[0]}
                 </div>
-
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">
+                  <span className="truncate font-medium text-sidebar-foreground">
                     {user?.firstName}
                   </span>
-                  <span className="truncate text-xs">{user?.username}</span>
+                  <span className="truncate text-xs text-sidebar-foreground/60">
+                    {user?.username}
+                  </span>
                 </div>
-
-                <ChevronRight
-                  size={20}
-                  strokeWidth={1.5}
-                  className="ml-auto !size-5"
-                />
+                <ChevronUp size={14} className="ml-auto text-sidebar-foreground/60" />
               </SidebarMenuButton>
             </DropdownMenuTrigger>
 
@@ -190,28 +187,24 @@ const Footer = () => {
               align="end"
               sideOffset={4}
               side={isMobile ? "bottom" : "right"}
-              className="w-[--radix-dropdown-menu-trigger-width] min-w-56"
+              className="w-[--radix-dropdown-menu-trigger-width] min-w-48 rounded-sm border-gray-200"
             >
               <DropdownMenuLabel className="!p-0 font-normal">
-                <div className="flex items-center gap-2 text-left text-sm">
-                  <div className="flex items-center justify-center size-8 shrink-0 bg-sidebar-accent text-sidebar-accent-foreground rounded-md font-semibold">
+                <div className="flex items-center gap-2 p-2 text-left text-sm">
+                  <div className="flex items-center justify-center size-7 shrink-0 bg-[#7c5c3e] text-white text-xs font-semibold">
                     {user?.firstName?.[0]}
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-medium">
-                      {user?.firstName}
-                    </span>
-                    <span className="truncate text-xs opacity-70">
-                      {user?.username}
-                    </span>
+                    <span className="truncate font-medium">{user?.firstName}</span>
+                    <span className="truncate text-xs text-gray-400">{user?.username}</span>
                   </div>
                 </div>
               </DropdownMenuLabel>
 
               <DropdownMenuSeparator />
 
-              <DropdownMenuItem onClick={handleLogout}>
-                <LogOut strokeWidth={1.5} />
+              <DropdownMenuItem onClick={handleLogout} className="gap-2 text-red-600 hover:!text-red-600 hover:!bg-red-50">
+                <LogOut size={14} strokeWidth={1.5} />
                 Chiqish
               </DropdownMenuItem>
             </DropdownMenuContent>

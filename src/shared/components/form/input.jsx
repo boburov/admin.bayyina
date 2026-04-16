@@ -28,21 +28,22 @@ const Input = ({
   const [showPassword, setShowPassword] = useState(false);
 
   const variantClasses = {
-    white: "bg-white",
-    gray: "bg-gray-50",
+    white:    "bg-white",
+    gray:     "bg-gray-50",
     "gray-md": "bg-gray-100",
   };
 
   const sizeClasses = {
-    sm: "h-9 px-2 rounded-sm",
-    md: "h-10 px-3 rounded-md",
-    lg: "h-11 px-3.5 rounded-lg",
-    xl: "h-12 px-3.5 rounded-xl",
+    sm: "h-8  px-2.5 text-xs",
+    md: "h-9  px-3   text-sm",
+    lg: "h-10 px-3   text-sm",
+    xl: "h-11 px-3.5 text-sm",
   };
 
-  const defaultClasses = cn(
-    border ? "border border-gray-300" : "-outline-offset-1",
-    "w-full focus:outline-blue-500",
+  const baseClasses = cn(
+    "w-full rounded-sm transition-colors outline-none",
+    border ? "border border-gray-300 focus:border-[#7c5c3e]" : "border-0 focus:outline-none",
+    "disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed",
   );
 
   const handleChange = (e) => {
@@ -67,9 +68,9 @@ const Input = ({
           placeholder={placeholder}
           className={cn(
             variantClasses[variant],
-            defaultClasses,
+            baseClasses,
             sizeClasses[size],
-            "h-auto py-1.5 min-h-24 max-h-48",
+            "h-auto py-2 min-h-24 max-h-48",
           )}
         />
       );
@@ -91,7 +92,7 @@ const Input = ({
           mask="+___ (__) ___-__-__"
           className={cn(
             variantClasses[variant],
-            defaultClasses,
+            baseClasses,
             sizeClasses[size],
           )}
         />
@@ -113,7 +114,7 @@ const Input = ({
             placeholder={placeholder}
             className={cn(
               variantClasses[variant],
-              defaultClasses,
+              baseClasses,
               sizeClasses[size],
               "pr-10",
             )}
@@ -121,12 +122,12 @@ const Input = ({
           <button
             type="button"
             onClick={togglePasswordVisibility}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
           >
             {showPassword ? (
-              <EyeOff className="size-5" />
+              <EyeOff className="w-4 h-4" />
             ) : (
-              <Eye className="size-5" />
+              <Eye className="w-4 h-4" />
             )}
           </button>
         </div>
@@ -146,7 +147,7 @@ const Input = ({
         placeholder={placeholder}
         className={cn(
           variantClasses[variant],
-          defaultClasses,
+          baseClasses,
           sizeClasses[size],
         )}
       />
@@ -158,12 +159,11 @@ const Input = ({
       {label && (
         <label
           htmlFor={name}
-          className="ml-1 text-sm font-medium text-gray-700"
+          className="text-sm font-medium text-gray-700"
         >
-          {label} {required && <span className="text-blue-500">*</span>}
+          {label} {required && <span className="text-[#7c5c3e]">*</span>}
         </label>
       )}
-
       {RenderInput}
     </div>
   );

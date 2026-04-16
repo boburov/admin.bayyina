@@ -1,17 +1,18 @@
 // Tanstack Query
 import { useQuery } from "@tanstack/react-query";
 
-// Router
-import { Navigate, Outlet } from "react-router-dom";
+// React
+import { useEffect } from "react";
 
-// Icons
-import logoIcon from "@/shared/assets/icons/logo.svg";
+// Router
+import { Navigate, Outlet, useNavigate } from "react-router-dom";
 
 // API
 import { authAPI } from "@/features/auth/api/auth.api";
 
 const AuthGuard = () => {
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
 
   const { isLoading, isError } = useQuery({
     queryKey: ["auth", "profile"],
@@ -21,27 +22,30 @@ const AuthGuard = () => {
     retry: false,
   });
 
+  // Side effect on auth failure — never in render body
+  useEffect(() => {
+    if (isError) {
+      localStorage.removeItem("token");
+      navigate("/login", { replace: true });
+    }
+  }, [isError, navigate]);
+
   if (!token) {
     return <Navigate to="/login" replace />;
   }
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center fixed inset-0 z-50 size-full bg-gray-100">
-        <img
-          width={64}
-          height={64}
-          src={logoIcon}
-          className="size-16"
-          alt="Bayyina logo icon svg"
-        />
+      <div className="flex items-center justify-center fixed inset-0 z-50 bg-white">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-7 h-7 bg-[#7c5c3e] animate-pulse" />
+        </div>
       </div>
     );
   }
 
   if (isError) {
-    localStorage.removeItem("token");
-    return <Navigate to="/login" replace />;
+    return null;
   }
 
   return <Outlet />;

@@ -39,7 +39,7 @@ const BugReport = () => {
       <Button
         title="Xatolik haqida xabar berish"
         onClick={() => openModal("bugReport")}
-        className="fixed bottom-6 right-6 z-50 rounded-full size-12"
+        className="fixed bottom-6 right-6 z-50 size-10"
       >
         <BugIcon />
       </Button>

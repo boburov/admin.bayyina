@@ -16,6 +16,7 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
 // API
+import { classesAPI } from "@/features/classes/api/classes.api";
 import { coinsAPI } from "@/features/coin-settings/api/coins.api";
 
 // Utils
@@ -24,7 +25,6 @@ import { formatDateUZ } from "@/shared/utils/date.utils";
 
 // Components
 import Card from "@/shared/components/ui/Card";
-import Counter from "@/shared/components/ui/Counter";
 import Button from "@/shared/components/ui/button/Button";
 
 const CoinStats = () => {
@@ -111,70 +111,46 @@ const CoinStats = () => {
         </Card>
       </div>
 
-      {/* Top 10 coin owner */}
-      <TopTenCoinOwner stats={stats} />
+      {/* Groups list */}
+      <GroupsList />
     </div>
   );
 };
 
-const TopTenCoinOwner = ({ stats }) => {
-  const getRankColor = (index) => {
-    if (index === 0)
-      return "size-10 bg-gradient-to-tr from-yellow-400 to-yellow-600";
-    if (index === 1)
-      return "size-9 mx-0.5 bg-gradient-to-tr from-slate-400 to-slate-700";
-    if (index === 2)
-      return "size-8 mx-1 bg-gradient-to-tr from-orange-400 to-orange-700";
-    return "size-7 mx-1.5 bg-gray-100 text-gray-500";
-  };
+const GroupsList = () => {
+  const { data, isLoading } = useQuery({
+    queryKey: ["admin-groups"],
+    queryFn:  () => classesAPI.getAll().then((res) => res.data),
+  });
+
+  const groups = data?.groups ?? [];
 
   return (
-    <Card
-      title="Top 10 ta guruhlar"
-      className="flex flex-col gap-1.5 xs:gap-3.5"
-    >
-      {/* Main  */}
-      <div className="max-h-72 overflow-y-auto hidden-scrollbar">
-        {stats?.topEarners.map((student, index) => (
-          <div
-            key={student._id}
-            className={cn(
-              "flex items-center justify-between py-2",
-              index === 0 ? "sticky top-0 bg-white" : "",
-            )}
-          >
-            {/* Info */}
-            <div className="flex items-center gap-2.5">
-              <div
-                className={cn(
-                  "flex items-center justify-center size-8 rounded-full text-sm font-bold text-white",
-                  getRankColor(index),
-                )}
-              >
-                {index + 1}
-              </div>
-
-              <p className="text-sm font-medium text-gray-800">
-                {student.fullName}
-              </p>
+    <Card title="Guruhlar" className="flex flex-col gap-3">
+      <div className="max-h-72 overflow-y-auto hidden-scrollbar divide-y divide-gray-100">
+        {isLoading && (
+          <p className="text-sm text-gray-400 py-4 text-center">Yuklanmoqda...</p>
+        )}
+        {!isLoading && groups.length === 0 && (
+          <p className="text-sm text-gray-400 py-4 text-center">Guruhlar yo'q</p>
+        )}
+        {!isLoading && groups.map((group, idx) => (
+          <div key={group._id} className="flex items-center justify-between py-2 gap-2">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <span className="flex items-center justify-center size-6 shrink-0 bg-[#fdf8f5] border border-[#e8d0b8] text-xs font-semibold text-[#7c5c3e]">
+                {idx + 1}
+              </span>
+              <p className="text-sm font-medium text-gray-800 truncate">{group.name}</p>
             </div>
-
-            {/* Coin */}
-            <Counter
-              value={student?.coinBalance || 0}
-              className="text-sm font-semibold text-blue-600"
-            />
+            {group.schedule?.time && (
+              <span className="text-xs text-gray-400 shrink-0">{group.schedule.time}</span>
+            )}
           </div>
         ))}
       </div>
 
-      {/* Coin controller link */}
-      <Button
-        asChild
-        variant="link"
-        className="inline-block py-0 size-auto mx-auto text-sm"
-      >
-        <Link to="/coin-settings">Tanga sozlamalari</Link>
+      <Button asChild variant="link" className="inline-block py-0 size-auto mx-auto text-sm">
+        <Link to="/classes">Barcha guruhlar</Link>
       </Button>
     </Card>
   );

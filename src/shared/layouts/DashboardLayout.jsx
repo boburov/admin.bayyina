@@ -22,7 +22,6 @@ import {
 } from "@/shared/components/shadcn/sidebar";
 import AppHeader from "@/shared/components/layout/AppHeader";
 import AppSidebar from "@/shared/components/layout/AppSidebar";
-import MainBackgroundPatterns from "../components/bg/MainBackgroundPatterns";
 
 // Modals
 import EditUserModal from "@/features/users/components/EditUserModal";
@@ -32,8 +31,8 @@ import DeleteUserModal from "@/features/users/components/DeleteUserModal";
 import ExportUsersModal from "@/features/users/components/ExportUsersModal";
 import CreateClassModal from "@/features/classes/components/CreateClassModal";
 import DeleteClassModal from "@/features/classes/components/DeleteClassModal";
-import SendMessageModal from "@/features/messages/components/SendMessageModal";
-import MessageDetailsModal from "@/features/messages/components/MessageDetailsModal";
+import SendNotificationModal from "@/features/notifications/components/SendNotificationModal";
+import NotificationDetailModal from "@/features/notifications/components/NotificationDetailModal";
 import ViewUserPasswordModal from "@/features/users/components/ViewUserPasswordModal";
 import ResetUserPasswordModal from "@/features/users/components/ResetUserPasswordModal";
 import StudentStatisticsModal from "@/features/statistics/components/StudentStatisticsModal";
@@ -58,9 +57,6 @@ const DashboardLayout = () => {
       {/* Bug Report */}
       <BugReport />
 
-      {/* Background Patterns */}
-      <MainBackgroundPatterns />
-
       {/* User Modals */}
       <EditUserModal />
       <DeleteUserModal />
@@ -74,9 +70,9 @@ const DashboardLayout = () => {
       <CreateClassModal />
       <DeleteClassModal />
 
-      {/* Message Modals */}
-      <SendMessageModal />
-      <MessageDetailsModal />
+      {/* Notification Modals */}
+      <SendNotificationModal />
+      <NotificationDetailModal />
 
       {/* Stats */}
       <StudentStatisticsModal />
