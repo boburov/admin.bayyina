@@ -137,7 +137,7 @@ const GroupsList = () => {
         {!isLoading && groups.map((group, idx) => (
           <div key={group._id} className="flex items-center justify-between py-2 gap-2">
             <div className="flex items-center gap-2.5 min-w-0">
-              <span className="flex items-center justify-center size-6 shrink-0 bg-[#fdf8f5] border border-[#e8d0b8] text-xs font-semibold text-[#7c5c3e]">
+              <span className="flex items-center justify-center size-6 shrink-0 bg-brown-50 border border-brown-200 text-xs font-semibold text-brown-800">
                 {idx + 1}
               </span>
               <p className="text-sm font-medium text-gray-800 truncate">{group.name}</p>

@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import platforms from "../data/platforms.data";
 
 // Icons
-import { Check, GraduationCap, Phone, Lock, Eye, EyeOff, ChevronLeft } from "lucide-react";
+import { Check, Phone, Lock, Eye, EyeOff, ChevronLeft } from "lucide-react";
 
 // API
 import { authAPI } from "@/features/auth/api/auth.api";
@@ -30,9 +30,7 @@ const LoginPage = () => {
       <div className="w-full max-w-sm">
         {/* Brand */}
         <div className="flex flex-col items-center gap-3 mb-8">
-          <div className="flex items-center justify-center w-10 h-10 bg-[#7c5c3e]">
-            <GraduationCap size={20} className="text-white" />
-          </div>
+          <img src="/favicon.png" alt="Bayyina" className="w-12 h-12 object-contain" />
           <div className="text-center">
             <h1 className="text-lg font-semibold text-gray-900">Bayyina</h1>
             <p className="text-sm text-gray-400 mt-0.5">Boshqaruv paneli</p>
@@ -86,12 +84,12 @@ const PlatformSelectForm = ({
             className={cn(
               "relative w-full flex items-center justify-between px-4 py-3 text-sm font-medium border transition-colors",
               isCurrent
-                ? "border-[#7c5c3e] text-[#7c5c3e] bg-[#fdf8f5]"
+                ? "border-brown-800 text-brown-800 bg-brown-50"
                 : "border-gray-200 text-gray-600 bg-white hover:bg-gray-50",
             )}
           >
             {platform.name}
-            {isCurrent && <Check size={14} className="text-[#7c5c3e]" />}
+            {isCurrent && <Check size={14} className="text-brown-800" />}
           </button>
         );
       })}
@@ -99,7 +97,7 @@ const PlatformSelectForm = ({
       <button
         type="button"
         onClick={handleShowLoginForm}
-        className="w-full h-10 bg-[#7c5c3e] text-white text-sm font-medium hover:bg-[#6b4f34] transition-colors mt-2"
+        className="w-full h-10 bg-brown-800 text-white text-sm font-medium hover:bg-brown-800 transition-colors mt-2"
       >
         Keyingi
       </button>
@@ -173,7 +171,7 @@ const LoginForm = ({ onShowLoginForm }) => {
               value={phone}
               placeholder="Faqat raqamlar"
               onChange={(e) => setField("phone", e.target.value.trim())}
-              className="w-full h-10 pl-9 pr-3 rounded-sm border border-gray-300 bg-white text-sm text-gray-900 placeholder:text-gray-400 outline-none focus:border-[#7c5c3e] transition-colors"
+              className="w-full h-10 pl-9 pr-3 rounded-sm border border-gray-300 bg-white text-sm text-gray-900 placeholder:text-gray-400 outline-none focus:border-brown-800 transition-colors"
             />
           </div>
         </div>
@@ -194,7 +192,7 @@ const LoginForm = ({ onShowLoginForm }) => {
               required
               value={password}
               onChange={(e) => setField("password", e.target.value.trim())}
-              className="w-full h-10 pl-9 pr-10 rounded-sm border border-gray-300 bg-white text-sm text-gray-900 placeholder:text-gray-400 outline-none focus:border-[#7c5c3e] transition-colors"
+              className="w-full h-10 pl-9 pr-10 rounded-sm border border-gray-300 bg-white text-sm text-gray-900 placeholder:text-gray-400 outline-none focus:border-brown-800 transition-colors"
             />
             <button
               type="button"
@@ -209,7 +207,7 @@ const LoginForm = ({ onShowLoginForm }) => {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full h-10 bg-[#7c5c3e] text-white text-sm font-medium hover:bg-[#6b4f34] transition-colors disabled:opacity-60 disabled:cursor-not-allowed mt-1"
+          className="w-full h-10 bg-brown-800 text-white text-sm font-medium hover:bg-brown-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed mt-1"
         >
           {isLoading ? "Kirish..." : "Kirish"}
         </button>

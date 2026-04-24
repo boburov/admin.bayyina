@@ -38,7 +38,7 @@ const AuthGuard = () => {
     return (
       <div className="flex items-center justify-center fixed inset-0 z-50 bg-white">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-7 h-7 bg-[#7c5c3e] animate-pulse" />
+          <div className="w-7 h-7 bg-brown-800 animate-pulse" />
         </div>
       </div>
     );

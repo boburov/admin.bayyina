@@ -11,8 +11,8 @@ const Button = ({
   const variants = {
     neutral:   "bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:!bg-gray-100 border border-gray-200",
     danger:    "bg-white text-red-600 hover:bg-red-50 disabled:!bg-white border border-red-200",
-    primary:   "bg-[#7c5c3e] text-white hover:bg-[#6b4f34] disabled:!bg-[#7c5c3e]",
-    outline:   "bg-white text-[#7c5c3e] border border-[#7c5c3e] hover:bg-[#fdf8f5] disabled:!bg-white",
+    primary:   "bg-brown-800 text-white hover:bg-brown-900 disabled:!bg-brown-800",
+    outline:   "bg-white text-brown-800 border border-brown-200 hover:bg-brown-50 hover:border-brown-300 disabled:!bg-white",
     lightblue: "bg-blue-50 text-blue-600 hover:bg-blue-100 disabled:!bg-blue-50 border border-blue-200",
   };
 

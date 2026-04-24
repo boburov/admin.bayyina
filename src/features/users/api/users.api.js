@@ -9,7 +9,7 @@ export const usersAPI = {
   getTeachers: (params) => http.get("/users/teachers", { params }),
   update: (id, data) => http.put(`/users/${id}`, data),
   delete: (id) => http.delete(`/users/${id}`),
-  resetPassword: (id, data) => http.put(`/users/${id}/reset-password`, data),
+  resetPassword: (id, password) => http.put(`/users/${id}`, { password }),
   getPassword: (id) => http.get(`/users/${id}`),
   exportUsers: (role) =>
     http.get("/users/export", { params: { role }, responseType: "blob" }),

@@ -17,18 +17,7 @@ import {
 } from "@/shared/components/shadcn/dialog";
 
 // Data
-const typeLabel = {
-  complaint:  "Shikoyat",
-  suggestion: "Taklif",
-  info:       "Ma'lumot",
-  request:    "So'rov",
-};
-
-const statusLabel = {
-  open:     { text: "Ochiq",    cls: "bg-amber-50 text-amber-700 border border-amber-200" },
-  closed:   { text: "Yopiq",   cls: "bg-green-50 text-green-700 border border-green-200" },
-  pending:  { text: "Kutilmoqda", cls: "bg-gray-100 text-gray-600 border border-gray-200" },
-};
+import { typeLabel, statusLabel } from "@/features/notifications/data/notifications.data";
 
 const NotificationDetailModal = () => {
   const { isOpen, data: n, closeModal } = useModal("notificationDetail");

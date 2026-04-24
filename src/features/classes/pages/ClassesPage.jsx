@@ -26,7 +26,6 @@ import {
   Edit,
   Trash2,
   ChevronRight,
-  Download,
   Clock,
   User,
   School,
@@ -46,25 +45,6 @@ const Classes = () => {
   const getDayLabel = (value) =>
     daysOptions.find((d) => d.value === value)?.label ?? value;
 
-  const handleExport = async () => {
-    try {
-      const response = await classesAPI.exportAll();
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute(
-        "download",
-        `guruhlar_${new Date().toISOString().split("T")[0]}.xlsx`,
-      );
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-    } catch {
-      toast.error("Eksport xatosi yuz berdi");
-    }
-  };
-
   if (isLoading) {
     return <div className="text-center py-8">Yuklanmoqda...</div>;
   }
@@ -77,14 +57,10 @@ const Classes = () => {
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center justify-between gap-3 mb-4">
+      <div className="flex items-center gap-3 mb-4">
         <Button onClick={() => openModal("createClass")} className="px-3.5">
           <Plus strokeWidth={1.5} />
           Yangi guruh
-        </Button>
-
-        <Button variant="neutral" onClick={handleExport} className="px-3.5" title="Excel yuklash">
-          <Download strokeWidth={1.5} />
         </Button>
       </div>
 
@@ -104,7 +80,7 @@ const Classes = () => {
             <div className="flex justify-between items-start mb-3">
               <Link
                 to={`/classes/${group._id}`}
-                className="flex items-center gap-1 text-sm font-semibold text-gray-900 hover:text-[#7c5c3e] transition-colors"
+                className="flex items-center gap-1 text-sm font-semibold text-gray-900 hover:text-brown-800 transition-colors"
               >
                 {group.name}
                 <ChevronRight className="size-4 shrink-0" strokeWidth={1.5} />
@@ -113,7 +89,7 @@ const Classes = () => {
               <div className="flex gap-3 shrink-0">
                 <button
                   onClick={() => openModal("editClass", group)}
-                  className="text-gray-400 hover:text-[#7c5c3e] transition-colors"
+                  className="text-gray-400 hover:text-brown-800 transition-colors"
                 >
                   <Edit className="size-4" strokeWidth={1.5} />
                 </button>

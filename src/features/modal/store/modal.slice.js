@@ -91,6 +91,10 @@ const initialState = {
 
   // Payments
   createPayment: initialModalData,
+
+  // Notifications
+  sendNotification: initialModalData,
+  notificationDetail: initialModalData,
 };
 
 export const modalSlice = createSlice({

@@ -30,7 +30,7 @@ import Pagination from "@/shared/components/ui/Pagination";
 import { useCallback } from "react";
 
 // Icons
-import { Plus, Edit, Trash2, Key, Eye, Download, Users } from "lucide-react";
+import { Plus, Edit, Trash2, Key, Eye, Users } from "lucide-react";
 
 const Teachers = () => {
   const { user: currentUser } = useAuth();
@@ -76,12 +76,6 @@ const Teachers = () => {
           Yangi foydalanuvchi
         </Button>
 
-        <div className="flex-1" />
-
-        <Button onClick={() => openModal("exportUsers")}>
-          <Download strokeWidth={1.5} />
-          <span className="sm:hidden">Foydalanuvchilarni yuklash</span>
-        </Button>
       </div>
 
       {/* Table Wrapper */}

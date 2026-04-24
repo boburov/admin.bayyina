@@ -68,7 +68,7 @@ const Content = ({ close, isLoading, setIsLoading }) => {
   const handleCreateUser = (e) => {
     e.preventDefault();
 
-    if (selectedGroups.length === 0) {
+    if (role === "student" && selectedGroups.length === 0) {
       toast.error("Kamida bitta guruh tanlang");
       return;
     }
@@ -190,7 +190,7 @@ const Content = ({ close, isLoading, setIsLoading }) => {
       <div className="flex flex-col gap-1.5">
         <div className="ml-1 flex items-center justify-between">
           <label className="text-sm font-medium text-gray-700">
-            Guruhlar <span className="text-blue-500">*</span>
+            Guruhlar{role === "student" && <span className="text-blue-500"> *</span>}{role === "teacher" && <span className="text-gray-400 text-xs font-normal"> (ixtiyoriy)</span>}
           </label>
           {selectedGroups.length > 0 && (
             <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">

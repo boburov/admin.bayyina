@@ -42,7 +42,7 @@ const Input = ({
 
   const baseClasses = cn(
     "w-full rounded-sm transition-colors outline-none",
-    border ? "border border-gray-300 focus:border-[#7c5c3e]" : "border-0 focus:outline-none",
+    border ? "border border-gray-300 focus:border-brown-800" : "border-0 focus:outline-none",
     "disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed",
   );
 
@@ -161,7 +161,7 @@ const Input = ({
           htmlFor={name}
           className="text-sm font-medium text-gray-700"
         >
-          {label} {required && <span className="text-[#7c5c3e]">*</span>}
+          {label} {required && <span className="text-brown-800">*</span>}
         </label>
       )}
       {RenderInput}

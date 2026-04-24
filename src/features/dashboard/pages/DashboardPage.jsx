@@ -19,7 +19,7 @@ const Dashboard = () => {
       {/* Top Bar */}
       <div className="flex gap-4 mb-4">
         <Card className="flex items-center gap-2.5 !py-3 grow">
-          <Smile className="w-5 h-5 text-[#7c5c3e]" strokeWidth={1.5} />
+          <Smile className="w-5 h-5 text-brown-800" strokeWidth={1.5} />
           <h2 className="text-base font-semibold text-gray-900">
             Xush kelibsiz, {user?.firstName}!
           </h2>

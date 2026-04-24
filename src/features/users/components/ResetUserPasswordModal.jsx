@@ -56,7 +56,7 @@ const Content = ({ close, isLoading, setIsLoading, ...user }) => {
     setIsLoading(true);
 
     usersAPI
-      .resetPassword(user._id, { newPassword: password.trim() })
+      .resetPassword(user._id, password.trim())
       .then(() => {
         close();
         toast.success("Parol yangilandi");

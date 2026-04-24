@@ -29,6 +29,7 @@ import { Routes as RoutesWrapper, Route, Navigate } from "react-router-dom";
 import Teachers from "@/features/teachers/pages/TeacherPage";
 import PaymentsPage from "@/features/payments/PaymentsPage";
 import NotificationsPage from "@/features/notifications/pages/NotificationsPage";
+import RecordsPage from "@/features/records/pages/RecordsPage";
 
 const Routes = () => {
   return (
@@ -66,6 +67,9 @@ const Routes = () => {
 
           {/* Notifications */}
           <Route path="/notifications" element={<NotificationsPage />} />
+
+          {/* Records */}
+          <Route path="/records" element={<RecordsPage />} />
         </Route>
       </Route>
 

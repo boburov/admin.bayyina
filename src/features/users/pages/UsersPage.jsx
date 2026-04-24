@@ -30,7 +30,7 @@ import Pagination from "@/shared/components/ui/Pagination";
 import { useCallback } from "react";
 
 // Icons
-import { Plus, Edit, Trash2, Key, Eye, Download, Users } from "lucide-react";
+import { Plus, Edit, Trash2, Key, Eye, Users } from "lucide-react";
 
 const UsersPage = () => {
   const { user: currentUser } = useAuth();
@@ -86,12 +86,6 @@ const UsersPage = () => {
           Yangi o'quvchi
         </Button>
 
-        <div className="flex-1" />
-
-        <Button variant="neutral" onClick={() => openModal("exportUsers")} className="px-3.5">
-          <Download size={14} strokeWidth={1.5} />
-          <span>Yuklash</span>
-        </Button>
       </div>
 
       {/* Table */}

@@ -30,7 +30,6 @@ import {
   Users,
   CheckCircle2,
   XCircle,
-  Download,
 } from "lucide-react";
 
 // ─── Helper ───────────────────────────────────────────────────────────────────
@@ -89,27 +88,6 @@ const ClassDetailPage = () => {
     unpaid: rows.filter((r) => !r.paid).length,
   }), [rows]);
 
-  // Export
-  const handleExport = async () => {
-    try {
-      const res  = await classesAPI.exportStudents(classId);
-      const blob = new Blob([res.data], {
-        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      });
-      const url  = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href  = url;
-      link.download = `${group?.name ?? "guruh"}_oquvchilar_${new Date().toISOString().split("T")[0]}.xlsx`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-      toast.success("Fayl muvaffaqiyatli yuklandi");
-    } catch {
-      toast.error("Eksport qilishda xatolik yuz berdi");
-    }
-  };
-
   if (groupLoading) {
     return <div className="text-center py-12 text-sm text-gray-400">Yuklanmoqda...</div>;
   }
@@ -134,12 +112,6 @@ const ClassDetailPage = () => {
           <h1 className="page-title">{group.name}</h1>
         </div>
 
-        {enrollments.length > 0 && (
-          <Button variant="neutral" onClick={handleExport} className="px-3.5">
-            <Download strokeWidth={1.5} />
-            Yuklash
-          </Button>
-        )}
       </div>
 
       {/* Filters + stats */}

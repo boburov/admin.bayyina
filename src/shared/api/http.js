@@ -2,7 +2,7 @@
 import axios from "axios";
 
 // API URL
-const API_URL = import.meta.env.VITE_API_URL || "http://156.67.29.62:4000/api";
+const API_URL = import.meta.env.VITE_API_URL || "https://api.bayyina.org.uz/api";
 
 // Create an Axios instance
 const http = axios.create({

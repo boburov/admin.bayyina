@@ -16,7 +16,7 @@ import { Skeleton } from "@/shared/components/shadcn/skeleton";
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 const colorMap = {
-  brown:  "bg-[#fdf8f5] border-[#e8d0b8] text-[#7c5c3e]",
+  brown:  "bg-brown-50 border-brown-200 text-brown-800",
   blue:   "bg-blue-50   border-blue-200   text-blue-600",
   green:  "bg-green-50  border-green-200  text-green-600",
   purple: "bg-purple-50 border-purple-200 text-purple-600",

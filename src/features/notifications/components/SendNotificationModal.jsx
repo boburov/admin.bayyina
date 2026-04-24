@@ -21,12 +21,7 @@ import SelectField from "@/shared/components/ui/select/SelectField";
 import ResponsiveModal from "@/shared/components/ui/ResponsiveModal";
 
 // Data
-const typeOptions = [
-  { value: "complaint",    label: "Shikoyat" },
-  { value: "suggestion",  label: "Taklif" },
-  { value: "info",        label: "Ma'lumot" },
-  { value: "request",     label: "So'rov" },
-];
+import { typeOptions } from "@/features/notifications/data/notifications.data";
 
 const SendNotificationModal = () => (
   <ResponsiveModal name="sendNotification" title="Xabarnoma yuborish">
@@ -81,7 +76,7 @@ const Content = ({ close, isLoading, setIsLoading }) => {
       {/* Title */}
       <div className="space-y-1.5">
         <label className="text-sm font-medium text-gray-700">
-          Sarlavha <span className="text-[#7c5c3e]">*</span>
+          Sarlavha <span className="text-brown-800">*</span>
         </label>
         <input
           required
@@ -89,14 +84,14 @@ const Content = ({ close, isLoading, setIsLoading }) => {
           maxLength={120}
           placeholder="Xabarnoma sarlavhasi"
           onChange={(e) => setField("title", e.target.value)}
-          className="w-full h-10 px-3 rounded-sm border border-gray-300 bg-white text-sm text-gray-900 placeholder:text-gray-400 outline-none focus:border-[#7c5c3e] transition-colors"
+          className="w-full h-10 px-3 rounded-sm border border-gray-300 bg-white text-sm text-gray-900 placeholder:text-gray-400 outline-none focus:border-brown-800 transition-colors"
         />
       </div>
 
       {/* Message */}
       <div className="space-y-1.5">
         <label className="text-sm font-medium text-gray-700">
-          Xabar matni <span className="text-[#7c5c3e]">*</span>
+          Xabar matni <span className="text-brown-800">*</span>
         </label>
         <textarea
           required
@@ -105,7 +100,7 @@ const Content = ({ close, isLoading, setIsLoading }) => {
           maxLength={1000}
           placeholder="Xabar matnini kiriting..."
           onChange={(e) => setField("message", e.target.value)}
-          className="w-full px-3 py-2 rounded-sm border border-gray-300 bg-white text-sm text-gray-900 placeholder:text-gray-400 outline-none focus:border-[#7c5c3e] transition-colors resize-none"
+          className="w-full px-3 py-2 rounded-sm border border-gray-300 bg-white text-sm text-gray-900 placeholder:text-gray-400 outline-none focus:border-brown-800 transition-colors resize-none"
         />
         <div className="text-xs text-gray-400 text-right">{message.length}/1000</div>
       </div>

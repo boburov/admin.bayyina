@@ -27,34 +27,13 @@ import Select from "@/shared/components/ui/select/Select";
 // Icons
 import { Bell, Eye, MessageSquare, Plus } from "lucide-react";
 
-// ─── Static data ──────────────────────────────────────────────────────────────
-
-const typeLabel = {
-  complaint:  "Shikoyat",
-  suggestion: "Taklif",
-  info:       "Ma'lumot",
-  request:    "So'rov",
-};
-
-const statusLabel = {
-  open:    { text: "Ochiq",      cls: "bg-amber-50 text-amber-700 border border-amber-200" },
-  closed:  { text: "Yopiq",     cls: "bg-green-50 text-green-700 border border-green-200" },
-  pending: { text: "Kutilmoqda", cls: "bg-gray-100 text-gray-600 border border-gray-200"  },
-};
-
-const typeOptions = [
-  { value: "all",        label: "Barcha turlar"  },
-  { value: "complaint",  label: "Shikoyat"       },
-  { value: "suggestion", label: "Taklif"         },
-  { value: "info",       label: "Ma'lumot"       },
-  { value: "request",    label: "So'rov"         },
-];
-
-const statusOptions = [
-  { value: "all",    label: "Barcha statuslar" },
-  { value: "open",   label: "Ochiq"            },
-  { value: "closed", label: "Yopiq"            },
-];
+// Data
+import {
+  typeLabel,
+  statusLabel,
+  typeFilterOptions,
+  statusFilterOptions,
+} from "@/features/notifications/data/notifications.data";
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -130,13 +109,13 @@ const NotificationsPage = () => {
         <div className="flex items-center gap-2 ml-auto">
           <Select
             value={typeFilter || "all"}
-            options={typeOptions}
+            options={typeFilterOptions}
             onChange={(v) => setParam("type", v)}
             placeholder="Turi"
           />
           <Select
             value={statusFilter || "all"}
-            options={statusOptions}
+            options={statusFilterOptions}
             onChange={(v) => setParam("status", v)}
             placeholder="Status"
           />
@@ -247,7 +226,7 @@ const NotificationsPage = () => {
                     <td className="text-center">
                       <button
                         onClick={() => openModal("notificationDetail", n)}
-                        className="text-gray-400 hover:text-[#7c5c3e] transition-colors"
+                        className="text-gray-400 hover:text-brown-800 transition-colors"
                         title="Ko'rish"
                       >
                         <Eye className="size-4" strokeWidth={1.5} />
