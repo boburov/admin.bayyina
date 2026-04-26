@@ -2,20 +2,22 @@
 import { toast } from "sonner";
 
 // API
-import { usersAPI } from "@/features/users/api/users.api";
-import { classesAPI } from "@/features/classes/api/classes.api";
+import { usersAPI }    from "@/features/users/api/users.api";
+import { classesAPI }  from "@/features/classes/api/classes.api";
+import { salariesAPI } from "@/features/salaries/api/salaries.api";
 
 // TanStack Query
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 // Components
-import Input from "@/shared/components/form/input";
-import Select from "@/shared/components/form/select";
-import Button from "@/shared/components/form/button";
+import Input           from "@/shared/components/form/input";
+import Select          from "@/shared/components/form/select";
+import Button          from "@/shared/components/form/button";
 import ResponsiveModal from "@/shared/components/ui/ResponsiveModal";
 
 // Data
 import { genderOptions, roleOptions, sourceOptions } from "../data/users.data";
+import { monthOptions, salariesKeys } from "@/features/salaries/data/salaries.data";
 
 // Hooks
 import useObjectState from "@/shared/hooks/useObjectState";
@@ -24,7 +26,7 @@ import useObjectState from "@/shared/hooks/useObjectState";
 import { useState } from "react";
 
 // Icons
-import { Search, School } from "lucide-react";
+import { Search, School, ChevronDown, ChevronUp } from "lucide-react";
 
 const CreateUserModal = () => (
   <ResponsiveModal
@@ -39,7 +41,14 @@ const CreateUserModal = () => (
 const Content = ({ close, isLoading, setIsLoading }) => {
   const queryClient = useQueryClient();
   const [selectedGroups, setSelectedGroups] = useState([]);
-  const [groupSearch, setGroupSearch] = useState("");
+  const [groupSearch,    setGroupSearch]    = useState("");
+
+  // Salary section state
+  const [salaryOpen,      setSalaryOpen]      = useState(false);
+  const [salaryMonth,     setSalaryMonth]      = useState(monthOptions[1]?.value ?? "");
+  const [salaryBonus,     setSalaryBonus]      = useState("");
+  const [salaryDeduction, setSalaryDeduction]  = useState("");
+  const [salaryNote,      setSalaryNote]       = useState("");
 
   const {
     phone, password, firstName, lastName,
@@ -89,11 +98,33 @@ const Content = ({ close, isLoading, setIsLoading }) => {
 
     usersAPI
       .create(data)
-      .then(() => {
-        close();
+      .then((res) => {
+        const newUserId = res.data?.user?._id ?? res.data?._id;
         queryClient.invalidateQueries({ queryKey: ["users"] });
+
+        // Salary creation — only for teachers when section is open
+        if (role === "teacher" && salaryOpen && newUserId && salaryMonth) {
+          return salariesAPI
+            .create({
+              teacher:   newUserId,
+              month:     salaryMonth,
+              bonus:     salaryBonus     ? Number(salaryBonus)     : 0,
+              deduction: salaryDeduction ? Number(salaryDeduction) : 0,
+              note:      salaryNote.trim() || undefined,
+            })
+            .then(() => {
+              queryClient.invalidateQueries({ queryKey: salariesKeys.all });
+              toast.success("O'qituvchi va oylik yaratildi");
+            })
+            .catch(() => {
+              toast.success("O'qituvchi yaratildi");
+              toast.error("Oylik yaratishda xatolik");
+            });
+        }
+
         toast.success("Foydalanuvchi yaratildi");
       })
+      .then(() => close())
       .catch((err) => {
         toast.error(err.response?.data?.message || "Xatolik yuz berdi");
       })
@@ -272,6 +303,65 @@ const Content = ({ close, isLoading, setIsLoading }) => {
           </div>
         </div>
       </div>
+
+      {/* Salary section — only for teachers */}
+      {role === "teacher" && (
+        <div className="border border-gray-200 rounded-lg overflow-hidden">
+          <button
+            type="button"
+            onClick={() => setSalaryOpen((o) => !o)}
+            className="w-full flex items-center justify-between px-3.5 py-2.5 text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 transition-colors"
+          >
+            <span>Oylik ham yaratish</span>
+            {salaryOpen
+              ? <ChevronUp className="size-4 text-gray-400" strokeWidth={1.5} />
+              : <ChevronDown className="size-4 text-gray-400" strokeWidth={1.5} />}
+          </button>
+
+          {salaryOpen && (
+            <div className="px-3.5 py-3 space-y-3">
+              <Select
+                size="md"
+                label="Oy"
+                value={salaryMonth}
+                onChange={setSalaryMonth}
+                options={monthOptions}
+                placeholder="Oy tanlang"
+              />
+              <div className="grid grid-cols-2 gap-3">
+                <Input
+                  label="Bonus (so'm)"
+                  name="salaryBonus"
+                  type="number"
+                  min={0}
+                  value={salaryBonus}
+                  onChange={(v) => setSalaryBonus(v)}
+                  placeholder="0"
+                />
+                <Input
+                  label="Jarima (so'm)"
+                  name="salaryDeduction"
+                  type="number"
+                  min={0}
+                  value={salaryDeduction}
+                  onChange={(v) => setSalaryDeduction(v)}
+                  placeholder="0"
+                />
+              </div>
+              <Input
+                label="Izoh"
+                name="salaryNote"
+                value={salaryNote}
+                onChange={(v) => setSalaryNote(v)}
+                placeholder="Ixtiyoriy"
+              />
+              <p className="text-xs text-gray-400">
+                Guruhlar bo'yicha hisob-kitob server tomonidan avtomatik amalga oshiriladi.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Actions */}
       <div className="flex flex-col-reverse gap-3 w-full pt-1 xs:flex-row xs:justify-end">

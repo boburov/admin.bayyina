@@ -127,7 +127,7 @@ const LoginForm = ({ onShowLoginForm }) => {
     authAPI
       .login(data)
       .then((response) => {
-        const { token } = response.data;
+        const token = response.data?.token ?? response.data?.accessToken;
         localStorage.setItem("token", token);
         navigate("/dashboard");
       })

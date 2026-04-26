@@ -16,12 +16,7 @@ import useArrayStore from "@/shared/hooks/useArrayStore";
 import useObjectStore from "@/shared/hooks/useObjectStore";
 
 // Components
-import {
-  SidebarInset,
-  SidebarProvider,
-} from "@/shared/components/shadcn/sidebar";
-import AppHeader from "@/shared/components/layout/AppHeader";
-import AppSidebar from "@/shared/components/layout/AppSidebar";
+import { AppSidebarDesktop, AppSidebarMobile } from "@/shared/components/layout/AppSidebar";
 
 // Modals
 import EditUserModal from "@/features/users/components/EditUserModal";
@@ -44,15 +39,22 @@ const DashboardLayout = () => {
   return (
     <>
       {/* Main */}
-      <SidebarProvider className="relative z-10">
-        <AppSidebar />
-        <SidebarInset>
-          <AppHeader />
-          <div className="flex flex-1 flex-col gap-4 px-4 py-2">
+      <div className="flex h-screen overflow-hidden bg-gray-50 relative z-10">
+        {/* Desktop sidebar */}
+        <AppSidebarDesktop />
+
+        {/* Mobile sidebar + toggle */}
+        <AppSidebarMobile />
+
+        {/* Page content */}
+        <div className="flex-1 overflow-y-auto">
+          {/* Mobile top spacing so content doesn't hide under toggle btn */}
+          <div className="lg:hidden h-14" />
+          <div className="px-4 py-5 lg:px-6 space-y-5">
             <Outlet />
           </div>
-        </SidebarInset>
-      </SidebarProvider>
+        </div>
+      </div>
 
       {/* Bug Report */}
       <BugReport />

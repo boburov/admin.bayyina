@@ -1,233 +1,172 @@
+// Router
+import { NavLink, useNavigate } from "react-router-dom";
+
 // Icons
 import {
   Home,
-  LogOut,
   Users,
   BarChart2,
   School,
-  ChevronUp,
   Wallet,
+  Banknote,
   UserPlus,
   GraduationCap,
   Bell,
+  LogOut,
+  Menu,
+  X,
+  ClipboardList,
+  BookOpen,
 } from "lucide-react";
 
-// Router
-import { Link, useLocation } from "react-router-dom";
-
-// Tanstack Query
-import { useQuery } from "@tanstack/react-query";
-
-// API
-import { authAPI } from "@/features/auth/api/auth.api";
+// Hooks
+import { useState } from "react";
+import useAuth from "@/shared/hooks/useAuth";
 
 // Utils
 import { cn } from "@/shared/utils/cn";
 
-// Hooks
-import { useIsMobile } from "@/shared/hooks/useMobile";
-
-// Dropdown Menu
-import {
-  DropdownMenu,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuSeparator,
-} from "@/shared/components/shadcn/dropdown-menu";
-
-// Sidebar (shadcn primitives — keep for provider/inset)
-import {
-  Sidebar,
-  useSidebar,
-  SidebarRail,
-  SidebarMenu,
-  SidebarGroup,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarContent,
-  SidebarTrigger,
-  SidebarMenuItem,
-  SidebarMenuButton,
-} from "@/shared/components/shadcn/sidebar";
-
-// Navigation items
-const navItems = [
-  { title: "Bosh sahifa",   url: "/",             icon: Home      },
-  { title: "Leadlar",       url: "/leads",         icon: UserPlus  },
-  { title: "O'quvchilar",   url: "/users",         icon: Users     },
-  { title: "O'qituvchilar", url: "/teachers",      icon: Users     },
-  { title: "Statistika",    url: "/statistics",    icon: BarChart2 },
-  { title: "Guruhlar",      url: "/classes",       icon: School    },
-  { title: "To'lovlar",     url: "/payments",      icon: Wallet    },
-  { title: "Xabarnomalar",  url: "/notifications", icon: Bell      },
+const NAV_ITEMS = [
+  { title: "Bosh sahifa",   url: "/dashboard",     icon: Home         },
+  { title: "Leadlar",       url: "/leads",          icon: UserPlus     },
+  { title: "O'quvchilar",   url: "/users",          icon: Users        },
+  { title: "O'qituvchilar", url: "/teachers",       icon: GraduationCap },
+  { title: "Guruhlar",      url: "/classes",        icon: School       },
+  { title: "Statistika",    url: "/statistics",     icon: BarChart2    },
+  { title: "To'lovlar",     url: "/payments",       icon: Wallet       },
+  { title: "Oyliklar",      url: "/salaries",       icon: Banknote     },
+  { title: "Xabarnomalar",  url: "/notifications",  icon: Bell         },
+  { title: "Yozuvlar",      url: "/records",        icon: ClipboardList },
 ];
 
-const AppSidebar = ({ ...props }) => {
-  return (
-    <Sidebar collapsible="icon" {...props}>
-      <Header />
-      <Main />
-      <Footer />
-      <SidebarRail />
-    </Sidebar>
-  );
-};
+function getUserInitials(user) {
+  if (!user) return "A";
+  if (user.firstName && user.lastName)
+    return (user.firstName[0] + user.lastName[0]).toUpperCase();
+  return (user.firstName ?? "A")[0].toUpperCase();
+}
 
-const Header = () => {
-  const { toggleSidebar, open } = useSidebar();
+function SidebarContent({ onNavClick }) {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
-  return (
-    <SidebarHeader className="border-b border-sidebar-border py-3">
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <SidebarMenuButton
-            size="lg"
-            onClick={() => toggleSidebar()}
-            className="data-[state=open]:bg-sidebar-accent hover:!bg-sidebar-accent"
-          >
-            <div className="flex items-center justify-center size-8 bg-brown-800 shrink-0">
-              <GraduationCap size={13} className="text-white" strokeWidth={1.5} />
-            </div>
-            <div className="grid flex-1 gap-0 text-left leading-tight">
-              <span className="truncate text-sm font-semibold tracking-widest uppercase text-sidebar-foreground">
-                Bayyina
-              </span>
-              <span className="truncate text-[9px] tracking-[0.18em] uppercase text-sidebar-foreground/40 font-medium">
-                Admin Panel
-              </span>
-            </div>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      </SidebarMenu>
-      {!open && <SidebarTrigger className="size-7" />}
-    </SidebarHeader>
-  );
-};
-
-const Main = () => {
-  const location = useLocation();
+  function handleLogout() {
+    logout();
+    navigate("/login", { replace: true });
+  }
 
   return (
-    <SidebarContent className="py-2">
-      <SidebarGroup>
-        <SidebarMenu className="gap-0.5">
-          {navItems.map((item) => {
-            const isActive =
-              item.url === "/"
-                ? location.pathname === "/"
-                : location.pathname.startsWith(item.url);
+    <aside className="flex flex-col w-56 h-full bg-white border-r border-gray-200 shrink-0">
+      {/* Brand */}
+      <div className="flex items-center gap-2.5 px-4 py-4 border-b border-gray-200">
+        <div className="flex items-center justify-center w-7 h-7 bg-brown-800 shrink-0">
+          <GraduationCap size={14} className="text-white" strokeWidth={1.5} />
+        </div>
+        <div>
+          <p className="text-sm font-semibold text-gray-900 leading-tight">Bayyina</p>
+          <p className="text-xs text-gray-400">Admin paneli</p>
+        </div>
+      </div>
 
-            return (
-              <SidebarMenuItem key={item.url}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={isActive}
-                  tooltip={item.title}
-                  className={cn(
-                    "h-9 transition-all duration-150 !text-sidebar-foreground/70 hover:!text-sidebar-foreground hover:!bg-sidebar-accent",
+      {/* Nav */}
+      <nav className="flex-1 px-3 py-4 overflow-y-auto">
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 px-2 mb-2">
+          Menyu
+        </p>
+        <ul className="flex flex-col gap-0.5">
+          {NAV_ITEMS.map((item) => (
+            <li key={item.url}>
+              <NavLink
+                to={item.url}
+                onClick={onNavClick}
+                end={item.url === "/dashboard"}
+                className={({ isActive }) =>
+                  cn(
+                    "flex items-center gap-2.5 px-3 py-2 text-sm font-medium transition-colors",
                     isActive
-                      ? "!text-white !bg-sidebar-accent border-l-2 border-brown-500 pl-[calc(0.75rem-2px)]"
-                      : "border-l-2 border-transparent",
-                  )}
-                >
-                  <Link to={item.url}>
-                    <item.icon
-                      size={14}
-                      strokeWidth={isActive ? 2 : 1.5}
-                      className={isActive ? "text-brown-400" : ""}
-                    />
-                    <span className={cn(
-                      "text-[13px] tracking-wide",
-                      isActive ? "font-medium" : "font-normal",
-                    )}>
-                      {item.title}
-                    </span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            );
-          })}
-        </SidebarMenu>
-      </SidebarGroup>
-    </SidebarContent>
+                      ? "border-l-2 border-brown-800 text-brown-800 bg-brown-50 pl-[10px]"
+                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900 border-l-2 border-transparent",
+                  )
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    <item.icon size={15} strokeWidth={isActive ? 2 : 1.5} />
+                    {item.title}
+                  </>
+                )}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      {/* User footer */}
+      <div className="border-t border-gray-200 px-3 py-3">
+        <div className="flex items-center gap-2.5 px-2 py-2 mb-1">
+          <div className="flex items-center justify-center w-7 h-7 bg-brown-800 text-white text-xs font-semibold shrink-0">
+            {getUserInitials(user)}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-gray-900 truncate leading-tight">
+              {user ? `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim() : "—"}
+            </p>
+            {user?.role && (
+              <p className="text-xs text-gray-400 truncate capitalize">{user.role}</p>
+            )}
+          </div>
+        </div>
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-2 px-2 py-1.5 text-xs font-medium text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors"
+        >
+          <LogOut size={13} />
+          Chiqish
+        </button>
+      </div>
+    </aside>
   );
-};
+}
 
-const Footer = () => {
-  const { data: user } = useQuery({
-    retry: false,
-    queryKey: ["auth", "profile"],
-    staleTime: 5 * 60 * 1000,
-    queryFn: () => authAPI.getMe().then((res) => res.data.data ?? null),
-  });
+export function AppSidebarDesktop() {
+  return (
+    <div className="hidden lg:flex h-full">
+      <SidebarContent />
+    </div>
+  );
+}
 
-  const isMobile = useIsMobile();
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    window.location.href = "/login";
-  };
+export function AppSidebarMobile() {
+  const [open, setOpen] = useState(false);
 
   return (
-    <SidebarFooter className="border-t border-sidebar-border py-2">
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <SidebarMenuButton
-                size="lg"
-                className="data-[state=open]:bg-sidebar-accent hover:!bg-sidebar-accent"
-              >
-                <div className="flex items-center justify-center size-7 shrink-0 bg-brown-800 text-white text-xs font-semibold tracking-wider">
-                  {user?.firstName?.[0]?.toUpperCase()}
-                </div>
-                <div className="grid flex-1 text-left leading-tight gap-0">
-                  <span className="truncate text-[13px] font-medium tracking-wide text-sidebar-foreground">
-                    {user?.firstName}
-                  </span>
-                  <span className="truncate text-[10px] text-sidebar-foreground/40 tracking-wider">
-                    {user?.username}
-                  </span>
-                </div>
-                <ChevronUp size={12} className="ml-auto text-sidebar-foreground/40" />
-              </SidebarMenuButton>
-            </DropdownMenuTrigger>
+    <>
+      {/* Toggle button */}
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="lg:hidden fixed top-3 left-3 z-50 flex items-center justify-center w-8 h-8 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
+        aria-label="Menyu"
+      >
+        {open ? <X size={15} /> : <Menu size={15} />}
+      </button>
 
-            <DropdownMenuContent
-              align="end"
-              sideOffset={4}
-              side={isMobile ? "bottom" : "right"}
-              className="w-[--radix-dropdown-menu-trigger-width] min-w-48 border-border"
-            >
-              <DropdownMenuLabel className="!p-0 font-normal">
-                <div className="flex items-center gap-2.5 px-3 py-2.5 text-left">
-                  <div className="flex items-center justify-center size-7 shrink-0 bg-brown-800 text-white text-xs font-semibold">
-                    {user?.firstName?.[0]?.toUpperCase()}
-                  </div>
-                  <div className="grid flex-1 text-left leading-tight gap-0">
-                    <span className="truncate text-sm font-medium text-gray-900">{user?.firstName}</span>
-                    <span className="truncate text-xs text-gray-400">{user?.username}</span>
-                  </div>
-                </div>
-              </DropdownMenuLabel>
+      {/* Backdrop */}
+      {open && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/10 z-40"
+          onClick={() => setOpen(false)}
+        />
+      )}
 
-              <DropdownMenuSeparator />
-
-              <DropdownMenuItem
-                onClick={handleLogout}
-                className="gap-2 text-red-600 hover:!text-red-600 hover:!bg-red-50 mx-1 my-0.5"
-              >
-                <LogOut size={13} strokeWidth={1.5} />
-                <span className="text-sm">Chiqish</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </SidebarMenuItem>
-      </SidebarMenu>
-    </SidebarFooter>
+      {/* Drawer */}
+      {open && (
+        <div className="lg:hidden fixed left-0 top-0 h-full z-50">
+          <SidebarContent onNavClick={() => setOpen(false)} />
+        </div>
+      )}
+    </>
   );
-};
+}
 
+const AppSidebar = () => null;
 export default AppSidebar;

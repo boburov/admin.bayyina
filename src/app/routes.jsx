@@ -29,7 +29,8 @@ import { Routes as RoutesWrapper, Route, Navigate } from "react-router-dom";
 import Teachers from "@/features/teachers/pages/TeacherPage";
 import PaymentsPage from "@/features/payments/PaymentsPage";
 import NotificationsPage from "@/features/notifications/pages/NotificationsPage";
-import RecordsPage from "@/features/records/pages/RecordsPage";
+import RecordsPage    from "@/features/records/pages/RecordsPage";
+import SalariesPage   from "@/features/salaries/pages/SalariesPage";
 
 const Routes = () => {
   return (
@@ -70,6 +71,9 @@ const Routes = () => {
 
           {/* Records */}
           <Route path="/records" element={<RecordsPage />} />
+
+          {/* Salaries */}
+          <Route path="/salaries" element={<SalariesPage />} />
         </Route>
       </Route>
 
