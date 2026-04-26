@@ -21,6 +21,12 @@ export const monthOptions = [
   { value: "2025-05-01", label: "May 2025" },
 ];
 
+export const PAYMENT_STATUS_OPTIONS = [
+  { value: "paid",    label: "To'langan" },
+  { value: "pending", label: "Kutilmoqda" },
+  { value: "overdue", label: "Muddati o'tgan" },
+];
+
 /** "2026-04-01" → "Aprel 2026" */
 export const formatMonthLabel = (isoDate) => {
   const d = new Date(isoDate);

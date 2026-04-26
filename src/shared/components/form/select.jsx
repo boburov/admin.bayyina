@@ -8,6 +8,12 @@ import {
 } from "@/shared/components/shadcn/select";
 import { cn } from "@/shared/utils/cn";
 
+// Radix Select forbids value="". Use this sentinel internally for "clear" options.
+const CLEAR_SENTINEL = "__CLEAR__";
+
+const normaliseValue = (v) => (v === "" ? CLEAR_SENTINEL : v);
+const externalValue  = (v) => (v === CLEAR_SENTINEL ? "" : v);
+
 const Select = ({
   value,
   onChange,
@@ -45,7 +51,9 @@ const Select = ({
     "w-full focus:outline-blue-500"
   );
 
-  const handleChange = (value) => onChange?.(value);
+  const handleChange = (v) => onChange?.(externalValue(v));
+
+  const resolvedValue = value === "" ? CLEAR_SENTINEL : value;
 
   return (
     <div className={cn("ext-left space-y-1.5", className)}>
@@ -63,7 +71,7 @@ const Select = ({
       <SelectWrapper
         id={name}
         name={name}
-        value={value}
+        value={resolvedValue}
         required={required}
         disabled={disabled}
         onOpenChange={onOpenChange}
@@ -83,21 +91,21 @@ const Select = ({
         <SelectContent>
           {/* Options */}
           {!isLoading &&
-            options.map((opt) =>
-              typeof opt === "object" ? (
-                <SelectItem
-                  key={opt.value}
-                  value={opt.value}
-                  disabled={opt.disabled}
-                >
-                  {opt.label}
-                </SelectItem>
-              ) : (
+            options.map((opt) => {
+              if (typeof opt === "object") {
+                const safeValue = normaliseValue(opt.value);
+                return (
+                  <SelectItem key={safeValue} value={safeValue} disabled={opt.disabled}>
+                    {opt.label}
+                  </SelectItem>
+                );
+              }
+              return (
                 <SelectItem key={opt} value={opt}>
                   {opt}
                 </SelectItem>
-              )
-            )}
+              );
+            })}
 
           {/* Loading */}
           {isLoading && (

@@ -15,13 +15,13 @@ const platforms = [
     name: "O'qituvchi",
     isCurrent: false,
     animationData: teacherEmojiAnimation,
-    href: "https://teacher.bayyina.uz",
+    href: "https://teacher.bayyina.org.uz",
   },
   {
     name: "O'quvchi",
     isCurrent: false,
     animationData: gcapEmojiAnimation,
-    href: "https://student.bayyina.uz",
+    href: "https://student.bayyina.org.uz",
   }
 ];
 

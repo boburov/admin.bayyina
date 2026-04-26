@@ -36,7 +36,7 @@ const UsersStats = () => {
 
   const { data: groupsData, isLoading: groupsLoading } = useQuery({
     queryKey: ["admin-groups"],
-    queryFn:  () => classesAPI.getAll().then((res) => res.data),
+    queryFn:  () => classesAPI.getAll({ limit: 200 }).then((res) => res.data),
   });
 
   const { data: leadsData, isLoading: leadsLoading } = useQuery({

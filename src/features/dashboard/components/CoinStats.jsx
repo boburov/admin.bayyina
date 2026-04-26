@@ -120,7 +120,7 @@ const CoinStats = () => {
 const GroupsList = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["admin-groups"],
-    queryFn:  () => classesAPI.getAll().then((res) => res.data),
+    queryFn:  () => classesAPI.getAll({ limit: 200 }).then((res) => res.data),
   });
 
   const groups = data?.groups ?? [];

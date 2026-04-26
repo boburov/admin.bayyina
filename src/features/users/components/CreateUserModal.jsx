@@ -66,7 +66,7 @@ const Content = ({ close, isLoading, setIsLoading }) => {
 
   const { data: groupsData, isLoading: groupsLoading } = useQuery({
     queryKey: ["classes"],
-    queryFn: () => classesAPI.getAll().then((res) => res.data),
+    queryFn: () => classesAPI.getAll({ limit: 200 }).then((res) => res.data),
   });
 
   const allGroups = groupsData?.groups ?? [];

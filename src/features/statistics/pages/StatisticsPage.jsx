@@ -957,7 +957,7 @@ const TolovTab = () => {
 
   const { data: groupsData, isLoading: groupsLoading } = useQuery({
     queryKey: ["admin-groups"],
-    queryFn:  () => classesAPI.getAll().then((res) => res.data),
+    queryFn:  () => classesAPI.getAll({ limit: 200 }).then((res) => res.data),
     onError:  () => toast.error("Guruhlar yuklanmadi"),
   });
 
@@ -1150,7 +1150,7 @@ const OquvchilarTab = () => {
 
   const { data: groupsData, isLoading: groupsLoading } = useQuery({
     queryKey: ["admin-groups"],
-    queryFn:  () => classesAPI.getAll().then((res) => res.data),
+    queryFn:  () => classesAPI.getAll({ limit: 200 }).then((res) => res.data),
   });
 
   const groups = groupsData?.groups ?? [];

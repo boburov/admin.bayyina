@@ -1,6 +1,9 @@
 // Toast
 import { toast } from "sonner";
 
+// React
+import { useCallback, useEffect, useRef, useState } from "react";
+
 // API
 import { usersAPI } from "@/features/users/api/users.api";
 
@@ -17,7 +20,7 @@ import { useSearchParams } from "react-router-dom";
 import { formatUzDate } from "@/shared/utils/formatDate";
 
 // Data
-import { genderOptions } from "../data/users.data";
+import { genderOptions, sourceOptions } from "../data/users.data";
 
 // Hooks
 import useModal from "@/shared/hooks/useModal";
@@ -26,18 +29,64 @@ import useModal from "@/shared/hooks/useModal";
 import Button from "@/shared/components/ui/button/Button";
 import Pagination from "@/shared/components/ui/Pagination";
 
-// React
-import { useCallback } from "react";
-
 // Icons
-import { Plus, Edit, Trash2, Key, Eye, Users } from "lucide-react";
+import { Plus, Edit, Trash2, Key, Eye, Users, Search, X } from "lucide-react";
 
 const UsersPage = () => {
   const { user: currentUser } = useAuth();
   const { openModal } = useModal();
-
   const [searchParams, setSearchParams] = useSearchParams();
+
   const currentPage = parseInt(searchParams.get("page") || "1", 10);
+  const qParam      = searchParams.get("q") || "";
+  const genderParam = searchParams.get("gender") || "";
+  const sourceParam = searchParams.get("source") || "";
+
+  const [inputQ, setInputQ] = useState(qParam);
+
+  const searchParamsRef = useRef(searchParams);
+  useEffect(() => { searchParamsRef.current = searchParams; }, [searchParams]);
+
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    const id = setTimeout(() => {
+      const params = new URLSearchParams(searchParamsRef.current);
+      if (inputQ) {
+        params.set("q", inputQ);
+      } else {
+        params.delete("q");
+      }
+      params.set("page", "1");
+      setSearchParams(params, { replace: true });
+    }, 400);
+    return () => clearTimeout(id);
+  }, [inputQ, setSearchParams]);
+
+  const hasFilters = qParam || genderParam || sourceParam;
+
+  const setFilter = useCallback(
+    (key, value) => {
+      const params = new URLSearchParams(searchParams);
+      if (value) {
+        params.set(key, value);
+      } else {
+        params.delete(key);
+      }
+      params.set("page", "1");
+      setSearchParams(params);
+    },
+    [searchParams, setSearchParams],
+  );
+
+  const resetFilters = useCallback(() => {
+    setInputQ("");
+    setSearchParams({ page: "1" });
+  }, [setSearchParams]);
 
   const goToPage = useCallback(
     (page) => {
@@ -49,12 +98,22 @@ const UsersPage = () => {
     [searchParams, setSearchParams],
   );
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["users", "students", { page: currentPage }],
+  const queryParams = {
+    page: currentPage,
+    limit: 20,
+    ...(qParam      && { q: qParam }),
+    ...(genderParam && { gender: genderParam }),
+    ...(sourceParam && { source: sourceParam }),
+  };
+
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: hasFilters
+      ? ["users", "students", "search", queryParams]
+      : ["users", "students", { page: currentPage }],
     queryFn: () =>
-      usersAPI
-        .getStudents({ page: currentPage, limit: 20 })
-        .then((res) => res.data),
+      hasFilters
+        ? usersAPI.searchStudents(queryParams).then((res) => res.data)
+        : usersAPI.getStudents({ page: currentPage, limit: 20 }).then((res) => res.data),
     keepPreviousData: true,
     onError: ({ message }) => toast.error(message || "Nimadir xato ketdi"),
   });
@@ -63,14 +122,6 @@ const UsersPage = () => {
 
   const getGenderLabel = (gender) =>
     genderOptions.find((g) => g.value === gender)?.label ?? "-";
-
-  if (isLoading) {
-    return (
-      <div className="py-12 text-center text-sm text-gray-400">
-        Yuklanmoqda...
-      </div>
-    );
-  }
 
   return (
     <div>
@@ -85,11 +136,55 @@ const UsersPage = () => {
           <Plus size={14} strokeWidth={1.5} />
           Yangi o'quvchi
         </Button>
+      </div>
 
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-3 mb-5">
+        <div className="relative flex-1 min-w-[200px]">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input
+            value={inputQ}
+            onChange={(e) => setInputQ(e.target.value)}
+            placeholder="Ism, telefon, manba..."
+            className="w-full pl-8 pr-3 py-2 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
+          />
+        </div>
+
+        <select
+          value={genderParam}
+          onChange={(e) => setFilter("gender", e.target.value)}
+          className="py-2 px-3 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
+        >
+          <option value="">Barcha jins</option>
+          {genderOptions.map((o) => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
+
+        <select
+          value={sourceParam}
+          onChange={(e) => setFilter("source", e.target.value)}
+          className="py-2 px-3 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
+        >
+          <option value="">Barcha manba</option>
+          {sourceOptions.map((o) => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
+
+        {hasFilters && (
+          <button
+            onClick={resetFilters}
+            className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-800 border border-gray-200 rounded-md px-2 py-2"
+          >
+            <X size={12} />
+            Tozalash
+          </button>
+        )}
       </div>
 
       {/* Table */}
-      <div className="table-wrapper">
+      <div className={`table-wrapper transition-opacity ${isFetching ? "opacity-60" : "opacity-100"}`}>
         <table>
           <thead>
             <tr>
@@ -103,7 +198,13 @@ const UsersPage = () => {
             </tr>
           </thead>
           <tbody>
-            {users.length === 0 && (
+            {isLoading ? (
+              <tr>
+                <td colSpan={7} className="py-12 text-center text-sm text-gray-400">
+                  Yuklanmoqda...
+                </td>
+              </tr>
+            ) : users.length === 0 ? (
               <tr>
                 <td colSpan={7} className="py-16 text-center">
                   <div className="flex flex-col items-center gap-2 text-gray-400">
@@ -112,72 +213,59 @@ const UsersPage = () => {
                   </div>
                 </td>
               </tr>
-            )}
-            {users.map((user) => (
-              <tr key={user._id}>
-                <td className="text-center text-sm font-medium text-gray-900">
-                  {user.firstName} {user.lastName}
-                </td>
-                <td className="text-center text-sm text-gray-500">
-                  {user.phone}
-                </td>
-                <td className="text-center text-sm text-gray-500">
-                  {getGenderLabel(user.gender)}
-                </td>
-                <td className="text-center text-sm text-gray-500">
-                  {user.age ?? "-"}
-                </td>
-                <td className="text-center text-sm text-gray-500">
-                  {user.source ?? "-"}
-                </td>
-                <td className="text-center text-sm text-gray-500">
-                  {formatUzDate(user.createdAt)}
-                </td>
-                <td className="text-center">
-                  <div className="flex justify-center gap-2">
-                    <button
-                      onClick={() => openModal("editUser", user)}
-                      className="text-gray-500 hover:text-blue-600 transition-colors"
-                      title="Tahrirlash"
-                    >
-                      <Edit className="size-4" strokeWidth={1.5} />
-                    </button>
-
-                    {currentUser?.role === "owner" && (
+            ) : (
+              users.map((user) => (
+                <tr key={user._id}>
+                  <td className="text-center text-sm font-medium text-gray-900">
+                    {user.firstName} {user.lastName}
+                  </td>
+                  <td className="text-center text-sm text-gray-500">{user.phone}</td>
+                  <td className="text-center text-sm text-gray-500">{getGenderLabel(user.gender)}</td>
+                  <td className="text-center text-sm text-gray-500">{user.age ?? "-"}</td>
+                  <td className="text-center text-sm text-gray-500">{user.source ?? "-"}</td>
+                  <td className="text-center text-sm text-gray-500">{formatUzDate(user.createdAt)}</td>
+                  <td className="text-center">
+                    <div className="flex justify-center gap-2">
                       <button
-                        onClick={() => openModal("viewUserPassword", user)}
-                        className="text-gray-500 hover:text-purple-600 transition-colors"
-                        title="Parolni ko'rish"
+                        onClick={() => openModal("editUser", user)}
+                        className="text-gray-500 hover:text-blue-600 transition-colors"
+                        title="Tahrirlash"
                       >
-                        <Eye className="size-4" strokeWidth={1.5} />
+                        <Edit className="size-4" strokeWidth={1.5} />
                       </button>
-                    )}
-
-                    <button
-                      onClick={() => openModal("resetUserPassword", user)}
-                      className="text-gray-500 hover:text-orange-600 transition-colors"
-                      title="Parolni yangilash"
-                    >
-                      <Key className="size-4" strokeWidth={1.5} />
-                    </button>
-
-                    <button
-                      onClick={() => openModal("deleteUser", user)}
-                      className="text-gray-500 hover:text-red-600 transition-colors"
-                      title="O'chirish"
-                    >
-                      <Trash2 className="size-4" strokeWidth={1.5} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                      {currentUser?.role === "owner" && (
+                        <button
+                          onClick={() => openModal("viewUserPassword", user)}
+                          className="text-gray-500 hover:text-purple-600 transition-colors"
+                          title="Parolni ko'rish"
+                        >
+                          <Eye className="size-4" strokeWidth={1.5} />
+                        </button>
+                      )}
+                      <button
+                        onClick={() => openModal("resetUserPassword", user)}
+                        className="text-gray-500 hover:text-orange-600 transition-colors"
+                        title="Parolni yangilash"
+                      >
+                        <Key className="size-4" strokeWidth={1.5} />
+                      </button>
+                      <button
+                        onClick={() => openModal("deleteUser", user)}
+                        className="text-gray-500 hover:text-red-600 transition-colors"
+                        title="O'chirish"
+                      >
+                        <Trash2 className="size-4" strokeWidth={1.5} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
 
-      {/* Pagination */}
-      {users.length > 0 && (
+      {!isLoading && users.length > 0 && (
         <Pagination
           maxPageButtons={5}
           showPageNumbers={true}
@@ -190,7 +278,7 @@ const UsersPage = () => {
         />
       )}
 
-      {users.length > 0 && (
+      {!isLoading && users.length > 0 && (
         <div className="overflow-x-auto pb-1.5">
           <Pagination
             maxPageButtons={5}

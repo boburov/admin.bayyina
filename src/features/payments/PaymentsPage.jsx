@@ -2,19 +2,28 @@
 import { toast } from "sonner";
 
 // React
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 
 // API
 import { classesAPI } from "@/features/classes/api/classes.api";
+import { paymentsAPI } from "@/features/payments/api/payments.api";
 
 // TanStack Query
 import { useAppQuery } from "@/shared/lib/query/query-hooks";
+import { useQuery } from "@tanstack/react-query";
+
+// Router
+import { useSearchParams } from "react-router-dom";
 
 // Hooks
 import useModal from "@/shared/hooks/useModal";
 
 // Data
-import { monthOptions, formatMonthLabel } from "@/features/payments/data/payments.data";
+import {
+  monthOptions,
+  formatMonthLabel,
+  PAYMENT_STATUS_OPTIONS,
+} from "@/features/payments/data/payments.data";
 
 // Utils
 import { formatUzDate } from "@/shared/utils/formatDate";
@@ -23,6 +32,7 @@ import { formatUzDate } from "@/shared/utils/formatDate";
 import Card from "@/shared/components/ui/Card";
 import Select from "@/shared/components/form/select";
 import Button from "@/shared/components/ui/button/Button";
+import Pagination from "@/shared/components/ui/Pagination";
 import CreatePaymentModal from "@/features/payments/components/CreatePaymentModal";
 
 // Icons
@@ -34,10 +44,11 @@ import {
   Wallet,
   Plus,
   Search,
+  X,
+  Receipt,
 } from "lucide-react";
 
 // ─── Helper ──────────────────────────────────────────────────────────────────
-// nextPaymentDate keyingi oyda yoki undan keyin bo'lsa → shu oy to'langan
 const isPaidForMonth = (enrollment, selectedMonth) => {
   if (!enrollment.nextPaymentDate) return false;
   const sel  = new Date(selectedMonth);
@@ -51,20 +62,68 @@ const isPaidForMonth = (enrollment, selectedMonth) => {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 const PaymentsPage = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const activeTab = searchParams.get("tab") || "enrollments";
+
+  const switchTab = (tab) => {
+    setSearchParams({ tab, page: "1" });
+  };
+
+  return (
+    <div className="space-y-5">
+      <h1 className="page-title">To'lovlar</h1>
+
+      {/* Tab switcher */}
+      <div className="flex gap-1 border-b border-border">
+        <button
+          onClick={() => switchTab("enrollments")}
+          className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px ${
+            activeTab === "enrollments"
+              ? "border-gray-900 text-gray-900"
+              : "border-transparent text-gray-400 hover:text-gray-600"
+          }`}
+        >
+          Guruh bo'yicha
+        </button>
+        <button
+          onClick={() => switchTab("records")}
+          className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px ${
+            activeTab === "records"
+              ? "border-gray-900 text-gray-900"
+              : "border-transparent text-gray-400 hover:text-gray-600"
+          }`}
+        >
+          To'lov tarixi
+        </button>
+      </div>
+
+      {activeTab === "enrollments" ? (
+        <EnrollmentsTab />
+      ) : (
+        <RecordsTab />
+      )}
+
+      <CreatePaymentModal />
+    </div>
+  );
+};
+
+// ─── Enrollments Tab ─────────────────────────────────────────────────────────
+
+const EnrollmentsTab = () => {
   const { openModal } = useModal();
 
   const [selectedGroup, setSelectedGroup] = useState("");
   const [selectedMonth, setSelectedMonth] = useState(monthOptions[0].value);
   const [search, setSearch]               = useState("");
 
-  // ── All groups ─────────────────────────────────────────────────────────
   const { data: groupsData, isLoading: groupsLoading } = useAppQuery({
     queryKey: ["admin-groups"],
-    queryFn:  () => classesAPI.getAll(),
+    queryFn:  () => classesAPI.getAll({ limit: 200 }),
     onError:  () => toast.error("Guruhlar yuklanmadi"),
   });
 
-  // ── Group detail + enrollments ─────────────────────────────────────────
   const { data: groupData, isLoading: enrollmentsLoading } = useAppQuery({
     queryKey: ["group-detail", selectedGroup],
     queryFn:  () => classesAPI.getOne(selectedGroup),
@@ -79,7 +138,6 @@ const PaymentsPage = () => {
 
   const groupOptions = groups.map((g) => ({ value: g._id, label: g.name }));
 
-  // ── Stats ──────────────────────────────────────────────────────────────
   const stats = useMemo(() => {
     const paid         = enrollments.filter((e) =>  isPaidForMonth(e, selectedMonth));
     const unpaid       = enrollments.filter((e) => !isPaidForMonth(e, selectedMonth));
@@ -88,7 +146,6 @@ const PaymentsPage = () => {
     return { total: enrollments.length, paid: paid.length, unpaid: unpaid.length, totalDebt, totalBalance };
   }, [enrollments, selectedMonth]);
 
-  // ── Search + sort ──────────────────────────────────────────────────────
   const sorted = useMemo(() => {
     const q    = search.trim().toLowerCase();
     const rows = enrollments.map((e) => ({ enrollment: e, paid: isPaidForMonth(e, selectedMonth) }));
@@ -116,11 +173,8 @@ const PaymentsPage = () => {
   };
 
   return (
-    <div className="space-y-5">
-      {/* ── Header ── */}
-      <h1 className="page-title">To'lovlar</h1>
-
-      {/* ── Filters ── */}
+    <>
+      {/* Filters */}
       <div className="flex flex-col gap-3 sm:flex-row">
         <div className="w-full sm:w-60">
           <Select
@@ -132,7 +186,6 @@ const PaymentsPage = () => {
             placeholder="Guruh tanlang"
           />
         </div>
-
         <div className="w-full sm:w-48">
           <Select
             size="md"
@@ -142,7 +195,6 @@ const PaymentsPage = () => {
             placeholder="Oy tanlang"
           />
         </div>
-
         <div className="flex flex-1 items-center gap-2 h-10 border border-gray-300 rounded-md px-3 bg-white focus-within:border-blue-500 transition-colors">
           <Search className="size-4 text-gray-400 shrink-0" strokeWidth={1.5} />
           <input
@@ -154,7 +206,7 @@ const PaymentsPage = () => {
         </div>
       </div>
 
-      {/* ── Stats ── */}
+      {/* Stats */}
       {selectedGroup && (
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 xl:grid-cols-5">
           <StatCard label="Jami o'quvchi" value={stats.total}
@@ -170,7 +222,7 @@ const PaymentsPage = () => {
         </div>
       )}
 
-      {/* ── Content ── */}
+      {/* Content */}
       {!selectedGroup ? (
         <EmptyState icon={<Users className="size-10 opacity-30" strokeWidth={1.5} />} text="Guruhni tanlang" />
       ) : isLoading ? (
@@ -217,18 +269,13 @@ const PaymentsPage = () => {
                     const s = enrollment.student;
                     return (
                       <tr key={enrollment._id} className={paid ? "" : "bg-red-50/40"}>
-
                         <td className="text-center text-sm text-gray-400">{idx + 1}</td>
-
                         <td className="text-sm font-medium text-primary whitespace-nowrap">
                           {s.firstName} {s.lastName}
                         </td>
-
                         <td className="text-sm text-gray-400 text-center whitespace-nowrap">
                           +{s.phone}
                         </td>
-
-                        {/* To'lov holati */}
                         <td className="text-center">
                           {paid ? (
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full bg-green-100 text-green-700">
@@ -242,13 +289,9 @@ const PaymentsPage = () => {
                             </span>
                           )}
                         </td>
-
-                        {/* So'nggi to'lov */}
                         <td className="text-center text-sm text-gray-400 whitespace-nowrap">
                           {enrollment.lastPaymentDate ? formatUzDate(enrollment.lastPaymentDate) : "—"}
                         </td>
-
-                        {/* Keyingi to'lov */}
                         <td className="text-center text-sm whitespace-nowrap">
                           {enrollment.nextPaymentDate ? (
                             <span className={paid ? "text-gray-400" : "text-orange-600 font-medium"}>
@@ -256,8 +299,6 @@ const PaymentsPage = () => {
                             </span>
                           ) : "—"}
                         </td>
-
-                        {/* Qarz */}
                         <td className="text-center text-sm whitespace-nowrap">
                           {enrollment.debt > 0 ? (
                             <span className="text-red-600 font-medium">
@@ -267,8 +308,6 @@ const PaymentsPage = () => {
                             <span className="text-gray-400">—</span>
                           )}
                         </td>
-
-                        {/* Balans */}
                         <td className="text-center text-sm whitespace-nowrap">
                           {enrollment.balance > 0 ? (
                             <span className="text-blue-600 font-medium">
@@ -278,8 +317,6 @@ const PaymentsPage = () => {
                             <span className="text-gray-400">—</span>
                           )}
                         </td>
-
-                        {/* Harakat */}
                         <td className="text-center">
                           {!paid && (
                             <Button
@@ -300,7 +337,6 @@ const PaymentsPage = () => {
             </table>
           </div>
 
-          {/* Footer */}
           <div className="flex flex-wrap items-center gap-4 mt-3 px-1 text-xs text-gray-400">
             <span>Jami: <strong className="text-gray-700">{stats.total}</strong> o'quvchi</span>
             <span className="text-green-600">To'lagan: <strong>{stats.paid}</strong></span>
@@ -318,9 +354,259 @@ const PaymentsPage = () => {
           </div>
         </div>
       )}
+    </>
+  );
+};
 
-      <CreatePaymentModal />
-    </div>
+// ─── Records Tab ─────────────────────────────────────────────────────────────
+
+const RecordsTab = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const currentPage = parseInt(searchParams.get("page") || "1", 10);
+  const qParam      = searchParams.get("q") || "";
+  const statusParam = searchParams.get("status") || "";
+  const monthParam  = searchParams.get("month") || "";
+
+  const [inputQ, setInputQ] = useState(qParam);
+
+  // always use latest searchParams inside the debounce callback
+  const searchParamsRef = useRef(searchParams);
+  useEffect(() => { searchParamsRef.current = searchParams; }, [searchParams]);
+
+  // skip the initial render so mount doesn't push a redundant history entry
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    const id = setTimeout(() => {
+      const params = new URLSearchParams(searchParamsRef.current);
+      if (inputQ) {
+        params.set("q", inputQ);
+      } else {
+        params.delete("q");
+      }
+      params.set("page", "1");
+      setSearchParams(params, { replace: true });
+    }, 400);
+    return () => clearTimeout(id);
+  }, [inputQ, setSearchParams]);
+
+  const setFilter = useCallback(
+    (key, value) => {
+      const params = new URLSearchParams(searchParams);
+      if (value) {
+        params.set(key, value);
+      } else {
+        params.delete(key);
+      }
+      params.set("page", "1");
+      setSearchParams(params);
+    },
+    [searchParams, setSearchParams],
+  );
+
+  const hasFilters = qParam || statusParam || monthParam;
+
+  const resetFilters = useCallback(() => {
+    setInputQ("");
+    setSearchParams({ tab: "records", page: "1" });
+  }, [setSearchParams]);
+
+  const goToPage = useCallback(
+    (page) => {
+      if (page < 1) return;
+      const params = new URLSearchParams(searchParams);
+      params.set("page", page.toString());
+      setSearchParams(params);
+    },
+    [searchParams, setSearchParams],
+  );
+
+  const queryParams = {
+    page: currentPage,
+    limit: 20,
+    ...(qParam      && { q: qParam }),
+    ...(statusParam && { status: statusParam }),
+    ...(monthParam  && { month: monthParam }),
+  };
+
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: ["payments", "search", queryParams],
+    queryFn: () => paymentsAPI.search(queryParams).then((res) => res.data),
+    keepPreviousData: true,
+    onError: () => toast.error("To'lovlar yuklanmadi"),
+  });
+
+  const payments = data?.payments ?? [];
+
+  const monthFilterOptions = monthOptions.map((o) => ({
+    value: o.value.slice(0, 7),
+    label: o.label,
+  }));
+
+  return (
+    <>
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="relative flex-1 min-w-[200px]">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input
+            value={inputQ}
+            onChange={(e) => setInputQ(e.target.value)}
+            placeholder="O'quvchi ismi, izoh, miqdor..."
+            className="w-full pl-8 pr-3 py-2 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
+          />
+        </div>
+
+        <select
+          value={statusParam}
+          onChange={(e) => setFilter("status", e.target.value)}
+          className="py-2 px-3 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
+        >
+          <option value="">Barcha holat</option>
+          {PAYMENT_STATUS_OPTIONS.map((o) => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
+
+        <select
+          value={monthParam}
+          onChange={(e) => setFilter("month", e.target.value)}
+          className="py-2 px-3 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
+        >
+          <option value="">Barcha oy</option>
+          {monthFilterOptions.map((o) => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
+
+        {hasFilters && (
+          <button
+            onClick={resetFilters}
+            className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-800 border border-gray-200 rounded-md px-2 py-2"
+          >
+            <X size={12} />
+            Tozalash
+          </button>
+        )}
+      </div>
+
+      {/* Table */}
+      <div className={`rounded-lg overflow-x-auto border border-border bg-white transition-opacity ${isFetching ? "opacity-60" : "opacity-100"}`}>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>O'quvchi</th>
+              <th>Telefon</th>
+              <th>Miqdor</th>
+              <th>Holat</th>
+              <th>Oy</th>
+              <th>Sana</th>
+              <th>Izoh</th>
+            </tr>
+          </thead>
+          <tbody>
+            {isLoading ? (
+              <tr>
+                <td colSpan={8} className="py-12 text-center text-sm text-gray-400">
+                  Yuklanmoqda...
+                </td>
+              </tr>
+            ) : payments.length === 0 ? (
+              <tr>
+                <td colSpan={8} className="py-16 text-center">
+                  <div className="flex flex-col items-center gap-2 text-gray-400">
+                    <Receipt className="size-10 opacity-30" strokeWidth={1.5} />
+                    <p className="text-sm">To'lovlar topilmadi</p>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              payments.map((payment, idx) => {
+                const s = payment.student;
+                return (
+                  <tr key={payment._id}>
+                    <td className="text-center text-sm text-gray-400">
+                      {(currentPage - 1) * 20 + idx + 1}
+                    </td>
+                    <td className="text-sm font-medium text-primary whitespace-nowrap">
+                      {s ? `${s.firstName} ${s.lastName}` : "—"}
+                    </td>
+                    <td className="text-center text-sm text-gray-500 whitespace-nowrap">
+                      {s?.phone ? `+${s.phone}` : "—"}
+                    </td>
+                    <td className="text-center text-sm font-medium text-gray-900 whitespace-nowrap">
+                      {payment.amount?.toLocaleString()} so'm
+                    </td>
+                    <td className="text-center">
+                      <PaymentStatusBadge status={payment.status} />
+                    </td>
+                    <td className="text-center text-sm text-gray-500 whitespace-nowrap">
+                      {payment.month ?? "—"}
+                    </td>
+                    <td className="text-center text-sm text-gray-500 whitespace-nowrap">
+                      {payment.paidAt ? formatUzDate(payment.paidAt) : "—"}
+                    </td>
+                    <td className="text-sm text-gray-400 max-w-[160px] truncate">
+                      {payment.note ?? "—"}
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {!isLoading && payments.length > 0 && (
+        <>
+          <Pagination
+            maxPageButtons={5}
+            showPageNumbers={true}
+            onPageChange={goToPage}
+            currentPage={currentPage}
+            hasNextPage={data?.hasNextPage}
+            hasPrevPage={data?.hasPrevPage}
+            className="pt-5 max-md:hidden"
+            totalPages={data?.totalPages || 1}
+          />
+          <div className="overflow-x-auto pb-1.5">
+            <Pagination
+              maxPageButtons={5}
+              showPageNumbers={true}
+              onPageChange={goToPage}
+              currentPage={currentPage}
+              hasNextPage={data?.hasNextPage}
+              hasPrevPage={data?.hasPrevPage}
+              className="pt-5 min-w-max md:hidden"
+              totalPages={data?.totalPages || 1}
+            />
+          </div>
+        </>
+      )}
+    </>
+  );
+};
+
+// ─── Payment Status Badge ─────────────────────────────────────────────────────
+
+const statusConfig = {
+  paid:    { label: "To'langan",      className: "bg-green-100 text-green-700"   },
+  pending: { label: "Kutilmoqda",     className: "bg-yellow-100 text-yellow-700" },
+  overdue: { label: "Muddati o'tgan", className: "bg-red-100 text-red-600"       },
+};
+
+const PaymentStatusBadge = ({ status }) => {
+  const cfg = statusConfig[status] ?? { label: status, className: "bg-gray-100 text-gray-600" };
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full ${cfg.className}`}>
+      {cfg.label}
+    </span>
   );
 };
 

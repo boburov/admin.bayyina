@@ -1,7 +1,8 @@
 import http from "@/shared/api/http";
 
 export const classesAPI = {
-  getAll: () => http.get("/groups"),
+  getAll: (params) => http.get("/groups", { params }),
+  search: (params) => http.get("/groups/search", { params }),
   getOne: (id) => http.get(`/groups/${id}`),
   create: (data) => http.post("/groups", data),
   update: (id, data) => http.put(`/groups/${id}`, data),

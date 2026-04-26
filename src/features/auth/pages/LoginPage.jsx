@@ -18,6 +18,7 @@ import { authAPI } from "@/features/auth/api/auth.api";
 
 // Hooks
 import useObjectState from "@/shared/hooks/useObjectState";
+import Input from "@/shared/components/form/input";
 
 const LoginPage = () => {
   const { setField, showLoginForm, currentPlatform } = useObjectState({
