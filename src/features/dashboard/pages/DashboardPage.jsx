@@ -10,6 +10,7 @@ import CoinStats from "../components/CoinStats";
 import UsersStats from "../components/UsersStats";
 import DashboardCharts from "../components/DashboardCharts";
 import LeadCharts from "../components/LeadCharts";
+import AttendanceCharts from "../components/AttendanceCharts";
 import AllSchedulesToday from "../components/AllSchedulesToday";
 
 const Dashboard = () => {
@@ -35,6 +36,9 @@ const Dashboard = () => {
 
       {/* Lead Charts */}
       <LeadCharts />
+
+      {/* Attendance & Group Ranking */}
+      <AttendanceCharts />
 
       {/* Coin Statistics */}
       <CoinStats />
