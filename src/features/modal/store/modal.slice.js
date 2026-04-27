@@ -84,6 +84,9 @@ const initialState = {
   createTask: initialModalData,
   extendDeadline: initialModalData,
 
+  // Records
+  recordDetail: initialModalData,
+
   // Payments
   createPayment: initialModalData,
 

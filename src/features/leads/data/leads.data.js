@@ -1,3 +1,16 @@
+export const GENDER_OPTIONS = [
+  { value: "", label: "Jins (ixtiyoriy)" },
+  { value: "male",   label: "Erkak" },
+  { value: "female", label: "Ayol" },
+];
+
+export const CREATE_STATUS_OPTIONS = [
+  { value: "new",        label: "Yangi" },
+  { value: "contacted",  label: "Bog'lashildi" },
+  { value: "interested", label: "Qiziqyapti" },
+  { value: "scheduled",  label: "Rejalashtirildi" },
+];
+
 export const STATUS_OPTIONS = [
   { label: "Barchasi",        value: "" },
   { label: "🆕 Yangi",        value: "new" },

@@ -17,6 +17,8 @@ import {
   X,
   ClipboardList,
   BookOpen,
+  History,
+  HistoryIcon,
 } from "lucide-react";
 
 // Hooks
@@ -27,16 +29,16 @@ import useAuth from "@/shared/hooks/useAuth";
 import { cn } from "@/shared/utils/cn";
 
 const NAV_ITEMS = [
-  { title: "Bosh sahifa",   url: "/dashboard",     icon: Home         },
-  { title: "Leadlar",       url: "/leads",          icon: UserPlus     },
-  { title: "O'quvchilar",   url: "/users",          icon: Users        },
-  { title: "O'qituvchilar", url: "/teachers",       icon: GraduationCap },
-  { title: "Guruhlar",      url: "/classes",        icon: School       },
-  { title: "Statistika",    url: "/statistics",     icon: BarChart2    },
-  { title: "To'lovlar",     url: "/payments",       icon: Wallet       },
-  { title: "Oyliklar",      url: "/salaries",       icon: Banknote     },
-  { title: "Xabarnomalar",  url: "/notifications",  icon: Bell         },
-  { title: "Yozuvlar",      url: "/records",        icon: ClipboardList },
+  { title: "Bosh sahifa", url: "/dashboard", icon: Home },
+  { title: "Leadlar", url: "/leads", icon: UserPlus },
+  { title: "O'quvchilar", url: "/users", icon: Users },
+  { title: "O'qituvchilar", url: "/teachers", icon: GraduationCap },
+  { title: "Guruhlar", url: "/classes", icon: School },
+  { title: "Statistika", url: "/statistics", icon: BarChart2 },
+  { title: "To'lovlar", url: "/payments", icon: Wallet },
+  { title: "Oyliklar", url: "/salaries", icon: Banknote },
+  { title: "Xabarnomalar", url: "/notifications", icon: Bell },
+  { title: "Tarix", url: "/records", icon: HistoryIcon },
 ];
 
 function getUserInitials(user) {
@@ -63,7 +65,9 @@ function SidebarContent({ onNavClick }) {
           <GraduationCap size={14} className="text-white" strokeWidth={1.5} />
         </div>
         <div>
-          <p className="text-sm font-semibold text-gray-900 leading-tight">Bayyina</p>
+          <p className="text-sm font-semibold text-gray-900 leading-tight">
+            Bayyina
+          </p>
           <p className="text-xs text-gray-400">Admin paneli</p>
         </div>
       </div>
@@ -109,10 +113,14 @@ function SidebarContent({ onNavClick }) {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-gray-900 truncate leading-tight">
-              {user ? `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim() : "—"}
+              {user
+                ? `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim()
+                : "—"}
             </p>
             {user?.role && (
-              <p className="text-xs text-gray-400 truncate capitalize">{user.role}</p>
+              <p className="text-xs text-gray-400 truncate capitalize">
+                {user.role}
+              </p>
             )}
           </div>
         </div>
@@ -141,29 +149,37 @@ export function AppSidebarMobile() {
 
   return (
     <>
-      {/* Toggle button */}
+      {/* Toggle button — min 44px tap area per accessibility guidelines */}
       <button
         onClick={() => setOpen((o) => !o)}
-        className="lg:hidden fixed top-3 left-3 z-50 flex items-center justify-center w-8 h-8 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
-        aria-label="Menyu"
+        className="lg:hidden fixed top-2 left-2 z-50 flex items-center justify-center w-11 h-11 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
+        aria-label={open ? "Menyuni yopish" : "Menyuni ochish"}
+        aria-expanded={open}
       >
-        {open ? <X size={15} /> : <Menu size={15} />}
+        {open ? <X size={16} /> : <Menu size={16} />}
       </button>
 
       {/* Backdrop */}
-      {open && (
-        <div
-          className="lg:hidden fixed inset-0 bg-black/10 z-40"
-          onClick={() => setOpen(false)}
-        />
-      )}
+      <div
+        className={cn(
+          "lg:hidden fixed inset-0 bg-black/20 z-40 transition-opacity duration-200",
+          open
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none",
+        )}
+        onClick={() => setOpen(false)}
+        aria-hidden="true"
+      />
 
-      {/* Drawer */}
-      {open && (
-        <div className="lg:hidden fixed left-0 top-0 h-full z-50">
-          <SidebarContent onNavClick={() => setOpen(false)} />
-        </div>
-      )}
+      {/* Drawer — slide transition */}
+      <div
+        className={cn(
+          "lg:hidden fixed left-0 top-0 h-full z-50 transition-transform duration-200 ease-out",
+          open ? "translate-x-0" : "-translate-x-full",
+        )}
+      >
+        <SidebarContent onNavClick={() => setOpen(false)} />
+      </div>
     </>
   );
 }

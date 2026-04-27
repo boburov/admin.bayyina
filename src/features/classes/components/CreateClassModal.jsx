@@ -137,7 +137,7 @@ const Content = ({ close, isLoading, setIsLoading }) => {
                 onClick={() => toggleDay(day.value)}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
                   isActive
-                    ? "bg-background-info border-info text-info"
+                    ? "bg-blue-50 border-blue-500 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-500"
                     : "bg-background-secondary border-border-secondary text-secondary-text hover:border-border-primary"
                 }`}
               >

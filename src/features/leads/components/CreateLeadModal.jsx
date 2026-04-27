@@ -20,18 +20,8 @@ import {
 // Icons
 import { UserPlus } from "lucide-react";
 
-const GENDER_OPTIONS = [
-  { value: "", label: "Jins (ixtiyoriy)" },
-  { value: "male",   label: "Erkak" },
-  { value: "female", label: "Ayol" },
-];
-
-const STATUS_OPTIONS = [
-  { value: "new",       label: "Yangi" },
-  { value: "contacted", label: "Bog'lashildi" },
-  { value: "interested",label: "Qiziqyapti" },
-  { value: "scheduled", label: "Rejalashtirildi" },
-];
+// Data
+import { GENDER_OPTIONS, CREATE_STATUS_OPTIONS } from "../data/leads.data";
 
 const inputCls = "w-full h-9 px-3 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-brown-800 placeholder:text-gray-400";
 const selectCls = "w-full h-9 px-2 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-brown-800 text-gray-700";
@@ -174,7 +164,7 @@ const CreateLeadModal = ({ open, onClose }) => {
             <div>
               <label className={labelCls}>Holat</label>
               <div className="flex flex-wrap gap-2">
-                {STATUS_OPTIONS.map((o) => (
+                {CREATE_STATUS_OPTIONS.map((o) => (
                   <button
                     key={o.value}
                     type="button"

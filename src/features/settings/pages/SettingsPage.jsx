@@ -46,9 +46,10 @@ const EditRow = ({ value, onChange, onSave, onCancel, fields }) => (
 
 const LeadSourcesTab = () => {
   const qc = useQueryClient();
-  const [adding, setAdding]   = useState(false);
-  const [editId, setEditId]   = useState(null);
-  const [form, setForm]       = useState({ name: "", slug: "" });
+  const [adding, setAdding]     = useState(false);
+  const [editId, setEditId]     = useState(null);
+  const [deleteId, setDeleteId] = useState(null);
+  const [form, setForm]         = useState({ name: "", slug: "" });
 
   const { data, isLoading } = useQuery({
     queryKey: ["settings", "lead-sources"],
@@ -71,7 +72,7 @@ const LeadSourcesTab = () => {
 
   const deleteMut = useMutation({
     mutationFn: (id) => leadSourcesAPI.delete(id),
-    onSuccess: () => { toast.success("O'chirildi"); invalidate(); },
+    onSuccess: () => { toast.success("O'chirildi"); invalidate(); setDeleteId(null); },
     onError:   (e) => toast.error(e.response?.data?.message || "Xatolik"),
   });
 
@@ -134,17 +135,37 @@ const LeadSourcesTab = () => {
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
                     <button
+                      aria-label="Tahrirlash"
                       onClick={() => { setEditId(item._id); setForm({ name: item.name, slug: item.slug ?? "" }); }}
                       className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded"
                     >
                       <Pencil size={13} />
                     </button>
-                    <button
-                      onClick={() => { if (confirm(`"${item.name}" ni o'chirasizmi?`)) deleteMut.mutate(item._id); }}
-                      className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded"
-                    >
-                      <Trash2 size={13} />
-                    </button>
+                    {deleteId === item._id ? (
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => deleteMut.mutate(item._id)}
+                          disabled={deleteMut.isPending}
+                          className="text-[11px] px-2 py-0.5 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-60"
+                        >
+                          Ha
+                        </button>
+                        <button
+                          onClick={() => setDeleteId(null)}
+                          className="text-[11px] px-2 py-0.5 border border-gray-200 text-gray-600 rounded hover:bg-gray-50"
+                        >
+                          Yo'q
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        aria-label="O'chirish"
+                        onClick={() => setDeleteId(item._id)}
+                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    )}
                   </div>
                 </div>
               )}
@@ -160,9 +181,10 @@ const LeadSourcesTab = () => {
 
 const CourseTypesTab = () => {
   const qc = useQueryClient();
-  const [adding, setAdding]   = useState(false);
-  const [editId, setEditId]   = useState(null);
-  const [form, setForm]       = useState({ name: "", type: "", direction: "" });
+  const [adding, setAdding]     = useState(false);
+  const [editId, setEditId]     = useState(null);
+  const [deleteId, setDeleteId] = useState(null);
+  const [form, setForm]         = useState({ name: "", type: "", direction: "" });
 
   const { data, isLoading } = useQuery({
     queryKey: ["settings", "course-types"],
@@ -185,7 +207,7 @@ const CourseTypesTab = () => {
 
   const deleteMut = useMutation({
     mutationFn: (id) => courseTypesAPI.delete(id),
-    onSuccess: () => { toast.success("O'chirildi"); invalidate(); },
+    onSuccess: () => { toast.success("O'chirildi"); invalidate(); setDeleteId(null); },
     onError:   (e) => toast.error(e.response?.data?.message || "Xatolik"),
   });
 
@@ -256,17 +278,37 @@ const CourseTypesTab = () => {
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
                     <button
+                      aria-label="Tahrirlash"
                       onClick={() => { setEditId(item._id); setForm({ name: item.name, type: item.type ?? "", direction: item.direction ?? "" }); }}
                       className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded"
                     >
                       <Pencil size={13} />
                     </button>
-                    <button
-                      onClick={() => { if (confirm(`"${item.name}" ni o'chirasizmi?`)) deleteMut.mutate(item._id); }}
-                      className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded"
-                    >
-                      <Trash2 size={13} />
-                    </button>
+                    {deleteId === item._id ? (
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => deleteMut.mutate(item._id)}
+                          disabled={deleteMut.isPending}
+                          className="text-[11px] px-2 py-0.5 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-60"
+                        >
+                          Ha
+                        </button>
+                        <button
+                          onClick={() => setDeleteId(null)}
+                          className="text-[11px] px-2 py-0.5 border border-gray-200 text-gray-600 rounded hover:bg-gray-50"
+                        >
+                          Yo'q
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        aria-label="O'chirish"
+                        onClick={() => setDeleteId(item._id)}
+                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    )}
                   </div>
                 </div>
               )}
@@ -282,9 +324,10 @@ const CourseTypesTab = () => {
 
 const RejectionReasonsTab = () => {
   const qc = useQueryClient();
-  const [adding, setAdding]   = useState(false);
-  const [editId, setEditId]   = useState(null);
-  const [form, setForm]       = useState({ title: "", description: "" });
+  const [adding, setAdding]     = useState(false);
+  const [editId, setEditId]     = useState(null);
+  const [deleteId, setDeleteId] = useState(null);
+  const [form, setForm]         = useState({ title: "", description: "" });
 
   const { data, isLoading } = useQuery({
     queryKey: ["settings", "rejection-reasons"],
@@ -307,7 +350,7 @@ const RejectionReasonsTab = () => {
 
   const deleteMut = useMutation({
     mutationFn: (id) => rejectionReasonsAPI.delete(id),
-    onSuccess: () => { toast.success("O'chirildi"); invalidate(); },
+    onSuccess: () => { toast.success("O'chirildi"); invalidate(); setDeleteId(null); },
     onError:   (e) => toast.error(e.response?.data?.message || "Xatolik"),
   });
 
@@ -372,17 +415,37 @@ const RejectionReasonsTab = () => {
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
                     <button
+                      aria-label="Tahrirlash"
                       onClick={() => { setEditId(item._id); setForm({ title: item.title, description: item.description ?? "" }); }}
                       className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded"
                     >
                       <Pencil size={13} />
                     </button>
-                    <button
-                      onClick={() => { if (confirm(`"${item.title}" ni o'chirasizmi?`)) deleteMut.mutate(item._id); }}
-                      className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded"
-                    >
-                      <Trash2 size={13} />
-                    </button>
+                    {deleteId === item._id ? (
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => deleteMut.mutate(item._id)}
+                          disabled={deleteMut.isPending}
+                          className="text-[11px] px-2 py-0.5 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-60"
+                        >
+                          Ha
+                        </button>
+                        <button
+                          onClick={() => setDeleteId(null)}
+                          className="text-[11px] px-2 py-0.5 border border-gray-200 text-gray-600 rounded hover:bg-gray-50"
+                        >
+                          Yo'q
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        aria-label="O'chirish"
+                        onClick={() => setDeleteId(item._id)}
+                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    )}
                   </div>
                 </div>
               )}

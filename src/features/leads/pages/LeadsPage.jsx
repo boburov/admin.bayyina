@@ -221,9 +221,11 @@ const LeadsPage = () => {
             {totalPages > 1 && (
               <div className="px-4 py-3 border-t border-gray-100">
                 <Pagination
-                  page={page}
+                  currentPage={page}
                   totalPages={totalPages}
-                  onChange={setPage}
+                  onPageChange={setPage}
+                  hasNextPage={page < totalPages}
+                  hasPrevPage={page > 1}
                 />
               </div>
             )}

@@ -34,6 +34,7 @@ import {
 const LeadDetailModal = ({ lead, open, onClose }) => {
   const queryClient = useQueryClient();
   const [isRejecting, setIsRejecting] = useState(false);
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
 
   // Fetch rejection reasons
   const { data: reasonsData } = useQuery({
@@ -90,6 +91,7 @@ const LeadDetailModal = ({ lead, open, onClose }) => {
 
   const handleClose = () => {
     setIsRejecting(false);
+    setIsConfirmingDelete(false);
     onClose();
   };
 
@@ -203,13 +205,31 @@ const LeadDetailModal = ({ lead, open, onClose }) => {
 
         {/* Footer */}
         <div className="px-6 py-4 border-t border-gray-100 flex justify-between items-center">
-          <button
-            onClick={() => deleteMutation.mutate(lead._id)}
-            disabled={deleteMutation.isPending}
-            className="text-xs text-red-500 hover:text-red-700 font-medium"
-          >
-            O'chirish
-          </button>
+          {isConfirmingDelete ? (
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-600">Rostdan o'chirasizmi?</span>
+              <button
+                onClick={() => deleteMutation.mutate(lead._id)}
+                disabled={deleteMutation.isPending}
+                className="text-xs px-2.5 py-1 bg-red-600 text-white rounded hover:bg-red-700 font-medium disabled:opacity-60"
+              >
+                {deleteMutation.isPending ? "..." : "Ha, o'chirish"}
+              </button>
+              <button
+                onClick={() => setIsConfirmingDelete(false)}
+                className="text-xs px-2.5 py-1 border border-gray-200 text-gray-600 rounded hover:bg-gray-50"
+              >
+                Bekor
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setIsConfirmingDelete(true)}
+              className="text-xs text-red-500 hover:text-red-700 font-medium"
+            >
+              O'chirish
+            </button>
+          )}
           <button
             onClick={handleClose}
             className="text-xs px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-700 font-medium"

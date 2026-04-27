@@ -183,7 +183,7 @@ const Classes = () => {
           <p className="text-sm">Guruhlar topilmadi</p>
         </div>
       ) : (
-        <div className={`grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 transition-opacity ${isFetching ? "opacity-60" : "opacity-100"}`}>
+        <div className={`grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 transition-opacity ${isFetching ? "opacity-60 pointer-events-none" : "opacity-100"}`}>
           {groups.map((group) => (
             <Card key={group._id}>
               {/* Top row — name + actions */}
@@ -196,16 +196,18 @@ const Classes = () => {
                   <ChevronRight className="size-4 shrink-0" strokeWidth={1.5} />
                 </Link>
 
-                <div className="flex gap-3 shrink-0">
+                <div className="flex gap-1 shrink-0">
                   <button
                     onClick={() => openModal("editClass", group)}
-                    className="text-gray-400 hover:text-brown-800 transition-colors"
+                    aria-label="Tahrirlash"
+                    className="p-1.5 text-gray-400 hover:text-brown-800 hover:bg-brown-50 rounded transition-colors"
                   >
                     <Edit className="size-4" strokeWidth={1.5} />
                   </button>
                   <button
                     onClick={() => openModal("deleteClass", group)}
-                    className="text-gray-400 hover:text-red-600 transition-colors"
+                    aria-label="O'chirish"
+                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
                   >
                     <Trash2 className="size-4" strokeWidth={1.5} />
                   </button>

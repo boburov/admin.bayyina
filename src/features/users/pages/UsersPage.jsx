@@ -184,7 +184,7 @@ const UsersPage = () => {
       </div>
 
       {/* Table */}
-      <div className={`table-wrapper transition-opacity ${isFetching ? "opacity-60" : "opacity-100"}`}>
+      <div className={`table-wrapper transition-opacity ${isFetching ? "opacity-60 pointer-events-none" : "opacity-100"}`}>
         <table>
           <thead>
             <tr>

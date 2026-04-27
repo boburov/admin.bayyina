@@ -31,11 +31,6 @@ const Pagination = ({
   hasPrevPage = false,
   showPageNumbers = true,
 }) => {
-  // Don't render if only one page
-  if (totalPages <= 1 && !showPageNumbers) {
-    return null;
-  }
-
   const [isFirst, setIsFirst] = useState(true);
   const scrollToTop = useMemo(() => {
     if (!contentRef || !contentRef.current) return 0;
@@ -50,6 +45,11 @@ const Pagination = ({
       window.scrollTo({ top: scrollToTop, left: 0, behavior: "smooth" });
     }
   }, [currentPage]);
+
+  // Don't render if only one page — after all hooks
+  if (totalPages <= 1 && !showPageNumbers) {
+    return null;
+  }
 
   const goToPage = (page) => {
     if (page < 1 || page > totalPages || page === currentPage) return;

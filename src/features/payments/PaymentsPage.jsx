@@ -496,7 +496,7 @@ const RecordsTab = () => {
       </div>
 
       {/* Table */}
-      <div className={`rounded-lg overflow-x-auto border border-border bg-white transition-opacity ${isFetching ? "opacity-60" : "opacity-100"}`}>
+      <div className={`rounded-lg overflow-x-auto border border-border bg-white transition-opacity ${isFetching ? "opacity-60 pointer-events-none" : "opacity-100"}`}>
         <table>
           <thead>
             <tr>
