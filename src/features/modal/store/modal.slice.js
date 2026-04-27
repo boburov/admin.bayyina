@@ -33,11 +33,6 @@ const initialState = {
   editSchedule: initialModalData,
   deleteSchedule: initialModalData,
 
-  // Holiday
-  createHoliday: initialModalData,
-  editHoliday: initialModalData,
-  deleteHoliday: initialModalData,
-
   // Messages
   sendMessage: initialModalData,
   messageDetails: initialModalData,

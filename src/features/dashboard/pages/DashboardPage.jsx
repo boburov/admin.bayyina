@@ -8,7 +8,7 @@ import useAuth from "@/shared/hooks/useAuth";
 import Card from "@/shared/components/ui/Card";
 import CoinStats from "../components/CoinStats";
 import UsersStats from "../components/UsersStats";
-import HolidayInfo from "../components/HolidayInfo";
+import DashboardCharts from "../components/DashboardCharts";
 import AllSchedulesToday from "../components/AllSchedulesToday";
 
 const Dashboard = () => {
@@ -26,11 +26,11 @@ const Dashboard = () => {
         </Card>
       </div>
 
-      {/* Holiday Info */}
-      <HolidayInfo />
-
       {/* User Statistics */}
       <UsersStats />
+
+      {/* Statistics Charts */}
+      <DashboardCharts />
 
       {/* Coin Statistics */}
       <CoinStats />

@@ -51,7 +51,7 @@ const Select = ({
       <SelectContent>
         {/* Options */}
         {!isLoading &&
-          options.map((opt) => (
+          options.filter((opt) => opt.value !== "").map((opt) => (
             <SelectItem
               key={opt.value}
               value={opt.value}

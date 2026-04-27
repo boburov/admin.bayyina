@@ -92,39 +92,3 @@ export const months = [
   { label: "Dekabr", value: 11 },
 ];
 
-/**
- * Formats holiday date based on holiday type
- * @param {Object} holiday - The holiday object
- * @returns {string} Formatted holiday date string
- */
-export const formatHolidayDate = (holiday) => {
-  if (holiday.type === "single" && holiday.date) {
-    return formatDateUZ(holiday.date);
-  }
-
-  if (holiday.type === "range" && holiday.startDate && holiday.endDate) {
-    return `${formatDateUZ(holiday.startDate)} - ${formatDateUZ(
-      holiday.endDate,
-    )}`;
-  }
-
-  if (holiday.type === "recurring") {
-    if (holiday.recurringDate?.month !== undefined) {
-      return `Har yili ${holiday.recurringDate.day}-${
-        months[holiday.recurringDate.month].label
-      }`;
-    }
-
-    if (
-      holiday.recurringStartDate?.month !== undefined &&
-      holiday.recurringEndDate?.month !== undefined
-    ) {
-      return `Har yili ${holiday.recurringStartDate.day}-${
-        months[holiday.recurringStartDate.month].label
-      } — ${holiday.recurringEndDate.day}-${
-        months[holiday.recurringEndDate.month].label
-      }`;
-    }
-  }
-  return "-";
-};

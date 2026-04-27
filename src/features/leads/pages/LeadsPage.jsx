@@ -14,6 +14,7 @@ import { leadsAPI } from "../api/leads.api";
 import LeadStatusBadge from "../components/LeadStatusBadge";
 import LeadsFilters    from "../components/LeadsFilters";
 import LeadDetailModal from "../components/LeadDetailModal";
+import CreateLeadModal from "../components/CreateLeadModal";
 import LeadsFunnel     from "../components/LeadsFunnel";
 import Card            from "@/shared/components/ui/Card";
 import Pagination      from "@/shared/components/ui/Pagination";
@@ -23,7 +24,7 @@ import { formatDateUZ } from "@/shared/utils/date.utils";
 import { formatPhone }  from "@/shared/utils/formatPhone";
 
 // Icons
-import { Phone, User, ExternalLink, BarChart2, List } from "lucide-react";
+import { Phone, User, ExternalLink, BarChart2, List, Plus } from "lucide-react";
 
 // Hooks
 import useObjectState from "@/shared/hooks/useObjectState";
@@ -35,6 +36,7 @@ const LeadsPage = () => {
 
   const [page, setPage]           = useState(1);
   const [selectedLead, setSelectedLead] = useState(null);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [view, setView]           = useState("table"); // "table" | "funnel"
 
   const {
@@ -90,24 +92,35 @@ const LeadsPage = () => {
           </p>
         </div>
 
-        {/* View toggle */}
-        <div className="flex gap-1 border border-gray-200 rounded-md p-0.5">
-          {[
-            { key: "table",  icon: <List   size={14} />, label: "Jadval"   },
-            { key: "funnel", icon: <BarChart2 size={14} />, label: "Tahlil" },
-          ].map((v) => (
-            <button
-              key={v.key}
-              onClick={() => setView(v.key)}
-              className={`flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded transition-colors ${
-                view === v.key
-                  ? "bg-gray-900 text-white"
-                  : "text-gray-500 hover:text-gray-800"
-              }`}
-            >
-              {v.icon} {v.label}
-            </button>
-          ))}
+        <div className="flex items-center gap-3">
+          {/* Create button */}
+          <button
+            onClick={() => setIsCreateOpen(true)}
+            className="flex items-center gap-1.5 px-4 py-2 bg-brown-800 text-white text-sm font-semibold rounded-md hover:bg-brown-700 transition-colors"
+          >
+            <Plus size={16} />
+            <span className="hidden sm:inline">Yangi lead</span>
+          </button>
+
+          {/* View toggle */}
+          <div className="flex gap-1 border border-gray-200 rounded-md p-0.5">
+            {[
+              { key: "table",  icon: <List   size={14} />, label: "Jadval"   },
+              { key: "funnel", icon: <BarChart2 size={14} />, label: "Tahlil" },
+            ].map((v) => (
+              <button
+                key={v.key}
+                onClick={() => setView(v.key)}
+                className={`flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded transition-colors ${
+                  view === v.key
+                    ? "bg-gray-900 text-white"
+                    : "text-gray-500 hover:text-gray-800"
+                }`}
+              >
+                {v.icon} {v.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -183,10 +196,10 @@ const LeadsPage = () => {
                           {lead.phone || "—"}
                         </td>
                         <td className="px-4 py-3 text-gray-600 text-xs hidden md:table-cell max-w-[140px] truncate">
-                          {lead.interest || "—"}
+                          {lead.interest?.name ?? lead.interest ?? "—"}
                         </td>
                         <td className="px-4 py-3 text-gray-500 text-xs hidden md:table-cell">
-                          {lead.source || "—"}
+                          {lead.source?.name ?? lead.source ?? "—"}
                         </td>
                         <td className="px-4 py-3">
                           <LeadStatusBadge status={lead.status} />
@@ -223,6 +236,12 @@ const LeadsPage = () => {
         lead={selectedLead}
         open={!!selectedLead}
         onClose={() => setSelectedLead(null)}
+      />
+
+      {/* Create modal */}
+      <CreateLeadModal
+        open={isCreateOpen}
+        onClose={() => setIsCreateOpen(false)}
       />
     </div>
   );

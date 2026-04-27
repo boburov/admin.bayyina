@@ -1,11 +1,15 @@
 // TanStack Query
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 // Toast
 import { toast } from "sonner";
 
+// React
+import { useState, useEffect } from "react";
+
 // API
 import { leadsAPI } from "../api/leads.api";
+import { rejectionReasonsAPI } from "@/features/settings/api/rejectionReasons.api";
 
 // Components
 import LeadStatusBadge from "./LeadStatusBadge";
@@ -29,12 +33,22 @@ import {
 
 const LeadDetailModal = ({ lead, open, onClose }) => {
   const queryClient = useQueryClient();
+  const [isRejecting, setIsRejecting] = useState(false);
+
+  // Fetch rejection reasons
+  const { data: reasonsData } = useQuery({
+    queryKey: ["settings", "rejection-reasons"],
+    queryFn:  () => rejectionReasonsAPI.getAll({ limit: 100 }).then((r) => r.data),
+    enabled:  open && (isRejecting || lead?.status === "rejected"),
+  });
+  const reasons = reasonsData?.rejectionReasons ?? [];
 
   const updateMutation = useMutation({
     mutationFn: ({ id, data }) => leadsAPI.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["leads"] });
       toast.success("Lead yangilandi");
+      setIsRejecting(false);
     },
     onError: (err) => toast.error(err.response?.data?.message || "Xatolik"),
   });
@@ -52,7 +66,18 @@ const LeadDetailModal = ({ lead, open, onClose }) => {
   if (!lead) return null;
 
   const changeStatus = (status) => {
-    updateMutation.mutate({ id: lead._id, data: { status } });
+    if (status === "rejected") {
+      setIsRejecting(true);
+      return;
+    }
+    updateMutation.mutate({ id: lead._id, data: { status, rejectionReason: null } });
+  };
+
+  const handleReject = (reasonId) => {
+    updateMutation.mutate({
+      id:   lead._id,
+      data: { status: "rejected", rejectionReason: reasonId },
+    });
   };
 
   const QUICK_ACTIONS = [
@@ -63,8 +88,13 @@ const LeadDetailModal = ({ lead, open, onClose }) => {
     { label: "❌ Rad etish",    status: "rejected",   color: "bg-red-50    hover:bg-red-100    text-red-700    border-red-200"    },
   ];
 
+  const handleClose = () => {
+    setIsRejecting(false);
+    onClose();
+  };
+
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+    <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
       <DialogContent className="sm:max-w-lg p-0 gap-0 overflow-hidden">
         <DialogHeader className="px-6 pt-5 pb-4 border-b border-gray-100">
           <div className="flex items-start justify-between">
@@ -75,7 +105,7 @@ const LeadDetailModal = ({ lead, open, onClose }) => {
               <div className="flex items-center gap-2 mt-1">
                 <LeadStatusBadge status={lead.status} />
                 {lead.source && (
-                  <span className="text-xs text-gray-400">{lead.source}</span>
+                  <span className="text-xs text-gray-400">{lead.source?.name ?? lead.source}</span>
                 )}
               </div>
             </div>
@@ -90,7 +120,7 @@ const LeadDetailModal = ({ lead, open, onClose }) => {
               value={lead.gender === "male" ? "Erkak" : lead.gender === "female" ? "Ayol" : "—"} />
             <InfoRow icon={<User size={13} />} label="Yosh" value={lead.age || "—"} />
             <InfoRow icon={<Briefcase size={13} />} label="Kasb" value={lead.profession || "—"} />
-            <InfoRow icon={<MapPin size={13} />} label="Manba" value={lead.source || "—"} />
+            <InfoRow icon={<MapPin size={13} />} label="Manba" value={lead.source?.name ?? lead.source ?? "—"} />
             <InfoRow icon={<Calendar size={13} />} label="Yaratilgan"
               value={lead.createdAt ? formatDateUZ(lead.createdAt) : "—"} />
           </div>
@@ -98,7 +128,17 @@ const LeadDetailModal = ({ lead, open, onClose }) => {
           {lead.interest && (
             <div className="p-3 bg-gray-50 rounded-md">
               <p className="text-xs text-gray-400 mb-1">Qiziqish</p>
-              <p className="text-sm font-medium text-gray-800">{lead.interest}</p>
+              <p className="text-sm font-medium text-gray-800">{lead.interest?.name ?? lead.interest}</p>
+            </div>
+          )}
+
+          {/* Rejection reason display */}
+          {lead.status === "rejected" && lead.rejectionReason && (
+            <div className="p-3 bg-red-50 border border-red-100 rounded-md">
+              <p className="text-xs text-red-600 mb-1">Rad etish sababi</p>
+              <p className="text-sm font-semibold text-red-800">
+                {typeof lead.rejectionReason === 'object' ? lead.rejectionReason.title : lead.rejectionReason}
+              </p>
             </div>
           )}
 
@@ -112,20 +152,52 @@ const LeadDetailModal = ({ lead, open, onClose }) => {
           )}
 
           {/* Quick status actions */}
-          <div>
-            <p className="text-xs font-medium text-gray-500 mb-2">Holat o'zgartirish:</p>
-            <div className="flex flex-wrap gap-2">
-              {QUICK_ACTIONS.filter(a => a.status !== lead.status).map((a) => (
-                <button
-                  key={a.status}
-                  onClick={() => changeStatus(a.status)}
-                  disabled={updateMutation.isPending}
-                  className={`text-xs px-3 py-1.5 rounded border font-medium transition-colors ${a.color}`}
-                >
-                  {a.label}
-                </button>
-              ))}
-            </div>
+          <div className="pt-2">
+            {!isRejecting ? (
+              <>
+                <p className="text-xs font-medium text-gray-500 mb-2">Holat o'zgartirish:</p>
+                <div className="flex flex-wrap gap-2">
+                  {QUICK_ACTIONS.filter(a => a.status !== lead.status).map((a) => (
+                    <button
+                      key={a.status}
+                      onClick={() => changeStatus(a.status)}
+                      disabled={updateMutation.isPending}
+                      className={`text-xs px-3 py-1.5 rounded border font-medium transition-colors ${a.color}`}
+                    >
+                      {a.label}
+                    </button>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div className="bg-gray-50 p-3 rounded-lg border border-gray-100 animate-in fade-in slide-in-from-top-2">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-xs font-bold text-gray-700 uppercase tracking-wider">Rad etish sababini tanlang:</p>
+                  <button
+                    onClick={() => setIsRejecting(false)}
+                    className="text-[10px] text-gray-400 hover:text-gray-600 underline"
+                  >
+                    Bekor qilish
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 gap-1.5">
+                  {reasons.length === 0 ? (
+                    <p className="text-xs text-gray-400 italic">Sabablar topilmadi. Sozlamalardan qo'shing.</p>
+                  ) : (
+                    reasons.map((r) => (
+                      <button
+                        key={r._id}
+                        onClick={() => handleReject(r._id)}
+                        disabled={updateMutation.isPending}
+                        className="text-left text-xs px-3 py-2 bg-white border border-gray-200 rounded hover:border-red-300 hover:bg-red-50 text-gray-700 transition-all"
+                      >
+                        {r.title}
+                      </button>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -139,7 +211,7 @@ const LeadDetailModal = ({ lead, open, onClose }) => {
             O'chirish
           </button>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="text-xs px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-700 font-medium"
           >
             Yopish
