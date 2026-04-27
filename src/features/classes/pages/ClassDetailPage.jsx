@@ -11,7 +11,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAppQuery } from "@/shared/lib/query/query-hooks";
 
 // API
-import { classesAPI } from "@/features/classes/api/classes.api";
+import { classesAPI }   from "@/features/classes/api/classes.api";
 import { statisticsAPI } from "@/features/statistics/api/statistics.api";
 
 // Utils
@@ -20,13 +20,18 @@ import { formatUzDate } from "@/shared/utils/formatDate";
 // Data
 import { monthOptions } from "@/features/payments/data/payments.data";
 
+// Hooks
+import useModal from "@/shared/hooks/useModal";
+
 // Components
-import Button from "@/shared/components/ui/button/Button";
-import Select from "@/shared/components/ui/select/Select";
+import Button                   from "@/shared/components/ui/button/Button";
+import Select                   from "@/shared/components/ui/select/Select";
+import TransferEnrollmentModal  from "@/features/classes/components/TransferEnrollmentModal";
 
 // Icons
 import {
   ArrowLeft,
+  ArrowRightLeft,
   Users,
   CheckCircle2,
   XCircle,
@@ -47,6 +52,7 @@ const isPaidForMonth = (enrollment, selectedMonth) => {
 const ClassDetailPage = () => {
   const { classId } = useParams();
   const navigate    = useNavigate();
+  const { openModal } = useModal("transferEnrollment");
 
   const [selectedMonth, setSelectedMonth] = useState(monthOptions[0].value);
 
@@ -161,12 +167,13 @@ const ClassDetailPage = () => {
                 <th>Oylik to'lov</th>
                 <th>So'nggi to'lov</th>
                 <th>Qarz / Balans</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
               {rankingsLoading ? (
                 <tr>
-                  <td colSpan={7} className="py-10 text-center text-sm text-gray-400">
+                  <td colSpan={8} className="py-10 text-center text-sm text-gray-400">
                     Yuklanmoqda...
                   </td>
                 </tr>
@@ -246,6 +253,32 @@ const ClassDetailPage = () => {
                           <span className="text-gray-300">—</span>
                         )}
                       </td>
+
+                      {/* O'tkazish */}
+                      <td className="text-center">
+                        {enrollment.status === "active" && (
+                          <button
+                            type="button"
+                            title="Boshqa guruhga o'tkazish"
+                            className="p-1.5 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition-colors"
+                            onClick={() =>
+                              openModal("transferEnrollment", {
+                                enrollmentId:   enrollment._id,
+                                studentId:      s._id,
+                                studentName:    `${s.firstName} ${s.lastName}`,
+                                currentGroupId: classId,
+                                discount:       enrollment.discount,
+                                discountReason: enrollment.discountReason,
+                                paymentDay:     enrollment.paymentDay,
+                                debt:           enrollment.debt,
+                                balance:        enrollment.balance,
+                              })
+                            }
+                          >
+                            <ArrowRightLeft className="size-4" strokeWidth={1.5} />
+                          </button>
+                        )}
+                      </td>
                     </tr>
                   );
                 })
@@ -254,6 +287,8 @@ const ClassDetailPage = () => {
           </table>
         </div>
       )}
+
+      <TransferEnrollmentModal />
     </div>
   );
 };

@@ -9,6 +9,7 @@ import Card from "@/shared/components/ui/Card";
 import CoinStats from "../components/CoinStats";
 import UsersStats from "../components/UsersStats";
 import DashboardCharts from "../components/DashboardCharts";
+import LeadCharts from "../components/LeadCharts";
 import AllSchedulesToday from "../components/AllSchedulesToday";
 
 const Dashboard = () => {
@@ -31,6 +32,9 @@ const Dashboard = () => {
 
       {/* Statistics Charts */}
       <DashboardCharts />
+
+      {/* Lead Charts */}
+      <LeadCharts />
 
       {/* Coin Statistics */}
       <CoinStats />

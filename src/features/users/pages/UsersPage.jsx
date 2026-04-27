@@ -41,6 +41,8 @@ const UsersPage = () => {
   const qParam      = searchParams.get("q") || "";
   const genderParam = searchParams.get("gender") || "";
   const sourceParam = searchParams.get("source") || "";
+  const minAgeParam = searchParams.get("minAge") || "";
+  const maxAgeParam = searchParams.get("maxAge") || "";
 
   const [inputQ, setInputQ] = useState(qParam);
 
@@ -67,7 +69,7 @@ const UsersPage = () => {
     return () => clearTimeout(id);
   }, [inputQ, setSearchParams]);
 
-  const hasFilters = qParam || genderParam || sourceParam;
+  const hasFilters = qParam || genderParam || sourceParam || minAgeParam || maxAgeParam;
 
   const setFilter = useCallback(
     (key, value) => {
@@ -104,6 +106,8 @@ const UsersPage = () => {
     ...(qParam      && { q: qParam }),
     ...(genderParam && { gender: genderParam }),
     ...(sourceParam && { source: sourceParam }),
+    ...(minAgeParam && { minAge: minAgeParam }),
+    ...(maxAgeParam && { maxAge: maxAgeParam }),
   };
 
   const { data, isLoading, isFetching } = useQuery({
@@ -147,6 +151,24 @@ const UsersPage = () => {
             onChange={(e) => setInputQ(e.target.value)}
             placeholder="Ism, telefon, manba..."
             className="w-full pl-8 pr-3 py-2 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
+          />
+        </div>
+
+        <div className="flex items-center gap-2">
+          <input
+            type="number"
+            value={minAgeParam}
+            onChange={(e) => setFilter("minAge", e.target.value)}
+            placeholder="Min yosh"
+            className="w-20 py-2 px-3 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
+          />
+          <span className="text-gray-400">-</span>
+          <input
+            type="number"
+            value={maxAgeParam}
+            onChange={(e) => setFilter("maxAge", e.target.value)}
+            placeholder="Max yosh"
+            className="w-20 py-2 px-3 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
           />
         </div>
 
