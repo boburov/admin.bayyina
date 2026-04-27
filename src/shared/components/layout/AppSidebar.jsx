@@ -5,6 +5,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import {
   Home,
   Users,
+  Activity,
   BarChart2,
   School,
   Wallet,
@@ -35,6 +36,7 @@ const NAV_ITEMS = [
   { title: "O'qituvchilar", url: "/teachers", icon: GraduationCap },
   { title: "Guruhlar", url: "/classes", icon: School },
   { title: "Statistika", url: "/statistics", icon: BarChart2 },
+  { title: "Davomat", url: "/attendance-statistics", icon: Activity },
   { title: "To'lovlar", url: "/payments", icon: Wallet },
   { title: "Oyliklar", url: "/salaries", icon: Banknote },
   { title: "Xabarnomalar", url: "/notifications", icon: Bell },

@@ -11,8 +11,8 @@ export const statisticsAPI = {
     http.get("/statistics/weekly/export", { params, responseType: "blob" }),
 
   getOverview:   () => http.get("/statistics/overview"),
-  getStudents:   () => http.get("/statistics/students"),
-  getLeads:      () => http.get("/statistics/leads"),
-  getRevenue:    () => http.get("/statistics/revenue"),
-  getAttendance: () => http.get("/statistics/attendance"),
+  getStudents:   (params) => http.get("/statistics/students", { params }),
+  getLeads:      (params) => http.get("/statistics/leads", { params }),
+  getRevenue:    (params) => http.get("/statistics/revenue", { params }),
+  getAttendance: (params) => http.get("/statistics/attendance", { params }),
 };

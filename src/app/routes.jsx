@@ -19,7 +19,8 @@ import ClassesPage from "@/features/classes/pages/ClassesPage";
 import ClassDetailPage from "@/features/classes/pages/ClassDetailPage";
 
 // Pages — Statistics
-import StatisticsPage from "@/features/statistics/pages/StatisticsPage";
+import StatisticsPage from "@/features/statistics/pages/ModernStatisticsPage";
+import AttendanceStatisticsPage from "@/features/statistics/pages/AttendanceDashboardPage";
 
 // Pages — Leads
 import LeadsPage from "@/features/leads/pages/LeadsPage";
@@ -57,6 +58,7 @@ const Routes = () => {
 
           {/* Statistics */}
           <Route path="/statistics" element={<StatisticsPage />} />
+          <Route path="/attendance-statistics" element={<AttendanceStatisticsPage />} />
 
           <Route path="/dashboard" element={<DashboardPage />} />
 
