@@ -8,6 +8,9 @@ import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { classesAPI } from "@/features/classes/api/classes.api";
 import { paymentsAPI } from "@/features/payments/api/payments.api";
 
+// Components
+import SetDiscountModal from "@/features/payments/components/SetDiscountModal";
+
 // TanStack Query
 import { useAppQuery } from "@/shared/lib/query/query-hooks";
 import { useQuery } from "@tanstack/react-query";
@@ -46,6 +49,7 @@ import {
   Search,
   X,
   Receipt,
+  Tag,
 } from "lucide-react";
 
 // ─── Helper ──────────────────────────────────────────────────────────────────
@@ -105,6 +109,7 @@ const PaymentsPage = () => {
       )}
 
       <CreatePaymentModal />
+      <SetDiscountModal />
     </div>
   );
 };
@@ -161,7 +166,7 @@ const EnrollmentsTab = () => {
   const handleOpenCreate = (enrollment) => {
     const discount      = enrollment.discount ?? 0;
     const price         = groupInfo?.price    ?? 0;
-    const defaultAmount = Math.round(price * (1 - discount / 100));
+    const defaultAmount = Math.max(0, price - discount);
     openModal("createPayment", {
       enrollmentId:  enrollment._id,
       studentId:     enrollment.student._id,
@@ -169,6 +174,17 @@ const EnrollmentsTab = () => {
       studentPhone:  enrollment.student.phone,
       month:         selectedMonth,
       defaultAmount,
+    });
+  };
+
+  const handleOpenDiscount = (enrollment) => {
+    const s = enrollment.student;
+    openModal("setEnrollmentDiscount", {
+      enrollmentId:          enrollment._id,
+      studentName:           `${s.firstName} ${s.lastName}`,
+      groupName:             groupInfo?.name ?? "",
+      currentDiscount:       enrollment.discount ?? 0,
+      currentDiscountReason: enrollment.discountReason ?? "",
     });
   };
 
@@ -250,6 +266,7 @@ const EnrollmentsTab = () => {
                   <th>F.I.O</th>
                   <th>Telefon</th>
                   <th>To'lov holati</th>
+                  <th>Chegirma</th>
                   <th>So'nggi to'lov</th>
                   <th>Keyingi to'lov</th>
                   <th>Qarz</th>
@@ -260,7 +277,7 @@ const EnrollmentsTab = () => {
               <tbody>
                 {sorted.length === 0 ? (
                   <tr>
-                    <td colSpan={9} className="py-10 text-center text-sm text-gray-400">
+                    <td colSpan={10} className="py-10 text-center text-sm text-gray-400">
                       O'quvchi topilmadi
                     </td>
                   </tr>
@@ -287,6 +304,15 @@ const EnrollmentsTab = () => {
                               <XCircle className="size-3" strokeWidth={2} />
                               To'lanmagan
                             </span>
+                          )}
+                        </td>
+                        <td className="text-center text-sm whitespace-nowrap">
+                          {enrollment.discount > 0 ? (
+                            <span className="text-purple-600 font-medium">
+                              -{enrollment.discount.toLocaleString()} so'm
+                            </span>
+                          ) : (
+                            <span className="text-gray-400">—</span>
                           )}
                         </td>
                         <td className="text-center text-sm text-gray-400 whitespace-nowrap">
@@ -318,16 +344,26 @@ const EnrollmentsTab = () => {
                           )}
                         </td>
                         <td className="text-center">
-                          {!paid && (
-                            <Button
-                              size="sm"
-                              className="gap-1 px-2.5 text-xs h-7"
-                              onClick={() => handleOpenCreate(enrollment)}
+                          <div className="flex items-center justify-center gap-1.5">
+                            {!paid && (
+                              <Button
+                                size="sm"
+                                className="gap-1 px-2.5 text-xs h-7"
+                                onClick={() => handleOpenCreate(enrollment)}
+                              >
+                                <Plus className="size-3.5" strokeWidth={2} />
+                                To'lov
+                              </Button>
+                            )}
+                            <button
+                              type="button"
+                              title="Chegirma o'rnatish"
+                              onClick={() => handleOpenDiscount(enrollment)}
+                              className="p-1.5 text-muted-foreground hover:text-purple-600 transition-colors"
                             >
-                              <Plus className="size-3.5" strokeWidth={2} />
-                              To'lov
-                            </Button>
-                          )}
+                              <Tag className="size-3.5" strokeWidth={1.5} />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );

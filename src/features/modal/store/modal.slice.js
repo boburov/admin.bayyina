@@ -87,6 +87,9 @@ const initialState = {
   // Records
   recordDetail: initialModalData,
 
+  // Enrollments
+  setEnrollmentDiscount: initialModalData,
+
   // Payments
   createPayment: initialModalData,
 

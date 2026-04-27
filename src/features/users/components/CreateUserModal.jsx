@@ -2,9 +2,10 @@
 import { toast } from "sonner";
 
 // API
-import { usersAPI }    from "@/features/users/api/users.api";
-import { classesAPI }  from "@/features/classes/api/classes.api";
-import { salariesAPI } from "@/features/salaries/api/salaries.api";
+import { usersAPI }       from "@/features/users/api/users.api";
+import { classesAPI }     from "@/features/classes/api/classes.api";
+import { salariesAPI }    from "@/features/salaries/api/salaries.api";
+import { enrollmentsAPI } from "@/features/enrollments/api/enrollments.api";
 
 // TanStack Query
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -40,8 +41,10 @@ const CreateUserModal = () => (
 
 const Content = ({ close, isLoading, setIsLoading }) => {
   const queryClient = useQueryClient();
-  const [selectedGroups, setSelectedGroups] = useState([]);
-  const [groupSearch,    setGroupSearch]    = useState("");
+  const [selectedGroups,  setSelectedGroups]  = useState([]);
+  const [groupSearch,     setGroupSearch]     = useState("");
+  const [discount,        setDiscount]        = useState("");
+  const [discountReason,  setDiscountReason]  = useState("");
 
   // Salary section state
   const [salaryOpen,      setSalaryOpen]      = useState(false);

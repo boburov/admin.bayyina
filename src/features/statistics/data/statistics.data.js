@@ -29,12 +29,12 @@ export const ENROLLMENT_STATUS_LABELS = {
 };
 
 export const LEAD_STATUS_LABELS = {
-  new:       "Yangi",
-  contacted: "Murojaat",
-  interested:"Qiziquvchi",
-  scheduled: "Rejalashtirilgan",
-  converted: "Qabul qilingan",
-  rejected:  "Rad etilgan",
+  new:       "Kutilmoqda",
+  contacted: "Bog'lashildi",
+  interested:"Qiziqyapti",
+  scheduled: "Rejalashtirildi",
+  converted: "Qabul qilindi",
+  rejected:  "Bekor qilindi",
 };
 
 export const LEAD_SOURCE_LABELS = {

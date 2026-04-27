@@ -82,11 +82,12 @@ const LeadDetailModal = ({ lead, open, onClose }) => {
   };
 
   const QUICK_ACTIONS = [
-    { label: "📞 Bog'lashildi", status: "contacted",  color: "bg-yellow-50 hover:bg-yellow-100 text-yellow-700 border-yellow-200" },
-    { label: "💡 Qiziqdi",      status: "interested", color: "bg-purple-50 hover:bg-purple-100 text-purple-700 border-purple-200" },
-    { label: "📅 Rejalashtir",  status: "scheduled",  color: "bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200" },
-    { label: "🎓 Qabul qilish", status: "converted",  color: "bg-green-50  hover:bg-green-100  text-green-700  border-green-200"  },
-    { label: "❌ Rad etish",    status: "rejected",   color: "bg-red-50    hover:bg-red-100    text-red-700    border-red-200"    },
+    { label: "⏳ Kutilmoqda",    status: "new",        color: "bg-slate-50  hover:bg-slate-100  text-slate-700  border-slate-200"  },
+    { label: "📞 Bog'lashildi",  status: "contacted",  color: "bg-yellow-50 hover:bg-yellow-100 text-yellow-700 border-yellow-200" },
+    { label: "💡 Qiziqdi",       status: "interested", color: "bg-purple-50 hover:bg-purple-100 text-purple-700 border-purple-200" },
+    { label: "📅 Rejalashtir",   status: "scheduled",  color: "bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200" },
+    { label: "🎓 Qabul qilish",  status: "converted",  color: "bg-green-50  hover:bg-green-100  text-green-700  border-green-200"  },
+    { label: "🚫 Bekor qilish",  status: "rejected",   color: "bg-red-50    hover:bg-red-100    text-red-700    border-red-200"    },
   ];
 
   const handleClose = () => {
@@ -137,7 +138,7 @@ const LeadDetailModal = ({ lead, open, onClose }) => {
           {/* Rejection reason display */}
           {lead.status === "rejected" && lead.rejectionReason && (
             <div className="p-3 bg-red-50 border border-red-100 rounded-md">
-              <p className="text-xs text-red-600 mb-1">Rad etish sababi</p>
+              <p className="text-xs text-red-600 mb-1">Bekor qilish sababi</p>
               <p className="text-sm font-semibold text-red-800">
                 {typeof lead.rejectionReason === 'object' ? lead.rejectionReason.title : lead.rejectionReason}
               </p>
@@ -174,7 +175,7 @@ const LeadDetailModal = ({ lead, open, onClose }) => {
             ) : (
               <div className="bg-gray-50 p-3 rounded-lg border border-gray-100 animate-in fade-in slide-in-from-top-2">
                 <div className="flex items-center justify-between mb-3">
-                  <p className="text-xs font-bold text-gray-700 uppercase tracking-wider">Rad etish sababini tanlang:</p>
+                  <p className="text-xs font-bold text-gray-700 uppercase tracking-wider">Bekor qilish sababini tanlang:</p>
                   <button
                     onClick={() => setIsRejecting(false)}
                     className="text-[10px] text-gray-400 hover:text-gray-600 underline"
