@@ -12,6 +12,7 @@ export const usersAPI = {
   update: (id, data) => http.put(`/users/${id}`, data),
   delete: (id) => http.delete(`/users/${id}`),
   resetPassword: (id, password) => http.put(`/users/${id}`, { password }),
+  getOne: (id) => http.get(`/users/${id}`),
   getPassword: (id) => http.get(`/users/${id}`),
   exportUsers: (role) =>
     http.get("/users/export", { params: { role }, responseType: "blob" }),

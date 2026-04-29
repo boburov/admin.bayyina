@@ -39,7 +39,7 @@ const CreateUserModal = () => (
   </ResponsiveModal>
 );
 
-const Content = ({ close, isLoading, setIsLoading }) => {
+const Content = ({ close, isLoading, setIsLoading, defaultRole }) => {
   const queryClient = useQueryClient();
   const [selectedGroups,  setSelectedGroups]  = useState([]);
   const [groupSearch,     setGroupSearch]     = useState("");
@@ -49,6 +49,7 @@ const Content = ({ close, isLoading, setIsLoading }) => {
   // Salary section state
   const [salaryOpen,      setSalaryOpen]      = useState(false);
   const [salaryMonth,     setSalaryMonth]      = useState(monthOptions[1]?.value ?? "");
+  const [salaryAmount,    setSalaryAmount]     = useState("");
   const [salaryBonus,     setSalaryBonus]      = useState("");
   const [salaryDeduction, setSalaryDeduction]  = useState("");
   const [salaryNote,      setSalaryNote]       = useState("");
@@ -61,7 +62,7 @@ const Content = ({ close, isLoading, setIsLoading }) => {
     password: "",
     firstName: "",
     lastName: "",
-    role: "student",
+    role: defaultRole ?? "student",
     gender: "",
     source: "",
     age: "",
@@ -111,6 +112,7 @@ const Content = ({ close, isLoading, setIsLoading }) => {
             .create({
               teacher:   newUserId,
               month:     salaryMonth,
+              amount:    salaryAmount    ? Number(salaryAmount)    : undefined,
               bonus:     salaryBonus     ? Number(salaryBonus)     : 0,
               deduction: salaryDeduction ? Number(salaryDeduction) : 0,
               note:      salaryNote.trim() || undefined,
@@ -182,16 +184,24 @@ const Content = ({ close, isLoading, setIsLoading }) => {
 
       {/* Row 4 — Rol / Yosh */}
       <div className="grid grid-cols-2 gap-3">
-        <Select
-          required
-          label="Rol"
-          value={role}
-          onChange={(v) => {
-            setField("role", v);
-            setSelectedGroups([]);
-          }}
-          options={roleOptions}
-        />
+        {!defaultRole ? (
+          <Select
+            required
+            label="Rol"
+            value={role}
+            onChange={(v) => {
+              setField("role", v);
+              setSelectedGroups([]);
+            }}
+            options={roleOptions}
+          />
+        ) : (
+          <Input
+            label="Rol"
+            value={defaultRole === "teacher" ? "O'qituvchi" : defaultRole === "student" ? "O'quvchi" : defaultRole}
+            disabled
+          />
+        )}
         <Input
           label="Yosh"
           name="age"
@@ -331,6 +341,15 @@ const Content = ({ close, isLoading, setIsLoading }) => {
                 options={monthOptions}
                 placeholder="Oy tanlang"
               />
+              <Input
+                label="Oylik miqdori (so'm)"
+                name="salaryAmount"
+                type="number"
+                min={0}
+                value={salaryAmount}
+                onChange={(v) => setSalaryAmount(v)}
+                placeholder="Guruhdan avtomatik hisoblanadi"
+              />
               <div className="grid grid-cols-2 gap-3">
                 <Input
                   label="Bonus (so'm)"
@@ -359,7 +378,7 @@ const Content = ({ close, isLoading, setIsLoading }) => {
                 placeholder="Ixtiyoriy"
               />
               <p className="text-xs text-gray-400">
-                Guruhlar bo'yicha hisob-kitob server tomonidan avtomatik amalga oshiriladi.
+                Oylik miqdorini kiritmesangiz, guruhlar bo'yicha avtomatik hisoblanadi.
               </p>
             </div>
           )}

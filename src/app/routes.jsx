@@ -29,6 +29,7 @@ import LeadsPage from "@/features/leads/pages/LeadsPage";
 // Router
 import { Routes as RoutesWrapper, Route, Navigate } from "react-router-dom";
 import Teachers from "@/features/teachers/pages/TeacherPage";
+import TeacherSalaryPage from "@/features/teachers/pages/TeacherSalaryPage";
 import PaymentsPage from "@/features/payments/PaymentsPage";
 import NotificationsPage from "@/features/notifications/pages/NotificationsPage";
 import RecordsPage    from "@/features/records/pages/RecordsPage";
@@ -52,6 +53,7 @@ const Routes = () => {
 
           {/* Teacher */}
           <Route path="/teachers" element={<Teachers />} />
+          <Route path="/teachers/:id" element={<TeacherSalaryPage />} />
 
           {/* Classes */}
           <Route path="/classes" element={<ClassesPage />} />

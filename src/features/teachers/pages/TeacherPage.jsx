@@ -14,7 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 import useAuth from "@/shared/hooks/useAuth";
 
 // Router
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 
 // Helpers
 import { formatUzDate } from "@/shared/utils/formatDate";
@@ -30,10 +30,11 @@ import Button from "@/shared/components/ui/button/Button";
 import Pagination from "@/shared/components/ui/Pagination";
 
 // Icons
-import { Plus, Edit, Trash2, Key, Eye, Users, Search, X } from "lucide-react";
+import { Plus, Edit, Trash2, Key, Eye, Users, Search, X, Banknote } from "lucide-react";
 
 const Teachers = () => {
   const { user: currentUser } = useAuth();
+  const navigate = useNavigate();
   const { openModal } = useModal();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -138,7 +139,7 @@ const Teachers = () => {
 
       {/* Actions */}
       <div className="flex flex-col sm:flex-row gap-3 mb-5">
-        <Button onClick={() => openModal("createUser")} className="px-3.5">
+        <Button onClick={() => openModal("createUser", { defaultRole: "teacher" })} className="px-3.5">
           <Plus size={14} strokeWidth={1.5} />
           Yangi o'qituvchi
         </Button>
@@ -272,6 +273,13 @@ const Teachers = () => {
                         title="Parolni yangilash"
                       >
                         <Key className="size-4" strokeWidth={1.5} />
+                      </button>
+                      <button
+                        onClick={() => navigate(`/teachers/${user._id}`)}
+                        className="text-gray-500 hover:text-green-600 transition-colors"
+                        title="Oylik tarixi"
+                      >
+                        <Banknote className="size-4" strokeWidth={1.5} />
                       </button>
                       <button
                         onClick={() => openModal("deleteUser", user)}

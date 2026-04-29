@@ -11,7 +11,6 @@ import {
   formatStatMonth,
   formatMoney,
   formatMoneyFull,
-  CHART_COLORS,
 } from "@/features/statistics/data/statistics.data";
 import { Skeleton } from "@/shared/components/shadcn/skeleton";
 import { TrendingUp, School, BarChart2, ArrowUpRight } from "lucide-react";

@@ -15,18 +15,16 @@ import {
   CHART_COLORS,
   GENDER_PIE_COLORS,
   ENROLLMENT_PIE_COLORS,
-  PAYMENT_PIE_COLORS,
   LEAD_STATUS_COLORS,
   ENROLLMENT_STATUS_LABELS,
   LEAD_STATUS_LABELS,
-  PAYMENT_STATUS_LABELS,
   GENDER_LABELS,
-  formatMoney,
   formatMoneyFull,
   TOOLTIP_STYLE,
 } from "@/features/statistics/data/statistics.data";
 import Card from "@/shared/components/ui/Card";
 import { Skeleton } from "@/shared/components/shadcn/skeleton";
+import DashboardCharts from "@/features/dashboard/components/DashboardCharts";
 
 import {
   GraduationCap, TrendingUp, Activity, Wallet,
@@ -266,19 +264,7 @@ const StatisticsPage = () => {
     value: g.count,
   }));
 
-  const revTrend = (revenue?.monthlyRevenue ?? []).map((d) => ({
-    label:     formatStatMonth(d),
-    collected: d.collected,
-    payments:  d.payments,
-  }));
-
-  const payDonut = (revenue?.paymentStatusDistribution ?? []).map((p) => ({
-    key:   p.status,
-    name:  PAYMENT_STATUS_LABELS[p.status] ?? p.status,
-    value: p.count,
-  }));
-
-  const attTrend = (attendance?.monthlyTrend ?? []).map((d) => ({
+const attTrend = (attendance?.monthlyTrend ?? []).map((d) => ({
     label:   formatStatMonth(d),
     present: d.present,
     absent:  (d.total ?? 0) - (d.present ?? 0),
@@ -296,8 +282,7 @@ const StatisticsPage = () => {
   const debt    = students?.debtOverview ?? {};
   const totalEnroll = enrollDonut.reduce((s, e) => s + e.value, 0);
   const totalLead   = leadStatusDonut.reduce((s, e) => s + e.value, 0);
-  const totalPay    = payDonut.reduce((s, e) => s + e.value, 0);
-  const totalAtt    = (attendance?.overall?.total ?? 0);
+const totalAtt    = (attendance?.overall?.total ?? 0);
   const totalGender = studentGenderDonut.reduce((s, e) => s + e.value, 0);
 
   return (
@@ -320,7 +305,21 @@ const StatisticsPage = () => {
         <KpiCard loading={ol} label="Bu oy davomat"    value={`${overview?.attendanceRateThisMonth ?? 0}%`}           icon={Activity}      color="purple" sub="Joriy oy ko'rsatkichi" />
       </div>
 
-      {/* ── 2. Leads ───────────────────────────────────────────────────── */}
+      {/* ── 2. Revenue ─────────────────────────────────────────────────── */}
+      <div>
+        <SecHeader icon={TrendingUp} title="Daromad tahlili" sub="Oylik to'lovlar va holat taqsimoti" />
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+          <KpiCard loading={rl} label="Jami yig'ilgan"    value={formatMoneyFull(revenue?.totalCollected)}          icon={TrendingUp}  color="green"  />
+          <KpiCard loading={rl} label="Jami qarz"         value={formatMoneyFull(revenue?.totalOutstandingDebt)}    icon={AlertCircle} color="red"    />
+          <KpiCard loading={rl} label="Kutilayotgan oylik" value={formatMoneyFull(revenue?.expectedMonthlyRevenue)} icon={Calendar}    color="amber"  />
+          <KpiCard loading={rl} label="To'lovlar soni"    value={revenue?.totalPaymentsCount ?? 0}                  icon={CreditCard}  color="blue"   />
+        </div>
+
+        <DashboardCharts />
+      </div>
+
+      {/* ── 3. Leads ──────────────────────────────────────────────────── */}
       <div>
         <SecHeader icon={UserPlus} title="Leadlar tahlili" sub="Murojaatlar dinamikasi va holat taqsimoti" />
 
@@ -345,8 +344,8 @@ const StatisticsPage = () => {
                   <Legend_ color={CHART_COLORS.blue}  label="Jami" />
                   <Legend_ color={CHART_COLORS.green} label="Qabul qilindi" />
                 </div>
-                <ResponsiveContainer width="100%" height="85%">
-                  <LineChart data={leadTrend} margin={{ top: 4, right: 16, left: -8, bottom: 28 }}>
+                <ResponsiveContainer width="100%" height={200}>
+                  <LineChart data={leadTrend} margin={{ top: 4, right: 16, left: -8, bottom: 8 }}>
                     <CartesianGrid vertical={false} {...GRID} />
                     <XAxis dataKey="label" axisLine={false} tickLine={false} dy={10} tick={TICK} />
                     <YAxis axisLine={false} tickLine={false} tick={TICK} allowDecimals={false} />
@@ -376,7 +375,7 @@ const StatisticsPage = () => {
         </div>
       </div>
 
-      {/* ── 3. Students ────────────────────────────────────────────────── */}
+      {/* ── 4. Students ────────────────────────────────────────────────── */}
       <div>
         <SecHeader icon={GraduationCap} title="O'quvchilar tahlili" sub="Ro'yxatga olishlar, jins va qarz holati" />
 
@@ -435,70 +434,6 @@ const StatisticsPage = () => {
         </div>
       </div>
 
-      {/* ── 4. Revenue ─────────────────────────────────────────────────── */}
-      <div>
-        <SecHeader icon={TrendingUp} title="Daromad tahlili" sub="Oylik to'lovlar va holat taqsimoti" />
-
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-          <KpiCard loading={rl} label="Jami yig'ilgan"    value={formatMoneyFull(revenue?.totalCollected)}          icon={TrendingUp}  color="green"  />
-          <KpiCard loading={rl} label="Jami qarz"         value={formatMoneyFull(revenue?.totalOutstandingDebt)}    icon={AlertCircle} color="red"    />
-          <KpiCard loading={rl} label="Kutilayotgan oylik" value={formatMoneyFull(revenue?.expectedMonthlyRevenue)} icon={Calendar}    color="amber"  />
-          <KpiCard loading={rl} label="To'lovlar soni"    value={revenue?.totalPaymentsCount ?? 0}                  icon={CreditCard}  color="blue"   />
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-
-          {/* Area chart — monthly revenue */}
-          <Card title="Oylik daromad tendensiyasi" className="lg:col-span-2 h-72">
-            {rl ? <CardLoader h={220} /> : !revTrend.length ? <Empty /> : (
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={revTrend} margin={{ top: 8, right: 16, left: 4, bottom: 32 }}>
-                  <defs>
-                    <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%"   stopColor={CHART_COLORS.green} stopOpacity={0.18} />
-                      <stop offset="100%" stopColor={CHART_COLORS.green} stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid vertical={false} {...GRID} />
-                  <XAxis dataKey="label" axisLine={false} tickLine={false} dy={10} tick={TICK} />
-                  <YAxis axisLine={false} tickLine={false} tick={TICK} tickFormatter={formatMoney} width={52} />
-                  <Tooltip contentStyle={TT.contentStyle} labelStyle={TT.labelStyle}
-                    formatter={(v) => [formatMoneyFull(v), "Daromad"]}
-                    cursor={{ stroke: "#E5E7EB", strokeWidth: 1 }}
-                  />
-                  <Area type="monotone" dataKey="collected" stroke={CHART_COLORS.green} fill="url(#revGrad)"
-                    strokeWidth={2.5} dot={false} activeDot={{ r: 5, strokeWidth: 2, stroke: "#fff" }} />
-                </AreaChart>
-              </ResponsiveContainer>
-            )}
-          </Card>
-
-          {/* Payment status donut */}
-          <Card title="To'lov holati">
-            <Donut
-              data={payDonut} total={totalPay}
-              colors={PAYMENT_PIE_COLORS}
-              labelMap={PAYMENT_STATUS_LABELS}
-              loading={rl}
-            />
-            {!rl && (
-              <div className="mt-4 pt-4 border-t border-border space-y-2">
-                {[
-                  { label: "Yig'ilgan",   val: formatMoneyFull(revenue?.totalCollected),         cls: "text-green-700" },
-                  { label: "Qarz",        val: formatMoneyFull(revenue?.totalOutstandingDebt),    cls: "text-red-600"   },
-                  { label: "Kutilmoqda",  val: formatMoneyFull(revenue?.expectedMonthlyRevenue),  cls: "text-amber-600" },
-                ].map(({ label, val, cls }) => (
-                  <div key={label} className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500">{label}</span>
-                    <span className={`text-xs font-semibold tabular-nums ${cls}`}>{val}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </Card>
-        </div>
-      </div>
-
       {/* ── 5. Attendance ──────────────────────────────────────────────── */}
       <div>
         <SecHeader icon={Activity} title="Davomat tahlili" sub="Qatnashish tendensiyasi va guruh bo'yicha ko'rsatkichlar" />
@@ -520,8 +455,8 @@ const StatisticsPage = () => {
                   <Legend_ color={CHART_COLORS.green} label="Qatnashgan" />
                   <Legend_ color={CHART_COLORS.red}   label="Qatnashmagan" />
                 </div>
-                <ResponsiveContainer width="100%" height="85%">
-                  <AreaChart data={attTrend} margin={{ top: 4, right: 16, left: -4, bottom: 28 }}>
+                <ResponsiveContainer width="100%" height={200}>
+                  <AreaChart data={attTrend} margin={{ top: 4, right: 16, left: -4, bottom: 8 }}>
                     <defs>
                       <linearGradient id="presentGrad" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%"   stopColor={CHART_COLORS.green} stopOpacity={0.15} />
