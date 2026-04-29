@@ -21,6 +21,7 @@ import {
   History,
   HistoryIcon,
   LineChart,
+  TrendingUp,
 } from "lucide-react";
 
 // Hooks
@@ -39,6 +40,7 @@ const NAV_ITEMS = [
   { title: "Statistika", url: "/statistics", icon: BarChart2 },
   { title: "Davomat", url: "/attendance-statistics", icon: Activity },
   { title: "Lead tahlili", url: "/lead-analytics", icon: LineChart },
+  { title: "Oylik daromad", url: "/monthly-income", icon: TrendingUp },
   { title: "To'lovlar", url: "/payments", icon: Wallet },
   { title: "Oyliklar", url: "/salaries", icon: Banknote },
   { title: "Xabarnomalar", url: "/notifications", icon: Bell },

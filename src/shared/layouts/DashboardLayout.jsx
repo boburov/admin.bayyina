@@ -6,11 +6,9 @@ import { Outlet } from "react-router-dom";
 
 // API
 import { usersAPI } from "@/features/users/api/users.api";
-import { rolesAPI } from "@/features/roles/api/roles.api";
 import { classesAPI } from "@/features/classes/api/classes.api";
 
 // Hooks
-import useAuth from "@/shared/hooks/useAuth";
 import useArrayStore from "@/shared/hooks/useArrayStore";
 
 // Components
@@ -29,7 +27,6 @@ import NotificationDetailModal from "@/features/notifications/components/Notific
 import ViewUserPasswordModal from "@/features/users/components/ViewUserPasswordModal";
 import ResetUserPasswordModal from "@/features/users/components/ResetUserPasswordModal";
 import StudentStatisticsModal from "@/features/statistics/components/StudentStatisticsModal";
-import BugReport from "../components/layout/BugReport";
 
 const DashboardLayout = () => {
   actions();
@@ -53,9 +50,6 @@ const DashboardLayout = () => {
           </div>
         </div>
       </div>
-
-      {/* Bug Report */}
-      <BugReport />
 
       {/* User Modals */}
       <EditUserModal />
@@ -81,41 +75,19 @@ const DashboardLayout = () => {
 };
 
 const actions = () => {
-  const { user } = useAuth();
-
   const {
     initialize,
     hasCollection,
     setCollection,
-    getCollectionData,
     setCollectionErrorState,
     setCollectionLoadingState,
   } = useArrayStore();
 
-  const isOwner = user?.role === "owner";
-  const roles = getCollectionData("roles");
-  const classes = getCollectionData("classes");
-  const teachers = getCollectionData("teachers");
+  const classes = useArrayStore().getCollectionData("classes");
 
-  // Initialize collection (pagination = false)
   useEffect(() => {
-    if (!hasCollection("roles")) initialize(false, "roles");
     if (!hasCollection("classes")) initialize(false, "classes");
-    if (!hasCollection("teachers")) initialize(false, "teachers");
   }, [initialize, hasCollection]);
-
-  const fetchRoles = () => {
-    setCollectionLoadingState(true, "roles");
-
-    rolesAPI
-      .getAll()
-      .then((res) => {
-        setCollection(res.data.data, null, "roles");
-      })
-      .catch(() => {
-        setCollectionErrorState(true, "roles");
-      });
-  };
 
   const fetchClasses = () => {
     setCollectionLoadingState(true, "classes");
@@ -130,24 +102,9 @@ const actions = () => {
       });
   };
 
-  const fetchTeachers = () => {
-    setCollectionLoadingState(true, "teachers");
-
-    usersAPI
-      .getAll({ role: "teacher", limit: 200 })
-      .then((res) => {
-        setCollection(res.data.data, null, "teachers");
-      })
-      .catch(() => {
-        setCollectionErrorState(true, "teachers");
-      });
-  };
-
   useEffect(() => {
-    !roles?.length && isOwner && fetchRoles();
-    !classes?.length && fetchClasses();
-    !teachers?.length && isOwner && fetchTeachers();
-  }, [roles?.length, classes?.length, teachers?.length]);
+    if (!classes?.length) fetchClasses();
+  }, [classes?.length]);
 };
 
 export default DashboardLayout;

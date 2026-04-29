@@ -10,7 +10,6 @@ import UsersStats from "../components/UsersStats";
 import DashboardCharts from "../components/DashboardCharts";
 import LeadCharts from "../components/LeadCharts";
 import AttendanceCharts from "../components/AttendanceCharts";
-import AllSchedulesToday from "../components/AllSchedulesToday";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -38,9 +37,6 @@ const Dashboard = () => {
 
       {/* Attendance & Group Ranking */}
       <AttendanceCharts />
-
-      {/* Today's Schedules */}
-      <AllSchedulesToday />
     </div>
   );
 };

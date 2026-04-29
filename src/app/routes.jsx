@@ -22,6 +22,7 @@ import ClassDetailPage from "@/features/classes/pages/ClassDetailPage";
 import StatisticsPage from "@/features/statistics/pages/ModernStatisticsPage";
 import AttendanceStatisticsPage from "@/features/statistics/pages/AttendanceDashboardPage";
 import LeadAnalyticsPage from "@/features/statistics/pages/LeadAnalyticsPage";
+import MonthlyIncomePage from "@/features/statistics/pages/MonthlyIncomePage";
 
 // Pages — Leads
 import LeadsPage from "@/features/leads/pages/LeadsPage";
@@ -63,6 +64,7 @@ const Routes = () => {
           <Route path="/statistics" element={<StatisticsPage />} />
           <Route path="/attendance-statistics" element={<AttendanceStatisticsPage />} />
           <Route path="/lead-analytics" element={<LeadAnalyticsPage />} />
+          <Route path="/monthly-income" element={<MonthlyIncomePage />} />
 
           <Route path="/dashboard" element={<DashboardPage />} />
 

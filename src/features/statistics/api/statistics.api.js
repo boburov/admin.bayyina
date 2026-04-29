@@ -16,4 +16,5 @@ export const statisticsAPI = {
   getRevenue:    (params) => http.get("/statistics/revenue", { params }),
   getAttendance: (params) => http.get("/statistics/attendance", { params }),
   getLeadManagers: (params) => http.get("/statistics/leads/managers", { params }),
+  getMonthlyIncome: (params) => http.get("/statistics/monthly-income", { params }),
 };
