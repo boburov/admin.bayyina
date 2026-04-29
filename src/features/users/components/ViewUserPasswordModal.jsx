@@ -98,7 +98,7 @@ const Content = ({ close, isLoading, setIsLoading, ...modalData }) => {
       <div className="flex justify-end gap-2">
         <Button
           type="button"
-          onClick={close}
+          onClick={() => close()}
           variant="neutral"
           className="w-full xs:w-32"
         >

@@ -129,7 +129,7 @@ const Content = ({ close, isLoading, setIsLoading }) => {
         <Button
           type="button"
           variant="secondary"
-          onClick={close}
+          onClick={() => close()}
           className="w-full xs:w-32"
         >
           Bekor qilish

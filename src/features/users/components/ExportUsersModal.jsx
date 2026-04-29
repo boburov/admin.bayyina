@@ -81,7 +81,7 @@ const Content = ({ close, isLoading, setIsLoading }) => {
           type="button"
           className="w-full xs:w-32"
           variant="neutral"
-          onClick={close}
+          onClick={() => close()}
         >
           Bekor qilish
         </Button>

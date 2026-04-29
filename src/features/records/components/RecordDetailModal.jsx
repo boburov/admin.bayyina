@@ -113,7 +113,7 @@ const Content = ({ close, ...record }) => {
       )}
 
       <div className="flex justify-end pt-1">
-        <Button type="button" variant="secondary" className="w-full xs:w-28" onClick={close}>
+        <Button type="button" variant="secondary" className="w-full xs:w-28" onClick={() => close()}>
           Yopish
         </Button>
       </div>

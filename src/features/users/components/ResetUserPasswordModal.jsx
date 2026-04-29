@@ -159,7 +159,7 @@ const Content = ({ close, isLoading, setIsLoading, ...user }) => {
             type="button"
             variant="neutral"
             className="w-full xs:w-32"
-            onClick={close}
+            onClick={() => close()}
           >
             Yopish
           </Button>

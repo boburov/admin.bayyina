@@ -48,7 +48,7 @@ const Content = ({ close, isLoading, setIsLoading, ...user }) => {
     >
       <Button
         type="button"
-        onClick={close}
+        onClick={() => close()}
         variant="neutral"
         className="w-full xs:w-32"
       >

@@ -48,7 +48,7 @@ const Content = ({ close, isLoading, setIsLoading, ...classData }) => {
     >
       <Button
         type="button"
-        onClick={close}
+        onClick={() => close()}
         variant="secondary"
         className="w-full xs:w-32"
       >

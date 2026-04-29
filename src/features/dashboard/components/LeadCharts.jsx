@@ -1,51 +1,78 @@
-// TanStack Query
 import { useAppQuery } from "@/shared/lib/query/query-hooks";
-
-// Recharts
 import {
   AreaChart, Area,
   BarChart, Bar, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend,
+  XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer,
 } from "recharts";
-
-// Router
 import { Link } from "react-router-dom";
-
-// API
 import { statisticsAPI } from "@/features/statistics/api/statistics.api";
-
-// Data
 import {
   formatStatMonth,
   CHART_COLORS,
-  TOOLTIP_STYLE,
   LEAD_STATUS_LABELS,
   LEAD_STATUS_COLORS,
 } from "@/features/statistics/data/statistics.data";
-
-// Components
-import Card   from "@/shared/components/ui/Card";
-import Button from "@/shared/components/ui/button/Button";
 import { Skeleton } from "@/shared/components/shadcn/skeleton";
+import { UserPlus, BarChart2, ArrowUpRight } from "lucide-react";
 
-// Icons
-import { UserPlus, BarChart2 } from "lucide-react";
+const grid = { stroke: "#F1F5F9", strokeDasharray: "4 4" };
+const tick = { fontSize: 10.5, fill: "#94A3B8" };
 
-// ─── Shared ───────────────────────────────────────────────────────────────────
+const TT_STYLE = {
+  contentStyle: {
+    borderRadius: "10px",
+    border: "1px solid rgba(226,232,240,0.8)",
+    boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+    backdropFilter: "blur(8px)",
+    background: "rgba(255,255,255,0.92)",
+    fontSize: "12px",
+    padding: "8px 12px",
+  },
+  labelStyle: { color: "#64748B", fontSize: "11px", marginBottom: "3px", fontWeight: 600 },
+};
 
-const grid    = { stroke: "#F3F4F6", strokeDasharray: "3 3" };
-const tick    = { fontSize: 11, fill: "#9CA3AF" };
-const tooltip = TOOLTIP_STYLE;
+const STATUS_GLASS = [
+  "rgba(99,102,241,0.72)",
+  "rgba(59,130,246,0.72)",
+  "rgba(245,158,11,0.72)",
+  "rgba(20,184,166,0.72)",
+  "rgba(34,197,94,0.72)",
+  "rgba(239,68,68,0.72)",
+];
 
 const Empty = () => (
   <div className="flex flex-col items-center justify-center h-full gap-2 py-8">
-    <BarChart2 className="size-7 text-gray-200" strokeWidth={1.5} />
-    <p className="text-xs text-gray-400">Ma'lumot mavjud emas</p>
+    <BarChart2 className="size-7 text-slate-200" strokeWidth={1.5} />
+    <p className="text-xs text-slate-400">Ma'lumot mavjud emas</p>
   </div>
 );
 
-// ─── Component ────────────────────────────────────────────────────────────────
+const ChartCard = ({ accent, icon: Icon, iconBg, title, linkTo, badge, loading, legend, children }) => (
+  <div className="relative overflow-hidden rounded-2xl border border-slate-100 bg-white/90 backdrop-blur-sm shadow-sm h-64 p-5 flex flex-col">
+    <div className={`absolute inset-x-0 top-0 h-[3px] ${accent}`} />
+    <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center gap-2.5">
+        <div className={`flex items-center justify-center w-8 h-8 rounded-xl ${iconBg}`}>
+          <Icon size={15} strokeWidth={2} />
+        </div>
+        <span className="text-sm font-semibold text-slate-800">{title}</span>
+      </div>
+      <div className="flex items-center gap-2">
+        {legend}
+        {badge}
+        {linkTo && (
+          <Link to={linkTo} className="flex items-center gap-0.5 text-xs font-medium text-slate-400 hover:text-slate-700 transition-colors">
+            Batafsil <ArrowUpRight size={12} strokeWidth={2} />
+          </Link>
+        )}
+      </div>
+    </div>
+    <div className="flex-1 min-h-0">
+      {loading ? <Skeleton className="w-full h-full rounded-xl" /> : children}
+    </div>
+  </div>
+);
 
 const LeadCharts = () => {
   const { data: leads, isLoading } = useAppQuery({
@@ -66,127 +93,101 @@ const LeadCharts = () => {
     status: d.status,
   }));
 
-  const sourceData = (leads?.bySource ?? []).slice(0, 7).map((d) => ({
-    label: d.source,
-    count: d.count,
-  }));
-
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
 
-      {/* ── Lead monthly trend ───────────────────────────────────────────── */}
-      <Card className="h-64">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <UserPlus className="size-4 text-brown-800" strokeWidth={1.5} />
-            <span className="text-sm font-semibold text-gray-800">Oylik leadlar</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1 text-xs text-gray-400">
-              <span className="inline-block w-2.5 h-0.5 rounded" style={{ background: CHART_COLORS.blue }} />
+      <ChartCard
+        accent="bg-gradient-to-r from-blue-400 to-cyan-500"
+        icon={UserPlus}
+        iconBg="bg-blue-50 text-blue-600"
+        title="Oylik leadlar"
+        linkTo="/leads"
+        loading={isLoading}
+        legend={
+          <div className="hidden sm:flex items-center gap-3">
+            <span className="flex items-center gap-1 text-[10.5px] font-medium text-slate-400">
+              <span className="inline-block w-2.5 h-[2.5px] rounded-full bg-blue-400" />
               Jami
             </span>
-            <span className="flex items-center gap-1 text-xs text-gray-400">
-              <span className="inline-block w-2.5 h-0.5 rounded" style={{ background: CHART_COLORS.green }} />
+            <span className="flex items-center gap-1 text-[10.5px] font-medium text-slate-400">
+              <span className="inline-block w-2.5 h-[2.5px] rounded-full bg-emerald-400" />
               Qabul
             </span>
-            <Button asChild variant="link" className="text-xs p-0 h-auto">
-              <Link to="/leads">Batafsil</Link>
-            </Button>
           </div>
-        </div>
-
-        {isLoading ? (
-          <Skeleton className="w-full h-44" />
-        ) : !trend.length ? (
-          <Empty />
-        ) : (
-          <ResponsiveContainer width="100%" height="85%">
-            <AreaChart data={trend} margin={{ top: 4, right: 8, left: -20, bottom: 20 }}>
+        }
+      >
+        {!trend.length ? <Empty /> : (
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={trend} margin={{ top: 4, right: 4, left: -24, bottom: 16 }}>
               <defs>
                 <linearGradient id="leadTotalGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%"   stopColor={CHART_COLORS.blue}  stopOpacity={0.15} />
-                  <stop offset="100%" stopColor={CHART_COLORS.blue}  stopOpacity={0.02} />
+                  <stop offset="0%"   stopColor="#3b82f6" stopOpacity={0.20} />
+                  <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="leadConvGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%"   stopColor={CHART_COLORS.green} stopOpacity={0.18} />
-                  <stop offset="100%" stopColor={CHART_COLORS.green} stopOpacity={0.02} />
+                  <stop offset="0%"   stopColor="#10b981" stopOpacity={0.22} />
+                  <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid vertical={false} {...grid} />
               <XAxis dataKey="label" axisLine={false} tickLine={false} dy={8} tick={tick} />
               <YAxis axisLine={false} tickLine={false} tick={tick} allowDecimals={false} />
-              <Tooltip
-                contentStyle={tooltip.contentStyle}
-                labelStyle={tooltip.labelStyle}
-                cursor={{ stroke: "#E5E7EB", strokeWidth: 1 }}
+              <Tooltip {...TT_STYLE} cursor={{ stroke: "#E2E8F0", strokeWidth: 1 }}
                 formatter={(v, name) =>
-                  name === "total"     ? [v, "Jami lead"] :
+                  name === "total" ? [v, "Jami lead"] :
                   name === "converted" ? [v, "Qabul qilindi"] : [v, name]
                 }
               />
               <Area type="monotone" dataKey="total" name="total"
-                stroke={CHART_COLORS.blue}  fill="url(#leadTotalGrad)"
-                strokeWidth={2} dot={false} activeDot={{ r: 4, strokeWidth: 2, stroke: "#fff" }}
+                stroke="#3b82f6" strokeWidth={2.5} fill="url(#leadTotalGrad)"
+                dot={false} activeDot={{ r: 5, fill: "#3b82f6", stroke: "#fff", strokeWidth: 2 }}
               />
               <Area type="monotone" dataKey="converted" name="converted"
-                stroke={CHART_COLORS.green} fill="url(#leadConvGrad)"
-                strokeWidth={2} dot={false} activeDot={{ r: 4, strokeWidth: 2, stroke: "#fff" }}
+                stroke="#10b981" strokeWidth={2.5} fill="url(#leadConvGrad)"
+                dot={false} activeDot={{ r: 5, fill: "#10b981", stroke: "#fff", strokeWidth: 2 }}
               />
             </AreaChart>
           </ResponsiveContainer>
         )}
-      </Card>
+      </ChartCard>
 
-      {/* ── Lead status + source ─────────────────────────────────────────── */}
-      <Card className="h-64">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <BarChart2 className="size-4 text-brown-800" strokeWidth={1.5} />
-            <span className="text-sm font-semibold text-gray-800">Leadlar holati</span>
-          </div>
-          {leads?.conversionRate != null && (
-            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-green-50 border border-green-200 text-green-700">
-              Konversiya: {leads.conversionRate}%
+      <ChartCard
+        accent="bg-gradient-to-r from-violet-400 to-pink-500"
+        icon={BarChart2}
+        iconBg="bg-violet-50 text-violet-600"
+        title="Leadlar holati"
+        loading={isLoading}
+        badge={
+          leads?.conversionRate != null && (
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100">
+              {leads.conversionRate}% konversiya
             </span>
-          )}
-        </div>
-
-        {isLoading ? (
-          <Skeleton className="w-full h-44" />
-        ) : !statusData.length ? (
-          <Empty />
-        ) : (
-          <ResponsiveContainer width="100%" height="85%">
-            <BarChart data={statusData} margin={{ top: 4, right: 8, left: -20, bottom: 20 }} layout="vertical">
+          )
+        }
+      >
+        {!statusData.length ? <Empty /> : (
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={statusData} margin={{ top: 4, right: 4, left: -20, bottom: 16 }} layout="vertical">
               <CartesianGrid horizontal={false} {...grid} />
               <XAxis type="number" axisLine={false} tickLine={false} tick={tick} allowDecimals={false} />
               <YAxis
-                type="category"
-                dataKey="label"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 10, fill: "#6B7280" }}
-                width={80}
+                type="category" dataKey="label"
+                axisLine={false} tickLine={false}
+                tick={{ fontSize: 9.5, fill: "#64748B" }}
+                width={78}
               />
-              <Tooltip
-                contentStyle={tooltip.contentStyle}
-                labelStyle={tooltip.labelStyle}
-                cursor={{ fill: "#F9FAFB" }}
+              <Tooltip {...TT_STYLE} cursor={{ fill: "rgba(241,245,249,0.7)" }}
                 formatter={(v) => [v, "Lead"]}
               />
-              <Bar dataKey="count" name="Lead" radius={[0, 3, 3, 0]} maxBarSize={20}>
-                {statusData.map((d, i) => (
-                  <Cell
-                    key={d.status}
-                    fill={LEAD_STATUS_COLORS[i % LEAD_STATUS_COLORS.length]}
-                  />
+              <Bar dataKey="count" radius={[0, 4, 4, 0]} maxBarSize={18}>
+                {statusData.map((_, i) => (
+                  <Cell key={i} fill={STATUS_GLASS[i % STATUS_GLASS.length]} />
                 ))}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
         )}
-      </Card>
+      </ChartCard>
 
     </div>
   );

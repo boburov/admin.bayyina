@@ -159,7 +159,7 @@ const BugReportForm = ({ close, isLoading, setIsLoading }) => {
       <div className="flex flex-col-reverse gap-3.5 w-full xs:flex-row xs:justify-end">
         <Button
           type="button"
-          onClick={close}
+          onClick={() => close()}
           variant="secondary"
           className="w-full xs:w-32"
         >

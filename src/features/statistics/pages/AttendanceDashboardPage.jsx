@@ -29,10 +29,10 @@ const TICK = { fontSize: 11, fill: "#9CA3AF" };
 const TT = TOOLTIP_STYLE;
 
 const PRESETS = [
-  { label: "Bu oy", getDates: () => { const n = new Date(); return { startDate: `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, "0")}-01`, endDate: "" }; } },
-  { label: "30 kun", getDates: () => { const e = new Date(); const s = new Date(); s.setDate(s.getDate() - 29); return { startDate: toISO(s), endDate: toISO(e) }; } },
-  { label: "6 oy", getDates: () => { const e = new Date(); const s = new Date(); s.setMonth(s.getMonth() - 5); s.setDate(1); return { startDate: toISO(s), endDate: "" }; } },
-  { label: "Hammasi", getDates: () => ({ startDate: "", endDate: "" }) },
+  { label: "1 oy",  getDates: () => { const e = new Date(); const s = new Date(); s.setMonth(s.getMonth()-1); return { startDate: toISO(s), endDate: toISO(e) }; } },
+  { label: "3 oy",  getDates: () => { const e = new Date(); const s = new Date(); s.setMonth(s.getMonth()-3); return { startDate: toISO(s), endDate: toISO(e) }; } },
+  { label: "6 oy",  getDates: () => { const e = new Date(); const s = new Date(); s.setMonth(s.getMonth()-6); return { startDate: toISO(s), endDate: toISO(e) }; } },
+  { label: "1 yil", getDates: () => { const e = new Date(); const s = new Date(); s.setFullYear(s.getFullYear()-1); return { startDate: toISO(s), endDate: toISO(e) }; } },
 ];
 
 const toISO = (d) => d.toISOString().slice(0, 10);
@@ -79,7 +79,7 @@ const KpiCard = ({ label, value, sub, icon: Icon, color = "brown", loading }) =>
 };
 
 const DateFilter = ({ value, onChange }) => {
-  const [active, setActive] = useState(3);
+  const [active, setActive] = useState(0);
   const apply = (idx, preset) => {
     setActive(idx);
     onChange(preset.getDates());
@@ -118,7 +118,8 @@ const DateFilter = ({ value, onChange }) => {
 };
 
 const AttendanceDashboardPage = () => {
-  const [dateRange, setDateRange] = useState({ startDate: "", endDate: "" });
+  const [activePreset, setActivePreset] = useState(0);
+  const [dateRange, setDateRange] = useState(PRESETS[0].getDates());
 
   const params = {
     ...(dateRange.startDate && { startDate: dateRange.startDate }),

@@ -106,7 +106,7 @@ const Content = ({
       />
 
       <div className="flex flex-col-reverse gap-3 xs:flex-row xs:justify-end pt-1">
-        <Button type="button" variant="secondary" className="w-full xs:w-32" onClick={close}>
+        <Button type="button" variant="secondary" className="w-full xs:w-32" onClick={() => close()}>
           Bekor qilish
         </Button>
         <Button className="w-full xs:w-32" disabled={isLoading || !targetGroupId}>

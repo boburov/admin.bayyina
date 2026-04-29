@@ -13,7 +13,7 @@ import SetDiscountModal from "@/features/payments/components/SetDiscountModal";
 
 // TanStack Query
 import { useAppQuery } from "@/shared/lib/query/query-hooks";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 
 // Router
 import { useSearchParams } from "react-router-dom";
@@ -30,6 +30,7 @@ import {
 
 // Utils
 import { formatUzDate } from "@/shared/utils/formatDate";
+import { formatPhone } from "@/shared/utils/formatPhone";
 
 // Components
 import Card from "@/shared/components/ui/Card";
@@ -50,6 +51,7 @@ import {
   X,
   Receipt,
   Tag,
+  BadgeCheck,
 } from "lucide-react";
 
 // ─── Helper ──────────────────────────────────────────────────────────────────
@@ -291,7 +293,7 @@ const EnrollmentsTab = () => {
                           {s.firstName} {s.lastName}
                         </td>
                         <td className="text-sm text-gray-400 text-center whitespace-nowrap">
-                          +{s.phone}
+                          {formatPhone(String(s.phone))}
                         </td>
                         <td className="text-center">
                           {paid ? (
@@ -397,7 +399,17 @@ const EnrollmentsTab = () => {
 // ─── Records Tab ─────────────────────────────────────────────────────────────
 
 const RecordsTab = () => {
+  const qc = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
+
+  const markPaidMutation = useMutation({
+    mutationFn: (id) => paymentsAPI.update(id, { status: "paid" }),
+    onSuccess: () => {
+      toast.success("To'lov holati yangilandi");
+      qc.invalidateQueries({ queryKey: ["payments"] });
+    },
+    onError: () => toast.error("Xatolik yuz berdi"),
+  });
 
   const currentPage = parseInt(searchParams.get("page") || "1", 10);
   const qParam      = searchParams.get("q") || "";
@@ -544,18 +556,19 @@ const RecordsTab = () => {
               <th>Oy</th>
               <th>Sana</th>
               <th>Izoh</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
             {isLoading ? (
               <tr>
-                <td colSpan={8} className="py-12 text-center text-sm text-gray-400">
+                <td colSpan={9} className="py-12 text-center text-sm text-gray-400">
                   Yuklanmoqda...
                 </td>
               </tr>
             ) : payments.length === 0 ? (
               <tr>
-                <td colSpan={8} className="py-16 text-center">
+                <td colSpan={9} className="py-16 text-center">
                   <div className="flex flex-col items-center gap-2 text-gray-400">
                     <Receipt className="size-10 opacity-30" strokeWidth={1.5} />
                     <p className="text-sm">To'lovlar topilmadi</p>
@@ -565,6 +578,7 @@ const RecordsTab = () => {
             ) : (
               payments.map((payment, idx) => {
                 const s = payment.student;
+                const canMarkPaid = payment.status !== "paid";
                 return (
                   <tr key={payment._id}>
                     <td className="text-center text-sm text-gray-400">
@@ -574,7 +588,7 @@ const RecordsTab = () => {
                       {s ? `${s.firstName} ${s.lastName}` : "—"}
                     </td>
                     <td className="text-center text-sm text-gray-500 whitespace-nowrap">
-                      {s?.phone ? `+${s.phone}` : "—"}
+                      {s?.phone ? formatPhone(String(s.phone)) : "—"}
                     </td>
                     <td className="text-center text-sm font-medium text-gray-900 whitespace-nowrap">
                       {payment.amount?.toLocaleString()} so'm
@@ -590,6 +604,20 @@ const RecordsTab = () => {
                     </td>
                     <td className="text-sm text-gray-400 max-w-[160px] truncate">
                       {payment.note ?? "—"}
+                    </td>
+                    <td className="text-center">
+                      {canMarkPaid && (
+                        <button
+                          type="button"
+                          title="To'landi deb belgilash"
+                          disabled={markPaidMutation.isLoading}
+                          onClick={() => markPaidMutation.mutate(payment._id)}
+                          className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded text-green-700 bg-green-50 hover:bg-green-100 transition-colors disabled:opacity-50"
+                        >
+                          <BadgeCheck className="size-3.5" strokeWidth={2} />
+                          To'landi
+                        </button>
+                      )}
                     </td>
                   </tr>
                 );
