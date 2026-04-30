@@ -95,7 +95,7 @@
 
 @layer base {
   * {
-    box-shadow: none !important;
+    box-shadow: none;
   }
 
   body {

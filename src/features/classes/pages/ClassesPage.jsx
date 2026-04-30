@@ -183,7 +183,7 @@ const Classes = () => {
           <p className="text-sm">Guruhlar topilmadi</p>
         </div>
       ) : (
-        <div className={`grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 transition-opacity ${isFetching ? "opacity-60 pointer-events-none" : "opacity-100"}`}>
+        <div className={`grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 transition-opacity duration-200 ${isFetching ? "opacity-60 pointer-events-none" : "opacity-100"}`}>
           {groups.map((group) => (
             <Card key={group._id}>
               {/* Top row — name + actions */}
@@ -256,7 +256,7 @@ const Classes = () => {
       )}
 
       {!isLoading && groups.length > 0 && (
-        <>
+        <div className="overflow-x-auto">
           <Pagination
             maxPageButtons={5}
             showPageNumbers={true}
@@ -264,22 +264,10 @@ const Classes = () => {
             currentPage={currentPage}
             hasNextPage={data?.hasNextPage}
             hasPrevPage={data?.hasPrevPage}
-            className="pt-5 max-md:hidden"
+            className="pt-5 min-w-max"
             totalPages={data?.totalPages || 1}
           />
-          <div className="overflow-x-auto pb-1.5">
-            <Pagination
-              maxPageButtons={5}
-              showPageNumbers={true}
-              onPageChange={goToPage}
-              currentPage={currentPage}
-              hasNextPage={data?.hasNextPage}
-              hasPrevPage={data?.hasPrevPage}
-              className="pt-5 min-w-max md:hidden"
-              totalPages={data?.totalPages || 1}
-            />
-          </div>
-        </>
+        </div>
       )}
     </div>
   );

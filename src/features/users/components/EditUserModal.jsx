@@ -15,7 +15,10 @@ import Button from "@/shared/components/form/button";
 import ResponsiveModal from "@/shared/components/ui/ResponsiveModal";
 
 // Data
-import { genderOptions, sourceOptions } from "../data/users.data";
+import { genderOptions } from "../data/users.data";
+
+// Settings hooks
+import { useLeadSources } from "@/features/settings/hooks/useLeadSources";
 
 // Hooks
 import useObjectState from "@/shared/hooks/useObjectState";
@@ -53,6 +56,8 @@ const Content = ({ close, isLoading, setIsLoading, ...user }) => {
   const initialGroupIds = user.groupIds ?? user.groups?.map((g) => g._id) ?? [];
   const [selectedGroupIds, setSelectedGroupIds] = useState(initialGroupIds);
   const [groupSearch, setGroupSearch] = useState("");
+
+  const { sources } = useLeadSources();
 
   const { data: groupsData, isLoading: groupsLoading } = useQuery({
     queryKey: ["classes"],
@@ -149,7 +154,7 @@ const Content = ({ close, isLoading, setIsLoading, ...user }) => {
           value={source}
           placeholder="Tanlang"
           onChange={(v) => setField("source", v || null)}
-          options={sourceOptions}
+          options={sources.map((s) => ({ value: s.name, label: s.name }))}
         />
         <Input
           label="Telegram ID"

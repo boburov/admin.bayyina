@@ -49,6 +49,68 @@ export const actorRoleLabel = {
   system:  "Tizim",
 };
 
+// color: "green" | "blue" | "amber" | "red"
+// icon: lucide-react icon name
+export const eventTypeConfig = {
+  USER_STUDENT_CREATED:    { color: "blue",  icon: "UserPlus"      },
+  USER_TEACHER_CREATED:    { color: "blue",  icon: "UserPlus"      },
+  USER_ADMIN_CREATED:      { color: "blue",  icon: "UserPlus"      },
+  USER_UPDATED:            { color: "amber", icon: "UserCog"       },
+  USER_DELETED:            { color: "red",   icon: "UserX"         },
+  LEAD_CREATED:            { color: "blue",  icon: "UserPlus"      },
+  LEAD_UPDATED:            { color: "amber", icon: "RefreshCw"     },
+  LEAD_STATUS_CHANGED:     { color: "amber", icon: "ArrowRightLeft"},
+  LEAD_DELETED:            { color: "red",   icon: "Trash2"        },
+  LEAD_LINK_CLICKED:       { color: "blue",  icon: "MousePointerClick" },
+  ENROLLMENT_CREATED:      { color: "blue",  icon: "BookOpen"      },
+  ENROLLMENT_UPDATED:      { color: "amber", icon: "Edit"          },
+  ENROLLMENT_COMPLETED:    { color: "green", icon: "GraduationCap" },
+  ENROLLMENT_DROPPED:      { color: "red",   icon: "LogOut"        },
+  ENROLLMENT_DELETED:      { color: "red",   icon: "Trash2"        },
+  GROUP_CREATED:           { color: "blue",  icon: "School"        },
+  GROUP_UPDATED:           { color: "amber", icon: "Edit"          },
+  GROUP_DELETED:           { color: "red",   icon: "Trash2"        },
+  PAYMENT_CREATED:         { color: "blue",  icon: "Wallet"        },
+  PAYMENT_PAID:            { color: "green", icon: "CheckCircle2"  },
+  PAYMENT_OVERDUE:         { color: "red",   icon: "AlertCircle"   },
+  PAYMENT_UPDATED:         { color: "amber", icon: "Edit"          },
+  PAYMENT_DELETED:         { color: "red",   icon: "Trash2"        },
+  ATTENDANCE_MARKED:       { color: "blue",  icon: "CalendarCheck" },
+  ATTENDANCE_UPDATED:      { color: "amber", icon: "CalendarCog"   },
+  ATTENDANCE_DELETED:      { color: "red",   icon: "CalendarX"     },
+  SALARY_CREATED:          { color: "blue",  icon: "Banknote"      },
+  SALARY_UPDATED:          { color: "amber", icon: "Edit"          },
+  SALARY_PAID:             { color: "green", icon: "BadgeCheck"    },
+  SALARY_DELETED:          { color: "red",   icon: "Trash2"        },
+};
+
+export const colorStyles = {
+  green: {
+    dot:  "bg-green-500",
+    icon: "bg-green-50 text-green-600",
+    text: "text-green-700",
+    tag:  "bg-green-50 text-green-700 border-green-200",
+  },
+  blue: {
+    dot:  "bg-blue-500",
+    icon: "bg-blue-50 text-blue-600",
+    text: "text-blue-700",
+    tag:  "bg-blue-50 text-blue-700 border-blue-200",
+  },
+  amber: {
+    dot:  "bg-amber-400",
+    icon: "bg-amber-50 text-amber-600",
+    text: "text-amber-700",
+    tag:  "bg-amber-50 text-amber-700 border-amber-200",
+  },
+  red: {
+    dot:  "bg-red-500",
+    icon: "bg-red-50 text-red-600",
+    text: "text-red-700",
+    tag:  "bg-red-50 text-red-700 border-red-200",
+  },
+};
+
 export const eventTypeFilterOptions = [
   { value: "",                     label: "Barcha hodisalar"          },
   { value: "USER_STUDENT_CREATED", label: "O'quvchi yaratildi"        },
@@ -89,3 +151,29 @@ export const entityTypeFilterOptions = [
   { value: "Attendance", label: "Davomat"               },
   { value: "System",     label: "Tizim"                 },
 ];
+
+const today     = () => { const d = new Date(); d.setHours(0,0,0,0); return d; };
+const yesterday = () => new Date(today() - 86400000);
+const weekStart = () => {
+  const d = today();
+  const day = d.getDay() || 7;
+  return new Date(d - (day - 1) * 86400000);
+};
+
+export const getDateGroup = (iso) => {
+  const d = new Date(iso);
+  d.setHours(0, 0, 0, 0);
+  if (d >= today())     return "bugun";
+  if (d >= yesterday()) return "kecha";
+  if (d >= weekStart()) return "bu_hafta";
+  return "oldinroq";
+};
+
+export const dateGroupLabel = {
+  bugun:    "Bugun",
+  kecha:    "Kecha",
+  bu_hafta: "Bu hafta",
+  oldinroq: "Oldinroq",
+};
+
+export const DATE_GROUP_ORDER = ["bugun", "kecha", "bu_hafta", "oldinroq"];

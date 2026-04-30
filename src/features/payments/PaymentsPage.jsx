@@ -146,11 +146,12 @@ const EnrollmentsTab = () => {
   const groupOptions = groups.map((g) => ({ value: g._id, label: g.name }));
 
   const stats = useMemo(() => {
-    const paid         = enrollments.filter((e) =>  isPaidForMonth(e, selectedMonth));
-    const unpaid       = enrollments.filter((e) => !isPaidForMonth(e, selectedMonth));
-    const totalDebt    = enrollments.reduce((s, e) => s + (e.debt    ?? 0), 0);
-    const totalBalance = enrollments.reduce((s, e) => s + (e.balance ?? 0), 0);
-    return { total: enrollments.length, paid: paid.length, unpaid: unpaid.length, totalDebt, totalBalance };
+    const active       = enrollments.filter((e) => e.status === "active");
+    const paid         = active.filter((e) =>  isPaidForMonth(e, selectedMonth));
+    const unpaid       = active.filter((e) => !isPaidForMonth(e, selectedMonth));
+    const totalDebt    = active.reduce((s, e) => s + (e.debt    ?? 0), 0);
+    const totalBalance = active.reduce((s, e) => s + (e.balance ?? 0), 0);
+    return { total: active.length, paid: paid.length, unpaid: unpaid.length, totalDebt, totalBalance };
   }, [enrollments, selectedMonth]);
 
   const sorted = useMemo(() => {
@@ -544,7 +545,7 @@ const RecordsTab = () => {
       </div>
 
       {/* Table */}
-      <div className={`rounded-lg overflow-x-auto border border-border bg-white transition-opacity ${isFetching ? "opacity-60 pointer-events-none" : "opacity-100"}`}>
+      <div className={`rounded-lg overflow-x-auto border border-border bg-white transition-opacity duration-200 ${isFetching ? "opacity-60 pointer-events-none" : "opacity-100"}`}>
         <table>
           <thead>
             <tr>
@@ -628,7 +629,7 @@ const RecordsTab = () => {
       </div>
 
       {!isLoading && payments.length > 0 && (
-        <>
+        <div className="overflow-x-auto">
           <Pagination
             maxPageButtons={5}
             showPageNumbers={true}
@@ -636,22 +637,10 @@ const RecordsTab = () => {
             currentPage={currentPage}
             hasNextPage={data?.hasNextPage}
             hasPrevPage={data?.hasPrevPage}
-            className="pt-5 max-md:hidden"
+            className="pt-5 min-w-max"
             totalPages={data?.totalPages || 1}
           />
-          <div className="overflow-x-auto pb-1.5">
-            <Pagination
-              maxPageButtons={5}
-              showPageNumbers={true}
-              onPageChange={goToPage}
-              currentPage={currentPage}
-              hasNextPage={data?.hasNextPage}
-              hasPrevPage={data?.hasPrevPage}
-              className="pt-5 min-w-max md:hidden"
-              totalPages={data?.totalPages || 1}
-            />
-          </div>
-        </>
+        </div>
       )}
     </>
   );

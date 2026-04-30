@@ -29,7 +29,7 @@ import ResetUserPasswordModal from "@/features/users/components/ResetUserPasswor
 import StudentStatisticsModal from "@/features/statistics/components/StudentStatisticsModal";
 
 const DashboardLayout = () => {
-  actions();
+  useLayoutActions();
 
   return (
     <>
@@ -74,7 +74,7 @@ const DashboardLayout = () => {
   );
 };
 
-const actions = () => {
+const useLayoutActions = () => {
   const {
     initialize,
     hasCollection,

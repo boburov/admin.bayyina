@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 // React
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 
 // API
 import { leadsAPI } from "../api/leads.api";
@@ -48,12 +48,24 @@ const LeadsPage = () => {
     status: "", source: "", search: "",
   });
 
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
+  const debounceRef = useRef(null);
+
+  useEffect(() => {
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(debounceRef.current);
+  }, [search]);
+
   const params = {
     page,
     limit: PAGE_SIZE,
-    ...(status && { status }),
-    ...(source && { source }),
-    ...(search && { search }),
+    ...(status         && { status }),
+    ...(source         && { source }),
+    ...(debouncedSearch && { search: debouncedSearch }),
   };
 
   const { data, isLoading } = useQuery({
@@ -87,7 +99,7 @@ const LeadsPage = () => {
 
   const handleFilterChange = (key, value) => {
     setField(key, value);
-    setPage(1);
+    if (key !== "search") setPage(1);
   };
 
   const handleReset = () => {

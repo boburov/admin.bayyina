@@ -20,14 +20,15 @@ import { useSearchParams } from "react-router-dom";
 import { formatUzDate } from "@/shared/utils/formatDate";
 
 // Data
-import { genderOptions, sourceOptions } from "../data/users.data";
+import { genderOptions } from "../data/users.data";
 
 // Hooks
 import useModal from "@/shared/hooks/useModal";
 
 // Components
-import Button from "@/shared/components/ui/button/Button";
-import Pagination from "@/shared/components/ui/Pagination";
+import Button          from "@/shared/components/ui/button/Button";
+import Pagination      from "@/shared/components/ui/Pagination";
+import DynamicSelect   from "@/shared/components/ui/DynamicSelect";
 
 // Icons
 import { Plus, Edit, Trash2, Key, Eye, Users, Search, X } from "lucide-react";
@@ -136,7 +137,7 @@ const UsersPage = () => {
 
       {/* Actions */}
       <div className="flex flex-col sm:flex-row gap-3 mb-5">
-        <Button onClick={() => openModal("createUser")} className="px-3.5">
+        <Button onClick={() => openModal("createUser", { defaultRole: "student" })} className="px-3.5">
           <Plus size={14} strokeWidth={1.5} />
           Yangi o'quvchi
         </Button>
@@ -183,16 +184,12 @@ const UsersPage = () => {
           ))}
         </select>
 
-        <select
+        <DynamicSelect
+          type="lead_source"
           value={sourceParam}
-          onChange={(e) => setFilter("source", e.target.value)}
-          className="py-2 px-3 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
-        >
-          <option value="">Barcha manba</option>
-          {sourceOptions.map((o) => (
-            <option key={o.value} value={o.value}>{o.label}</option>
-          ))}
-        </select>
+          onChange={(v) => setFilter("source", v)}
+          allLabel="Barcha manba"
+        />
 
         {hasFilters && (
           <button
@@ -206,7 +203,7 @@ const UsersPage = () => {
       </div>
 
       {/* Table */}
-      <div className={`table-wrapper transition-opacity ${isFetching ? "opacity-60 pointer-events-none" : "opacity-100"}`}>
+      <div className={`table-wrapper transition-opacity duration-200 ${isFetching ? "opacity-60 pointer-events-none" : "opacity-100"}`}>
         <table>
           <thead>
             <tr>
@@ -288,20 +285,7 @@ const UsersPage = () => {
       </div>
 
       {!isLoading && users.length > 0 && (
-        <Pagination
-          maxPageButtons={5}
-          showPageNumbers={true}
-          onPageChange={goToPage}
-          currentPage={currentPage}
-          hasNextPage={data?.hasNextPage}
-          hasPrevPage={data?.hasPrevPage}
-          className="pt-5 max-md:hidden"
-          totalPages={data?.totalPages || 1}
-        />
-      )}
-
-      {!isLoading && users.length > 0 && (
-        <div className="overflow-x-auto pb-1.5">
+        <div className="overflow-x-auto">
           <Pagination
             maxPageButtons={5}
             showPageNumbers={true}
@@ -309,7 +293,7 @@ const UsersPage = () => {
             currentPage={currentPage}
             hasNextPage={data?.hasNextPage}
             hasPrevPage={data?.hasPrevPage}
-            className="pt-5 min-w-max md:hidden"
+            className="pt-5 min-w-max"
             totalPages={data?.totalPages || 1}
           />
         </div>

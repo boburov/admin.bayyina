@@ -91,11 +91,14 @@ const ClassDetailPage = () => {
     }));
   }, [enrollments, rankings, selectedMonth]);
 
-  const stats = useMemo(() => ({
-    total:  rows.length,
-    paid:   rows.filter((r) =>  r.paid).length,
-    unpaid: rows.filter((r) => !r.paid).length,
-  }), [rows]);
+  const stats = useMemo(() => {
+    const active = rows.filter((r) => r.enrollment.status === "active");
+    return {
+      total:  active.length,
+      paid:   active.filter((r) =>  r.paid).length,
+      unpaid: active.filter((r) => !r.paid).length,
+    };
+  }, [rows]);
 
   if (groupLoading) {
     return <div className="text-center py-12 text-sm text-gray-400">Yuklanmoqda...</div>;
@@ -188,7 +191,7 @@ const ClassDetailPage = () => {
                   const grades = rank?.totalGrades ?? null;
 
                   return (
-                    <tr key={enrollment._id} className={paid ? "" : "bg-red-50/40"}>
+                    <tr key={enrollment._id} className={!paid && enrollment.status === "active" ? "bg-red-50/40" : ""}>
                       {/* # */}
                       <td className="text-center text-sm text-gray-400">{idx + 1}</td>
 

@@ -2,15 +2,17 @@
 import { useState } from "react";
 
 // TanStack Query
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 // Toast
 import { toast } from "sonner";
 
 // API
-import { leadsAPI }         from "../api/leads.api";
-import { leadSourcesAPI }   from "@/features/settings/api/leadSources.api";
-import { courseTypesAPI }   from "@/features/settings/api/courseTypes.api";
+import { leadsAPI } from "../api/leads.api";
+
+// Settings hooks
+import { useLeadSources } from "@/features/settings/hooks/useLeadSources";
+import { useCourseTypes } from "@/features/settings/hooks/useCourseTypes";
 
 // Shadcn
 import {
@@ -35,21 +37,8 @@ const CreateLeadModal = ({ open, onClose }) => {
 
   const set = (k, v) => setForm((p) => ({ ...p, [k]: v }));
 
-  // Lead sources
-  const { data: sourcesData } = useQuery({
-    queryKey: ["settings", "lead-sources"],
-    queryFn:  () => leadSourcesAPI.getAll({ limit: 100 }).then((r) => r.data),
-    enabled:  open,
-  });
-  const sources = sourcesData?.leadSources ?? [];
-
-  // Course types
-  const { data: typesData } = useQuery({
-    queryKey: ["settings", "course-types"],
-    queryFn:  () => courseTypesAPI.getAll({ limit: 100 }).then((r) => r.data),
-    enabled:  open,
-  });
-  const courseTypes = typesData?.courseTypes ?? [];
+  const { sources }     = useLeadSources({ enabled: open });
+  const { courseTypes } = useCourseTypes({ enabled: open });
 
   const createMut = useMutation({
     mutationFn: (data) => leadsAPI.create(data),

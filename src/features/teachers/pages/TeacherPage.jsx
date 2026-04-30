@@ -20,14 +20,15 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { formatUzDate } from "@/shared/utils/formatDate";
 
 // Data
-import { genderOptions, sourceOptions } from "../../users/data/users.data";
+import { genderOptions } from "../../users/data/users.data";
 
 // Hooks
 import useModal from "@/shared/hooks/useModal";
 
 // Components
-import Button from "@/shared/components/ui/button/Button";
-import Pagination from "@/shared/components/ui/Pagination";
+import Button        from "@/shared/components/ui/button/Button";
+import Pagination    from "@/shared/components/ui/Pagination";
+import DynamicSelect from "@/shared/components/ui/DynamicSelect";
 
 // Icons
 import { Plus, Edit, Trash2, Key, Eye, Users, Search, X, Banknote } from "lucide-react";
@@ -186,16 +187,12 @@ const Teachers = () => {
           ))}
         </select>
 
-        <select
+        <DynamicSelect
+          type="lead_source"
           value={sourceParam}
-          onChange={(e) => setFilter("source", e.target.value)}
-          className="py-2 px-3 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
-        >
-          <option value="">Barcha manba</option>
-          {sourceOptions.map((o) => (
-            <option key={o.value} value={o.value}>{o.label}</option>
-          ))}
-        </select>
+          onChange={(v) => setFilter("source", v)}
+          allLabel="Barcha manba"
+        />
 
         {hasFilters && (
           <button

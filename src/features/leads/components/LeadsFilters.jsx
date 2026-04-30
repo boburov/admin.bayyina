@@ -1,8 +1,5 @@
-// TanStack Query
-import { useQuery } from "@tanstack/react-query";
-
-// API
-import { leadSourcesAPI } from "@/features/settings/api/leadSources.api";
+// Hooks
+import { useLeadSources } from "@/features/settings/hooks/useLeadSources";
 
 // Data
 import { STATUS_OPTIONS } from "../data/leads.data";
@@ -13,12 +10,7 @@ import { Search, X } from "lucide-react";
 const LeadsFilters = ({ filters, onChange, onReset }) => {
   const hasFilters = filters.status || filters.source || filters.search;
 
-  const { data: sourcesData } = useQuery({
-    queryKey: ["settings", "lead-sources"],
-    queryFn:  () => leadSourcesAPI.getAll({ limit: 100 }).then((r) => r.data),
-    staleTime: 60_000,
-  });
-  const sources = sourcesData?.leadSources ?? [];
+  const { sources } = useLeadSources();
 
   return (
     <div className="flex flex-wrap items-center gap-3">

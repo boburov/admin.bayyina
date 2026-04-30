@@ -17,8 +17,11 @@ import Button          from "@/shared/components/form/button";
 import ResponsiveModal from "@/shared/components/ui/ResponsiveModal";
 
 // Data
-import { genderOptions, roleOptions, sourceOptions } from "../data/users.data";
+import { genderOptions, roleOptions } from "../data/users.data";
 import { monthOptions, salariesKeys } from "@/features/salaries/data/salaries.data";
+
+// Settings hooks
+import { useLeadSources } from "@/features/settings/hooks/useLeadSources";
 
 // Hooks
 import useObjectState from "@/shared/hooks/useObjectState";
@@ -67,6 +70,8 @@ const Content = ({ close, isLoading, setIsLoading, defaultRole }) => {
     source: "",
     age: "",
   });
+
+  const { sources } = useLeadSources();
 
   const { data: groupsData, isLoading: groupsLoading } = useQuery({
     queryKey: ["classes"],
@@ -226,7 +231,7 @@ const Content = ({ close, isLoading, setIsLoading, defaultRole }) => {
           value={source}
           placeholder="Tanlang"
           onChange={(v) => setField("source", v)}
-          options={sourceOptions}
+          options={sources.map((s) => ({ value: s.name, label: s.name }))}
         />
       </div>
 

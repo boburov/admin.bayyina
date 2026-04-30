@@ -21,14 +21,6 @@ export const STATUS_OPTIONS = [
   { label: "🚫 Bekor qilindi",   value: "rejected" },
 ];
 
-export const SOURCE_OPTIONS = [
-  { label: "Barcha manbalar", value: "" },
-  { label: "📸 Instagram",    value: "instagram" },
-  { label: "✈️ Telegram",     value: "telegram" },
-  { label: "👥 Do'st orqali", value: "referral" },
-  { label: "🏠 Offline",      value: "offline" },
-  { label: "🌍 Boshqa",       value: "other" },
-];
 
 export const STATUS_BADGE = {
   new:        { label: "Kutilmoqda",     className: "bg-slate-50  text-slate-700  border border-slate-200" },
