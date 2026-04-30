@@ -55,7 +55,7 @@ const Content = ({ close, isLoading, setIsLoading, enrollmentId, studentName, gr
           Bekor qilish
         </Button>
         <Button
-          className="w-full xs:w-36 bg-green-700 hover:bg-green-600"
+          className="w-full xs:w-auto xs:px-[10px] bg-green-700 hover:bg-green-600"
           disabled={isLoading}
           onClick={handleConfirm}
         >
