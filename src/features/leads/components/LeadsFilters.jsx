@@ -1,15 +1,24 @@
-// Components
-import Select from "@/shared/components/form/select";
-import Input  from "@/shared/components/form/input";
+// TanStack Query
+import { useQuery } from "@tanstack/react-query";
+
+// API
+import { leadSourcesAPI } from "@/features/settings/api/leadSources.api";
 
 // Data
-import { STATUS_OPTIONS, SOURCE_OPTIONS } from "../data/leads.data";
+import { STATUS_OPTIONS } from "../data/leads.data";
 
 // Icons
 import { Search, X } from "lucide-react";
 
 const LeadsFilters = ({ filters, onChange, onReset }) => {
   const hasFilters = filters.status || filters.source || filters.search;
+
+  const { data: sourcesData } = useQuery({
+    queryKey: ["settings", "lead-sources"],
+    queryFn:  () => leadSourcesAPI.getAll({ limit: 100 }).then((r) => r.data),
+    staleTime: 60_000,
+  });
+  const sources = sourcesData?.leadSources ?? [];
 
   return (
     <div className="flex flex-wrap items-center gap-3">
@@ -41,8 +50,9 @@ const LeadsFilters = ({ filters, onChange, onReset }) => {
         onChange={(e) => onChange("source", e.target.value)}
         className="py-2 px-3 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
       >
-        {SOURCE_OPTIONS.map((o) => (
-          <option key={o.value} value={o.value}>{o.label}</option>
+        <option value="">Barcha manbalar</option>
+        {sources.map((s) => (
+          <option key={s._id} value={s._id}>{s.name}</option>
         ))}
       </select>
 
