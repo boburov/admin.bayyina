@@ -13,7 +13,7 @@ import { useQueryClient } from "@tanstack/react-query";
 
 // API
 import { classesAPI }    from "@/features/classes/api/classes.api";
-import { statisticsAPI } from "@/features/statistics/api/statistics.api";
+import { attendanceAPI } from "@/features/classes/api/attendance.api";
 
 // Utils
 import { formatUzDate } from "@/shared/utils/formatDate";
@@ -88,29 +88,28 @@ const ClassDetailPage = () => {
     onError:  () => toast.error("Guruh ma'lumotlari yuklanmadi"),
   });
 
-  // Attendance rankings
-  const { data: rankingsData, isLoading: rankingsLoading } = useAppQuery({
-    queryKey: ["class-rankings", classId],
-    queryFn:  () => statisticsAPI.getClassRankings(classId, { page: 1, limit: 200 }),
+  // Attendance summary for selected month
+  const attendanceMonth = selectedMonth.slice(0, 7); // "2026-04-01" → "2026-04"
+  const { data: summaryData, isLoading: summaryLoading } = useAppQuery({
+    queryKey: ["attendance-summary", classId, attendanceMonth],
+    queryFn:  () => attendanceAPI.getSummary(classId, attendanceMonth),
     enabled:  !!classId,
-    onError:  () => toast.error("Davomat ma'lumotlari yuklanmadi"),
+    onError:  () => {},
   });
 
   const group       = groupData?.group       ?? null;
   const enrollments = groupData?.enrollments ?? [];
-  const rankings    = rankingsData?.data?.rankings ?? [];
+  const totalSessions  = summaryData?.totalSessions  ?? null;
+  const perEnrollment  = summaryData?.perEnrollment  ?? {};
 
-  // Merge enrollments + rankings by student._id
+  // Merge enrollments + attendance summary
   const rows = useMemo(() => {
-    const rankMap = {};
-    rankings.forEach((r) => { rankMap[r.student._id] = r; });
-
     return enrollments.map((enrollment) => ({
       enrollment,
-      rank: rankMap[enrollment.student._id] ?? null,
+      attended: perEnrollment[String(enrollment._id)] ?? 0,
       paid: isPaidForMonth(enrollment, selectedMonth),
     }));
-  }, [enrollments, rankings, selectedMonth]);
+  }, [enrollments, perEnrollment, selectedMonth]);
 
   const stats = useMemo(() => {
     const active = rows.filter((r) => r.enrollment.status === "active");
@@ -235,17 +234,15 @@ const ClassDetailPage = () => {
               </tr>
             </thead>
             <tbody>
-              {rankingsLoading ? (
+              {groupLoading ? (
                 <tr>
                   <td colSpan={9} className="py-10 text-center text-sm text-gray-400">
                     Yuklanmoqda...
                   </td>
                 </tr>
               ) : (
-                rows.map(({ enrollment, rank, paid }, idx) => {
-                  const s      = enrollment.student;
-                  const score  = rank?.totalSum    ?? null;
-                  const grades = rank?.totalGrades ?? null;
+                rows.map(({ enrollment, attended, paid }, idx) => {
+                  const s = enrollment.student;
 
                   return (
                     <tr key={enrollment._id} className={!paid && enrollment.status === "active" ? "bg-red-50/40" : ""}>
@@ -264,17 +261,16 @@ const ClassDetailPage = () => {
 
                       {/* Davomat */}
                       <td className="text-center">
-                        {score !== null ? (
-                          <span className={`text-sm font-semibold ${
-                            score >= 45 ? "text-green-600" :
-                            score >= 35 ? "text-blue-600"  : "text-orange-500"
+                        {summaryLoading ? (
+                          <span className="text-sm text-gray-300">...</span>
+                        ) : totalSessions !== null ? (
+                          <span className={`text-sm font-semibold tabular-nums ${
+                            totalSessions === 0        ? "text-gray-400" :
+                            attended / totalSessions >= 0.75 ? "text-green-600" :
+                            attended / totalSessions >= 0.5  ? "text-orange-500" :
+                            "text-red-500"
                           }`}>
-                            {score}
-                            {grades !== null && (
-                              <span className="text-xs font-normal text-gray-400 ml-1">
-                                ({grades} baho)
-                              </span>
-                            )}
+                            {attended}/{totalSessions}
                           </span>
                         ) : (
                           <span className="text-sm text-gray-300">—</span>
