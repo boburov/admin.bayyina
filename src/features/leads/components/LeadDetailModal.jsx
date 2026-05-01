@@ -45,10 +45,10 @@ const labelCls  = "block text-[10px] font-medium text-gray-500 mb-0.5";
 // Returns display name regardless of whether field is populated or raw ObjectId
 const resolveName = (field, list) => {
   if (!field) return null;
-  if (typeof field === "object") return field.name ?? null;
-  // raw ObjectId string — look up in list
-  const found = list.find((item) => item._id === field);
-  return found?.name ?? null;
+  if (typeof field === "object") return field.name ?? field.label ?? null;
+  // raw ObjectId string — look up in list (selectOptions returns label, populated returns name)
+  const found = list.find((item) => String(item._id) === String(field));
+  return found?.name ?? found?.label ?? null;
 };
 
 // Returns the ObjectId string regardless of whether field is populated or raw
@@ -118,7 +118,7 @@ const EditForm = ({ lead, sources, courseTypes, interests, onSave, onCancel, isP
           <select className={selectCls} value={form.source} onChange={(e) => set("source", e.target.value)}>
             <option value="">Tanlang</option>
             {sources.map((s) => (
-              <option key={s._id} value={s._id}>{s.name}</option>
+              <option key={s._id} value={s._id}>{s.label}</option>
             ))}
           </select>
         </div>
@@ -127,7 +127,7 @@ const EditForm = ({ lead, sources, courseTypes, interests, onSave, onCancel, isP
           <select className={selectCls} value={form.courseType} onChange={(e) => set("courseType", e.target.value)}>
             <option value="">Tanlang</option>
             {courseTypes.map((c) => (
-              <option key={c._id} value={c._id}>{c.name}</option>
+              <option key={c._id} value={c._id}>{c.label}</option>
             ))}
           </select>
         </div>
@@ -138,7 +138,7 @@ const EditForm = ({ lead, sources, courseTypes, interests, onSave, onCancel, isP
         <select className={selectCls} value={form.interest} onChange={(e) => set("interest", e.target.value)}>
           <option value="">Tanlang</option>
           {interests.map((i) => (
-            <option key={i._id} value={i._id}>{i.name}</option>
+            <option key={i._id} value={i._id}>{i.label}</option>
           ))}
         </select>
       </div>

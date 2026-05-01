@@ -127,14 +127,14 @@ const CreateLeadModal = ({ open, onClose }) => {
                 <label className={labelCls}>Manba</label>
                 <select className={selectCls} value={form.source} onChange={(e) => set("source", e.target.value)}>
                   <option value="">Manba tanlang</option>
-                  {sources.map((s) => <option key={s._id} value={s._id}>{s.name}</option>)}
+                  {sources.map((s) => <option key={s._id} value={s._id}>{s.label}</option>)}
                 </select>
               </div>
               <div>
                 <label className={labelCls}>Kurs turi</label>
                 <select className={selectCls} value={form.courseType} onChange={(e) => set("courseType", e.target.value)}>
                   <option value="">Kurs turi</option>
-                  {courseTypes.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
+                  {courseTypes.map((c) => <option key={c._id} value={c._id}>{c.label}</option>)}
                 </select>
               </div>
             </div>
@@ -145,7 +145,7 @@ const CreateLeadModal = ({ open, onClose }) => {
                 <label className={labelCls}>Qiziqishi</label>
                 <select className={selectCls} value={form.interest} onChange={(e) => set("interest", e.target.value)}>
                   <option value="">Qiziqish tanlang</option>
-                  {interests.map((i) => <option key={i._id} value={i._id}>{i.name}</option>)}
+                  {interests.map((i) => <option key={i._id} value={i._id}>{i.label}</option>)}
                 </select>
               </div>
               <div>

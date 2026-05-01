@@ -46,7 +46,7 @@ const LeadsFilters = ({ filters, onChange, onReset }) => {
       >
         <option value="">Barcha manbalar</option>
         {sources.map((s) => (
-          <option key={s._id} value={s._id}>{s.name}</option>
+          <option key={s._id} value={s._id}>{s.label}</option>
         ))}
       </select>
 
@@ -59,7 +59,7 @@ const LeadsFilters = ({ filters, onChange, onReset }) => {
         >
           <option value="">Barcha qiziqishlar</option>
           {interests.map((i) => (
-            <option key={i._id} value={i._id}>{i.name}</option>
+            <option key={i._id} value={i._id}>{i.label}</option>
           ))}
         </select>
       )}
