@@ -36,6 +36,7 @@ import NotificationsPage from "@/features/notifications/pages/NotificationsPage"
 import RecordsPage    from "@/features/records/pages/RecordsPage";
 import SalariesPage   from "@/features/salaries/pages/SalariesPage";
 import SettingsPage   from "@/features/settings/pages/SettingsPage";
+import TelegramPage   from "@/features/telegram/pages/TelegramPage";
 
 const Routes = () => {
   return (
@@ -86,6 +87,9 @@ const Routes = () => {
 
           {/* Settings */}
           <Route path="/settings" element={<SettingsPage />} />
+
+          {/* Telegram */}
+          <Route path="/telegram" element={<TelegramPage />} />
         </Route>
       </Route>
 

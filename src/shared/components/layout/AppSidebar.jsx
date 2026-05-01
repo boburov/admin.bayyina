@@ -23,6 +23,7 @@ import {
   LineChart,
   TrendingUp,
   Settings,
+  Send,
 } from "lucide-react";
 
 // Hooks
@@ -46,6 +47,7 @@ const NAV_ITEMS = [
   { title: "Oyliklar", url: "/salaries", icon: Banknote },
   { title: "Xabarnomalar", url: "/notifications", icon: Bell },
   { title: "Tarix", url: "/records", icon: HistoryIcon },
+  { title: "Telegram xabar", url: "/telegram", icon: Send },
   { title: "Sozlamalar", url: "/settings", icon: Settings },
 ];
 
