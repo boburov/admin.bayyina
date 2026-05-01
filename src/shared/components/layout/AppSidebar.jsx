@@ -24,6 +24,7 @@ import {
   TrendingUp,
   Settings,
   Send,
+  Trophy,
 } from "lucide-react";
 
 // Hooks
@@ -41,6 +42,7 @@ const NAV_ITEMS = [
   { title: "Guruhlar", url: "/classes", icon: School },
   { title: "Statistika", url: "/statistics", icon: BarChart2 },
   { title: "Davomat", url: "/attendance-statistics", icon: Activity },
+  { title: "Reyting", url: "/ratings", icon: Trophy },
   { title: "Lead tahlili", url: "/lead-analytics", icon: LineChart },
   { title: "Oylik daromad", url: "/monthly-income", icon: TrendingUp },
   { title: "To'lovlar", url: "/payments", icon: Wallet },

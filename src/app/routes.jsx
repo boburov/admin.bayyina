@@ -37,6 +37,7 @@ import RecordsPage    from "@/features/records/pages/RecordsPage";
 import SalariesPage   from "@/features/salaries/pages/SalariesPage";
 import SettingsPage   from "@/features/settings/pages/SettingsPage";
 import TelegramPage   from "@/features/telegram/pages/TelegramPage";
+import RatingsPage    from "@/features/ratings/pages/RatingsPage";
 
 const Routes = () => {
   return (
@@ -90,6 +91,9 @@ const Routes = () => {
 
           {/* Telegram */}
           <Route path="/telegram" element={<TelegramPage />} />
+
+          {/* Ratings / DER */}
+          <Route path="/ratings" element={<RatingsPage />} />
         </Route>
       </Route>
 
