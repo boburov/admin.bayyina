@@ -63,8 +63,10 @@ export const formatMoney = (val) => {
   return String(val);
 };
 
-export const formatMoneyFull = (val) =>
-  val ? `${Number(val).toLocaleString()} so'm` : "0 so'm";
+export const formatMoneyFull = (val) => {
+  if (!val && val !== 0) return "0 so'm";
+  return `${Number(val).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} so'm`;
+};
 
 export const TOOLTIP_STYLE = {
   contentStyle: {

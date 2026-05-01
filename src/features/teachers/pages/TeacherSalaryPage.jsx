@@ -12,6 +12,8 @@ import {
 import { useAppQuery } from "@/shared/lib/query/query-hooks";
 import useModal        from "@/shared/hooks/useModal";
 import { formatUzDate } from "@/shared/utils/formatDate";
+import { formatMoney } from "@/shared/utils/formatNumber";
+import { formatPhone } from "@/shared/utils/formatPhone";
 
 import Card       from "@/shared/components/ui/Card";
 import Button     from "@/shared/components/ui/button/Button";
@@ -120,7 +122,7 @@ const TeacherSalaryPage = () => {
             </div>
             <div className="min-w-0">
               <p className="text-xs text-gray-400">Telefon</p>
-              <p className="text-sm font-semibold text-gray-900">{teacher.phone ?? "—"}</p>
+              <p className="text-sm font-semibold text-gray-900">{teacher.phone ? formatPhone(String(teacher.phone)) : "—"}</p>
             </div>
           </Card>
 
@@ -131,7 +133,7 @@ const TeacherSalaryPage = () => {
             <div className="min-w-0">
               <p className="text-xs text-gray-400">Jami sof (filtr)</p>
               <p className="text-sm font-semibold text-gray-900">
-                {totalNet.toLocaleString()} so'm
+                {formatMoney(totalNet)}
               </p>
             </div>
           </Card>
@@ -206,15 +208,15 @@ const TeacherSalaryPage = () => {
                       ? sal.groups.map((g) => g.groupName).join(", ")
                       : "—"}
                   </td>
-                  <td>{sal.totalAmount?.toLocaleString()} so'm</td>
+                  <td>{formatMoney(sal.totalAmount)}</td>
                   <td className={sal.bonus > 0 ? "text-green-600 font-medium" : "text-gray-400"}>
-                    {sal.bonus > 0 ? `+${sal.bonus.toLocaleString()}` : "—"}
+                    {sal.bonus > 0 ? `+${formatMoney(sal.bonus)}` : "—"}
                   </td>
                   <td className={sal.deduction > 0 ? "text-red-500 font-medium" : "text-gray-400"}>
-                    {sal.deduction > 0 ? `-${sal.deduction.toLocaleString()}` : "—"}
+                    {sal.deduction > 0 ? `-${formatMoney(sal.deduction)}` : "—"}
                   </td>
                   <td className="font-semibold text-gray-900">
-                    {sal.netAmount?.toLocaleString()} so'm
+                    {formatMoney(sal.netAmount)}
                   </td>
                   <td className="text-gray-500 text-sm">
                     {sal.paidAt ? formatUzDate(sal.paidAt) : "—"}

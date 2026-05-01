@@ -69,7 +69,7 @@ const Counter = ({
       return formatter(animatedValue);
     }
 
-    return animatedValue.toLocaleString("uz-UZ");
+    return animatedValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   }, [animatedValue, formatter]);
 
   return (

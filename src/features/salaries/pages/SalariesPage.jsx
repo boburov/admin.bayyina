@@ -32,6 +32,7 @@ import GenerateSalariesModal from "@/features/salaries/components/GenerateSalari
 
 // Utils
 import { formatUzDate } from "@/shared/utils/formatDate";
+import { formatMoney } from "@/shared/utils/formatNumber";
 
 // Icons
 import {
@@ -186,7 +187,7 @@ const SalariesPage = () => {
               <StatCard label="Jami"        value={total}                             icon={<Wallet      className="size-5" strokeWidth={1.5} />} color="blue"   />
               <StatCard label="To'langan"   value={paidCount}                         icon={<CheckCircle2 className="size-5" strokeWidth={1.5} />} color="green"  />
               <StatCard label="Kutilmoqda"  value={pendingCount}                      icon={<Clock       className="size-5" strokeWidth={1.5} />} color="orange" />
-              <StatCard label="Jami to'lov" value={`${totalNet.toLocaleString()} so'm`} icon={<Banknote  className="size-5" strokeWidth={1.5} />} color="purple" small />
+              <StatCard label="Jami to'lov" value={formatMoney(totalNet)} icon={<Banknote  className="size-5" strokeWidth={1.5} />} color="purple" small />
             </div>
           )}
 
@@ -230,14 +231,14 @@ const SalariesPage = () => {
                         <td className="text-center text-sm text-gray-400">{(page - 1) * 20 + idx + 1}</td>
                         <td className="text-sm font-medium text-primary whitespace-nowrap">{teacherName}</td>
                         <td className="text-sm text-gray-600 whitespace-nowrap">{formatMonthLabel(salary.month)}</td>
-                        <td className="text-sm text-gray-600 whitespace-nowrap text-right">{salary.totalAmount?.toLocaleString()} so'm</td>
+                        <td className="text-sm text-gray-600 whitespace-nowrap text-right">{formatMoney(salary.totalAmount)}</td>
                         <td className="text-sm whitespace-nowrap text-right">
-                          {salary.bonus > 0 ? <span className="text-green-600">+{salary.bonus?.toLocaleString()} so'm</span> : <span className="text-gray-400">—</span>}
+                          {salary.bonus > 0 ? <span className="text-green-600">+{formatMoney(salary.bonus)}</span> : <span className="text-gray-400">—</span>}
                         </td>
                         <td className="text-sm whitespace-nowrap text-right">
-                          {salary.deduction > 0 ? <span className="text-red-500">-{salary.deduction?.toLocaleString()} so'm</span> : <span className="text-gray-400">—</span>}
+                          {salary.deduction > 0 ? <span className="text-red-500">-{formatMoney(salary.deduction)}</span> : <span className="text-gray-400">—</span>}
                         </td>
-                        <td className="text-sm font-semibold whitespace-nowrap text-right">{salary.netAmount?.toLocaleString()} so'm</td>
+                        <td className="text-sm font-semibold whitespace-nowrap text-right">{formatMoney(salary.netAmount)}</td>
                         <td><StatusBadge status={salary.status} /></td>
                         <td className="text-sm text-gray-400 whitespace-nowrap text-center">{salary.paidAt ? formatUzDate(salary.paidAt) : "—"}</td>
                         <td className="text-center" onClick={(e) => e.stopPropagation()}>
@@ -318,7 +319,7 @@ const TeacherSalaryPanel = ({
       <div className="grid grid-cols-3 gap-3">
         <StatCard label="To'langan"   value={paidCount}                           icon={<CheckCircle2 className="size-5" strokeWidth={1.5} />} color="green"  />
         <StatCard label="Kutilmoqda"  value={pendingCount}                        icon={<Clock        className="size-5" strokeWidth={1.5} />} color="orange" />
-        <StatCard label="Jami to'lov" value={`${totalNet.toLocaleString()} so'm`} icon={<Banknote     className="size-5" strokeWidth={1.5} />} color="purple" small />
+        <StatCard label="Jami to'lov" value={formatMoney(totalNet)} icon={<Banknote     className="size-5" strokeWidth={1.5} />} color="purple" small />
       </div>
     )}
 
@@ -357,17 +358,17 @@ const TeacherSalaryPanel = ({
                 <span className="text-sm text-muted-foreground">
                   Hisoblangan:{" "}
                   <span className="text-foreground font-medium">
-                    {salary.totalAmount?.toLocaleString()} so'm
+                    {formatMoney(salary.totalAmount)}
                   </span>
                 </span>
                 {salary.bonus > 0 && (
                   <span className="text-sm text-green-600">
-                    +{salary.bonus?.toLocaleString()} so'm bonus
+                    +{formatMoney(salary.bonus)} bonus
                   </span>
                 )}
                 {salary.deduction > 0 && (
                   <span className="text-sm text-red-500">
-                    -{salary.deduction?.toLocaleString()} so'm jarima
+                    -{formatMoney(salary.deduction)} jarima
                   </span>
                 )}
               </div>
@@ -375,7 +376,7 @@ const TeacherSalaryPanel = ({
               {/* Net */}
               <div className="shrink-0 text-right">
                 <p className="text-sm font-semibold text-foreground">
-                  {salary.netAmount?.toLocaleString()} so'm
+                  {formatMoney(salary.netAmount)}
                 </p>
               </div>
 

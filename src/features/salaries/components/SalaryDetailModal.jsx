@@ -26,6 +26,7 @@ import ResponsiveModal from "@/shared/components/ui/ResponsiveModal";
 
 // Utils
 import { formatUzDate } from "@/shared/utils/formatDate";
+import { formatMoney } from "@/shared/utils/formatNumber";
 
 const SalaryDetailModal = () => (
   <ResponsiveModal
@@ -137,14 +138,14 @@ const Content = ({ close, isLoading, setIsLoading, salary }) => {
                     {g.salaryType === "percentage"
                       ? `${g.salaryValue}%`
                       : g.salaryType === "fixed"
-                        ? `Belgilangan: ${g.salaryValue?.toLocaleString()} so'm`
-                        : `${g.salaryValue?.toLocaleString()} so'm/talaba`}
+                        ? `Belgilangan: ${formatMoney(g.salaryValue)}`
+                        : `${formatMoney(g.salaryValue)}/talaba`}
                     {" · "}
                     {g.paidStudentsCount}/{g.studentCount} to'lagan
                   </p>
                 </div>
                 <p className="text-sm font-semibold text-gray-900 whitespace-nowrap">
-                  {g.amount?.toLocaleString()} so'm
+                  {formatMoney(g.amount)}
                 </p>
               </div>
             ))}
@@ -155,26 +156,26 @@ const Content = ({ close, isLoading, setIsLoading, salary }) => {
       <div className="bg-gray-50 border border-gray-200 rounded-md px-4 py-3 space-y-1.5 text-sm">
         <Row
           label="Hisoblangan"
-          value={`${salary.totalAmount?.toLocaleString()} so'm`}
+          value={formatMoney(salary.totalAmount)}
         />
         {salary.bonus > 0 && (
           <Row
             label="Bonus"
-            value={`+${salary.bonus?.toLocaleString()} so'm`}
+            value={`+${formatMoney(salary.bonus)}`}
             green
           />
         )}
         {salary.deduction > 0 && (
           <Row
             label="Jarima"
-            value={`-${salary.deduction?.toLocaleString()} so'm`}
+            value={`-${formatMoney(salary.deduction)}`}
             red
           />
         )}
         <div className="border-t border-gray-200 pt-1.5">
           <Row
             label="Sof to'lov"
-            value={`${salary.netAmount?.toLocaleString()} so'm`}
+            value={formatMoney(salary.netAmount)}
             bold
           />
         </div>

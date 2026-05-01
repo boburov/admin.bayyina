@@ -17,6 +17,8 @@ import { statisticsAPI } from "@/features/statistics/api/statistics.api";
 
 // Utils
 import { formatUzDate } from "@/shared/utils/formatDate";
+import { formatMoney, formatNumber } from "@/shared/utils/formatNumber";
+import { formatPhone } from "@/shared/utils/formatPhone";
 
 // Data
 import { monthOptions }      from "@/features/payments/data/payments.data";
@@ -172,11 +174,11 @@ const ClassDetailPage = () => {
             {group.salaryType === "percentage"
               ? `${group.salaryValue ?? 0}%`
               : group.salaryType === "per_student"
-              ? `${(group.salaryValue ?? 0).toLocaleString()} so'm / o'quvchi`
-              : `${(group.salaryValue ?? 0).toLocaleString()} so'm`}
+              ? `${formatNumber(group.salaryValue ?? 0)} so'm / o'quvchi`
+              : `${formatNumber(group.salaryValue ?? 0)} so'm`}
           </span>
           {group.minSalary > 0 && (
-            <span>Minimal: {group.minSalary.toLocaleString()} so'm</span>
+            <span>Minimal: {formatMoney(group.minSalary)}</span>
           )}
         </div>
       )}
@@ -257,7 +259,7 @@ const ClassDetailPage = () => {
 
                       {/* Telefon */}
                       <td className="text-center text-sm text-gray-400 whitespace-nowrap">
-                        +{s.phone}
+                        {formatPhone(String(s.phone))}
                       </td>
 
                       {/* Davomat */}
@@ -305,11 +307,11 @@ const ClassDetailPage = () => {
                       <td className="text-center text-sm whitespace-nowrap">
                         {enrollment.debt > 0 ? (
                           <span className="text-red-600 font-medium">
-                            -{enrollment.debt.toLocaleString()} so'm
+                            -{formatMoney(enrollment.debt)}
                           </span>
                         ) : enrollment.balance > 0 ? (
                           <span className="text-blue-600 font-medium">
-                            +{enrollment.balance.toLocaleString()} so'm
+                            +{formatMoney(enrollment.balance)}
                           </span>
                         ) : (
                           <span className="text-gray-300">—</span>

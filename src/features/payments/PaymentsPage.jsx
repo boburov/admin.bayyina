@@ -31,6 +31,7 @@ import {
 // Utils
 import { formatUzDate } from "@/shared/utils/formatDate";
 import { formatPhone } from "@/shared/utils/formatPhone";
+import { formatMoney } from "@/shared/utils/formatNumber";
 
 // Components
 import Card from "@/shared/components/ui/Card";
@@ -234,9 +235,9 @@ const EnrollmentsTab = () => {
             icon={<CheckCircle2 className="size-5" strokeWidth={1.5} />} color="green" />
           <StatCard label="To'lamagan" value={stats.unpaid}
             icon={<XCircle className="size-5" strokeWidth={1.5} />} color="red" />
-          <StatCard label="Jami qarz" value={`${stats.totalDebt.toLocaleString()} so'm`}
+          <StatCard label="Jami qarz" value={formatMoney(stats.totalDebt)}
             icon={<TrendingDown className="size-5" strokeWidth={1.5} />} color="orange" small />
-          <StatCard label="Jami balans" value={`${stats.totalBalance.toLocaleString()} so'm`}
+          <StatCard label="Jami balans" value={formatMoney(stats.totalBalance)}
             icon={<Wallet className="size-5" strokeWidth={1.5} />} color="purple" small />
         </div>
       )}
@@ -255,7 +256,7 @@ const EnrollmentsTab = () => {
               {groupInfo.name} — {formatMonthLabel(selectedMonth)}
               {groupInfo.price > 0 && (
                 <span className="ml-2 text-gray-500">
-                  · Oylik: {groupInfo.price.toLocaleString()} so'm
+                  · Oylik: {formatMoney(groupInfo.price)}
                 </span>
               )}
             </p>
@@ -312,7 +313,7 @@ const EnrollmentsTab = () => {
                         <td className="text-center text-sm whitespace-nowrap">
                           {enrollment.discount > 0 ? (
                             <span className="text-purple-600 font-medium">
-                              -{enrollment.discount.toLocaleString()} so'm
+                              -{formatMoney(enrollment.discount)}
                             </span>
                           ) : (
                             <span className="text-gray-400">—</span>
@@ -331,7 +332,7 @@ const EnrollmentsTab = () => {
                         <td className="text-center text-sm whitespace-nowrap">
                           {enrollment.debt > 0 ? (
                             <span className="text-red-600 font-medium">
-                              {enrollment.debt.toLocaleString()} so'm
+                              {formatMoney(enrollment.debt)}
                             </span>
                           ) : (
                             <span className="text-gray-400">—</span>
@@ -340,7 +341,7 @@ const EnrollmentsTab = () => {
                         <td className="text-center text-sm whitespace-nowrap">
                           {enrollment.balance > 0 ? (
                             <span className="text-blue-600 font-medium">
-                              {enrollment.balance.toLocaleString()} so'm
+                              {formatMoney(enrollment.balance)}
                             </span>
                           ) : (
                             <span className="text-gray-400">—</span>
@@ -382,12 +383,12 @@ const EnrollmentsTab = () => {
             <span className="text-red-500">To'lamagan: <strong>{stats.unpaid}</strong></span>
             {stats.totalDebt > 0 && (
               <span className="text-orange-500">
-                Jami qarz: <strong>{stats.totalDebt.toLocaleString()} so'm</strong>
+                Jami qarz: <strong>{formatMoney(stats.totalDebt)}</strong>
               </span>
             )}
             {stats.totalBalance > 0 && (
               <span className="text-blue-500">
-                Jami balans: <strong>{stats.totalBalance.toLocaleString()} so'm</strong>
+                Jami balans: <strong>{formatMoney(stats.totalBalance)}</strong>
               </span>
             )}
           </div>
@@ -592,7 +593,7 @@ const RecordsTab = () => {
                       {s?.phone ? formatPhone(String(s.phone)) : "—"}
                     </td>
                     <td className="text-center text-sm font-medium text-gray-900 whitespace-nowrap">
-                      {payment.amount?.toLocaleString()} so'm
+                      {formatMoney(payment.amount)}
                     </td>
                     <td className="text-center">
                       <PaymentStatusBadge status={payment.status} />

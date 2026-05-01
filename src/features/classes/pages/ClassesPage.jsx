@@ -19,6 +19,8 @@ import useModal from "@/shared/hooks/useModal";
 // Data
 import { daysOptions } from "../data/classes.data";
 
+import { formatMoney } from "@/shared/utils/formatNumber";
+
 // Components
 import Button from "@/shared/components/ui/button/Button";
 import Card from "@/shared/components/ui/Card";
@@ -247,7 +249,7 @@ const Classes = () => {
               {/* Price */}
               <div className="pt-3 border-t">
                 <span className="text-sm font-semibold text-gray-900">
-                  {Number(group.price).toLocaleString("uz-UZ")} so'm
+                  {formatMoney(group.price)}
                 </span>
               </div>
             </Card>

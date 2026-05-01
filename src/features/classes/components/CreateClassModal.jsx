@@ -1,5 +1,6 @@
 // Toast
 import { toast } from "sonner";
+import { formatPhone } from "@/shared/utils/formatPhone";
 // API
 import { classesAPI } from "@/features/classes/api/classes.api";
 import { usersAPI } from "@/features/users/api/users.api";
@@ -219,7 +220,7 @@ const Content = ({ close, isLoading, setIsLoading }) => {
                         {teacher.firstName} {teacher.lastName}
                       </p>
                       <p className="text-xs text-secondary-text">
-                        +{teacher.phone}
+                        {formatPhone(String(teacher.phone))}
                       </p>
                     </div>
 

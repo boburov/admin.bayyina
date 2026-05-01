@@ -5,9 +5,8 @@
  */
 export const formatPhone = (phone) => {
   if (!phone) return "";
-  const cleaned = phone.replace(/\D/g, "");
-  if (cleaned.length === 12) {
-    return `+${cleaned.slice(0, 3)} (${cleaned.slice(3, 5)}) ${cleaned.slice(5, 8)}-${cleaned.slice(8, 10)}-${cleaned.slice(10, 12)}`;
-  }
-  return phone;
+  const d = String(phone).replace(/\D/g, "");
+  if (d.length === 12)
+    return `+${d.slice(0, 3)}-${d.slice(3, 5)}-${d.slice(5, 8)}-${d.slice(8, 10)}-${d.slice(10, 12)}`;
+  return String(phone);
 };

@@ -18,6 +18,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 
 // Helpers
 import { formatUzDate } from "@/shared/utils/formatDate";
+import { formatPhone } from "@/shared/utils/formatPhone";
 
 // Data
 import { genderOptions } from "../../users/data/users.data";
@@ -241,7 +242,7 @@ const Teachers = () => {
                   <td className="py-4 text-center text-sm font-medium text-gray-900">
                     {user.firstName} {user.lastName}
                   </td>
-                  <td className="text-center text-sm text-gray-500">{user.phone}</td>
+                  <td className="text-center text-sm text-gray-500">{formatPhone(String(user.phone))}</td>
                   <td className="text-center text-sm text-gray-500">{getGenderLabel(user.gender)}</td>
                   <td className="text-center text-sm text-gray-500">{user.age ?? "-"}</td>
                   <td className="text-center text-sm text-gray-500">{user.source ?? "-"}</td>
