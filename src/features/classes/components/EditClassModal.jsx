@@ -16,13 +16,14 @@ const EditClassModal = () => (
 const Content = ({ close, isLoading, setIsLoading, ...classData }) => {
   const queryClient = useQueryClient();
 
-  const { name, price, salaryType, salaryValue, minSalary, showPaymentsToTeacher, setField } =
+  const { name, price, salaryOverride, salaryType, salaryValue, minSalary, showPaymentsToTeacher, setField } =
     useObjectState({
-      name:                 classData.name        ?? "",
-      price:                classData.price        ?? "",
-      salaryType:           classData.salaryType   ?? "percentage",
-      salaryValue:          classData.salaryValue  ?? "",
-      minSalary:            classData.minSalary    ?? "",
+      name:                 classData.name         ?? "",
+      price:                classData.price         ?? "",
+      salaryOverride:       classData.salaryOverride ?? false,
+      salaryType:           classData.salaryType    ?? "percentage",
+      salaryValue:          classData.salaryValue   ?? "",
+      minSalary:            classData.minSalary     ?? "",
       showPaymentsToTeacher: classData.showPaymentsToTeacher ?? false,
     });
 
@@ -33,9 +34,12 @@ const Content = ({ close, isLoading, setIsLoading, ...classData }) => {
     const payload = {
       name,
       ...(price !== "" && { price: Number(price) }),
-      salaryType,
-      ...(salaryValue !== "" && { salaryValue: Number(salaryValue) }),
-      ...(minSalary !== "" && { minSalary: Number(minSalary) }),
+      salaryOverride,
+      ...(salaryOverride && {
+        salaryType,
+        ...(salaryValue !== "" && { salaryValue: Number(salaryValue) }),
+        ...(minSalary   !== "" && { minSalary:   Number(minSalary) }),
+      }),
       showPaymentsToTeacher,
     };
 
@@ -77,42 +81,59 @@ const Content = ({ close, isLoading, setIsLoading, ...classData }) => {
         onChange={(e) => setField("price", e.target.value)}
       />
 
-      {/* Salary settings */}
-      <div className="pt-2 border-t border-border-secondary">
-        <p className="text-xs font-semibold text-secondary-text uppercase tracking-wider mb-3">
-          O'qituvchi maosh sozlamalari
-        </p>
-
-        <div className="flex flex-col gap-1.5 mb-3">
-          <label className="text-sm font-medium">Maosh turi</label>
-          <select
-            value={salaryType}
-            onChange={(e) => setField("salaryType", e.target.value)}
-            className="w-full px-3 py-2 text-sm border border-border-secondary rounded-lg bg-background-secondary outline-none focus:border-border-primary transition-colors text-primary"
-          >
-            {salaryTypeOptions.map((o) => (
-              <option key={o.value} value={o.value}>{o.label}</option>
-            ))}
-          </select>
+      {/* Salary override toggle */}
+      <div className="flex items-center justify-between pt-2 border-t border-border-secondary">
+        <div>
+          <p className="text-sm font-medium text-primary">Bu guruh uchun alohida maosh</p>
+          <p className="text-xs text-secondary-text mt-0.5">
+            O'chiq — o'qituvchi darajasidagi umumiy sozlama ishlaydi
+          </p>
         </div>
+        <button
+          type="button"
+          onClick={() => setField("salaryOverride", !salaryOverride)}
+          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+            salaryOverride ? "bg-blue-500" : "bg-gray-300"
+          }`}
+        >
+          <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
+            salaryOverride ? "translate-x-6" : "translate-x-1"
+          }`} />
+        </button>
+      </div>
 
-        <InputField
-          type="number"
-          name="salaryValue"
-          value={salaryValue}
-          label={
-            salaryType === "percentage"
-              ? "Foiz (%)"
-              : salaryType === "per_student"
-              ? "Har bir o'quvchi uchun (so'm)"
-              : "Belgilangan oylik (so'm)"
-          }
-          placeholder={salaryType === "percentage" ? "20" : "500000"}
-          onChange={(e) => setField("salaryValue", e.target.value)}
-        />
+      {/* Salary settings — only if override enabled */}
+      {salaryOverride && (
+        <div className="pl-3 border-l-2 border-blue-200 space-y-3">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium">Maosh turi</label>
+            <select
+              value={salaryType}
+              onChange={(e) => setField("salaryType", e.target.value)}
+              className="w-full px-3 py-2 text-sm border border-border-secondary rounded-lg bg-background-secondary outline-none focus:border-border-primary transition-colors text-primary"
+            >
+              {salaryTypeOptions.map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
+          </div>
 
-        {isPercentageOrPerStudent && (
-          <div className="mt-3">
+          <InputField
+            type="number"
+            name="salaryValue"
+            value={salaryValue}
+            label={
+              salaryType === "percentage"
+                ? "Foiz (%)"
+                : salaryType === "per_student"
+                ? "Har bir o'quvchi uchun (so'm)"
+                : "Belgilangan oylik (so'm)"
+            }
+            placeholder={salaryType === "percentage" ? "20" : "500000"}
+            onChange={(e) => setField("salaryValue", e.target.value)}
+          />
+
+          {isPercentageOrPerStudent && (
             <InputField
               type="number"
               name="minSalary"
@@ -121,9 +142,9 @@ const Content = ({ close, isLoading, setIsLoading, ...classData }) => {
               placeholder="0 (yo'q)"
               onChange={(e) => setField("minSalary", e.target.value)}
             />
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
 
       {/* Payment visibility toggle */}
       <div className="flex items-center justify-between pt-2 border-t border-border-secondary">

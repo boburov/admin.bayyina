@@ -16,6 +16,7 @@ import ResponsiveModal from "@/shared/components/ui/ResponsiveModal";
 
 // Data
 import { genderOptions } from "../data/users.data";
+import { salaryTypeOptions } from "@/features/classes/data/classes.data";
 
 // Settings hooks
 import { useLeadSources } from "@/features/settings/hooks/useLeadSources";
@@ -42,14 +43,19 @@ const EditUserModal = () => (
 const Content = ({ close, isLoading, setIsLoading, ...user }) => {
   const queryClient = useQueryClient();
 
-  const { firstName, lastName, gender, age, source, telegramId, setField } =
+  const isTeacher = user.role === "teacher";
+
+  const { firstName, lastName, gender, age, source, telegramId, salaryType, salaryValue, minSalary, setField } =
     useObjectState({
-      firstName: user.firstName || "",
-      lastName: user.lastName || "",
-      gender: user.gender || "",
-      age: user.age || "",
-      source: user.source || "",
-      telegramId: user.telegramId || "",
+      firstName:   user.firstName   || "",
+      lastName:    user.lastName    || "",
+      gender:      user.gender      || "",
+      age:         user.age         || "",
+      source:      user.source      || "",
+      telegramId:  user.telegramId  || "",
+      salaryType:  user.salaryType  || "percentage",
+      salaryValue: user.salaryValue ?? "",
+      minSalary:   user.minSalary   ?? "",
     });
 
   // Pre-populate groups from user data
@@ -84,16 +90,23 @@ const Content = ({ close, isLoading, setIsLoading, ...user }) => {
 
     setIsLoading(true);
 
+    const payload = {
+      firstName:  firstName.trim(),
+      lastName:   lastName.trim(),
+      gender:     gender || null,
+      age:        age ? Number(age) : null,
+      source:     source || null,
+      telegramId: telegramId.trim() || null,
+      groupIds:   selectedGroupIds,
+      ...(isTeacher && {
+        salaryType,
+        salaryValue: salaryValue !== "" ? Number(salaryValue) : null,
+        minSalary:   minSalary   !== "" ? Number(minSalary)   : 0,
+      }),
+    };
+
     usersAPI
-      .update(user._id, {
-        firstName: firstName.trim(),
-        lastName: lastName.trim(),
-        gender: gender || null,
-        age: age ? Number(age) : null,
-        source: source || null,
-        telegramId: telegramId.trim() || null,
-        groupIds: selectedGroupIds,
-      })
+      .update(user._id, payload)
       .then(() => {
         close();
         queryClient.invalidateQueries({ queryKey: ["users"] });
@@ -250,6 +263,59 @@ const Content = ({ close, isLoading, setIsLoading, ...user }) => {
           </div>
         </div>
       </div>
+
+      {/* Salary settings — only for teachers */}
+      {isTeacher && (
+        <div className="pt-2 border-t border-gray-200">
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+            Maosh sozlamalari (barcha guruhlarga qo'llanadi)
+          </p>
+
+          <div className="flex flex-col gap-1.5 mb-3">
+            <label className="text-sm font-medium text-gray-700">Maosh turi</label>
+            <select
+              value={salaryType}
+              onChange={(e) => setField("salaryType", e.target.value)}
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white outline-none focus:border-blue-400 transition-colors"
+            >
+              {salaryTypeOptions.map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
+          </div>
+
+          <Input
+            type="number"
+            label={
+              salaryType === "percentage"
+                ? "Foiz (%)"
+                : salaryType === "per_student"
+                ? "Har bir o'quvchi uchun (so'm)"
+                : "Belgilangan oylik (so'm)"
+            }
+            name="salaryValue"
+            value={salaryValue}
+            placeholder={salaryType === "percentage" ? "20" : "500000"}
+            onChange={(v) => setField("salaryValue", v)}
+          />
+
+          {salaryType !== "fixed" && (
+            <div className="mt-3">
+              <Input
+                type="number"
+                label="Minimal kafolatlangan oylik (so'm)"
+                name="minSalary"
+                value={minSalary}
+                placeholder="0"
+                onChange={(v) => setField("minSalary", v)}
+              />
+              <p className="text-xs text-gray-400 mt-1 ml-1">
+                Hisoblangan summa bundan kam bo'lsa, minimal summa to'lanadi
+              </p>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Actions */}
       <div className="flex flex-col-reverse gap-3 w-full pt-1 xs:flex-row xs:justify-end">
