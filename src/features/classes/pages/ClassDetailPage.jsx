@@ -9,16 +9,18 @@ import { useParams, useNavigate } from "react-router-dom";
 
 // TanStack Query
 import { useAppQuery } from "@/shared/lib/query/query-hooks";
+import { useQueryClient } from "@tanstack/react-query";
 
 // API
-import { classesAPI }   from "@/features/classes/api/classes.api";
+import { classesAPI }    from "@/features/classes/api/classes.api";
 import { statisticsAPI } from "@/features/statistics/api/statistics.api";
 
 // Utils
 import { formatUzDate } from "@/shared/utils/formatDate";
 
 // Data
-import { monthOptions } from "@/features/payments/data/payments.data";
+import { monthOptions }      from "@/features/payments/data/payments.data";
+import { salaryTypeOptions } from "@/features/classes/data/classes.data";
 
 // Hooks
 import useModal from "@/shared/hooks/useModal";
@@ -37,6 +39,8 @@ import {
   Users,
   CheckCircle2,
   XCircle,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 
 // ─── Helper ───────────────────────────────────────────────────────────────────
@@ -52,12 +56,27 @@ const isPaidForMonth = (enrollment, selectedMonth) => {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 const ClassDetailPage = () => {
-  const { classId } = useParams();
-  const navigate    = useNavigate();
-  const { openModal } = useModal("transferEnrollment");
+  const { classId }    = useParams();
+  const navigate       = useNavigate();
+  const queryClient    = useQueryClient();
+  const { openModal }  = useModal("transferEnrollment");
   const { openModal: openCompleteModal } = useModal("completeEnrollment");
 
   const [selectedMonth, setSelectedMonth] = useState(monthOptions[0].value);
+  const [togglingPayments, setTogglingPayments] = useState(false);
+
+  const togglePaymentVisibility = async (currentValue) => {
+    setTogglingPayments(true);
+    try {
+      await classesAPI.update(classId, { showPaymentsToTeacher: !currentValue });
+      queryClient.invalidateQueries({ queryKey: ["group-detail", classId] });
+      toast.success(!currentValue ? "To'lovlar o'qituvchiga ko'rinadi" : "To'lovlar yashirildi");
+    } catch {
+      toast.error("Xatolik yuz berdi");
+    } finally {
+      setTogglingPayments(false);
+    }
+  };
 
   // Group info + enrollments
   const { data: groupData, isLoading: groupLoading } = useAppQuery({
@@ -124,7 +143,43 @@ const ClassDetailPage = () => {
           <h1 className="page-title">{group.name}</h1>
         </div>
 
+        {/* Payment visibility toggle */}
+        <button
+          type="button"
+          disabled={togglingPayments}
+          onClick={() => togglePaymentVisibility(group.showPaymentsToTeacher)}
+          title={group.showPaymentsToTeacher ? "To'lovlarni yashirish" : "To'lovlarni ko'rsatish"}
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+            group.showPaymentsToTeacher
+              ? "bg-green-50 border-green-300 text-green-700 hover:bg-green-100"
+              : "bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100"
+          } disabled:opacity-50 disabled:cursor-not-allowed`}
+        >
+          {group.showPaymentsToTeacher
+            ? <><Eye className="size-3.5" strokeWidth={1.5} /> To'lovlar ko'rinadi</>
+            : <><EyeOff className="size-3.5" strokeWidth={1.5} /> To'lovlar yashirin</>
+          }
+        </button>
       </div>
+
+      {/* Salary info */}
+      {(group.salaryType || group.salaryValue) && (
+        <div className="flex flex-wrap items-center gap-4 py-2.5 px-4 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800">
+          <span className="font-semibold">
+            Maosh: {salaryTypeOptions.find((o) => o.value === (group.salaryType || "percentage"))?.label}
+          </span>
+          <span>
+            {group.salaryType === "percentage"
+              ? `${group.salaryValue ?? 0}%`
+              : group.salaryType === "per_student"
+              ? `${(group.salaryValue ?? 0).toLocaleString()} so'm / o'quvchi`
+              : `${(group.salaryValue ?? 0).toLocaleString()} so'm`}
+          </span>
+          {group.minSalary > 0 && (
+            <span>Minimal: {group.minSalary.toLocaleString()} so'm</span>
+          )}
+        </div>
+      )}
 
       {/* Filters + stats */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
