@@ -11,10 +11,11 @@ import { toast } from "sonner";
 import { leadSourcesAPI }     from "../api/leadSources.api";
 import { courseTypesAPI }     from "../api/courseTypes.api";
 import { rejectionReasonsAPI } from "../api/rejectionReasons.api";
+import { interestsAPI }       from "../api/interests.api";
 
 // Icons
 import {
-  Plus, Pencil, Trash2, Check, X, MapPin, BookOpen, AlertCircle,
+  Plus, Pencil, Trash2, Check, X, MapPin, BookOpen, AlertCircle, Star,
 } from "lucide-react";
 
 // Components
@@ -53,7 +54,7 @@ const LeadSourcesTab = () => {
 
   const { data, isLoading } = useQuery({
     queryKey: ["settings", "lead-sources"],
-    queryFn:  () => leadSourcesAPI.getAll({ limit: 100 }).then((r) => r.data.data),
+    queryFn:  () => leadSourcesAPI.getAll({ limit: 100 }).then((r) => r.data),
   });
 
   const invalidate = () => qc.invalidateQueries({ queryKey: ["settings", "lead-sources"] });
@@ -188,7 +189,7 @@ const CourseTypesTab = () => {
 
   const { data, isLoading } = useQuery({
     queryKey: ["settings", "course-types"],
-    queryFn:  () => courseTypesAPI.getAll({ limit: 100 }).then((r) => r.data.data),
+    queryFn:  () => courseTypesAPI.getAll({ limit: 100 }).then((r) => r.data),
   });
 
   const invalidate = () => qc.invalidateQueries({ queryKey: ["settings", "course-types"] });
@@ -331,7 +332,7 @@ const RejectionReasonsTab = () => {
 
   const { data, isLoading } = useQuery({
     queryKey: ["settings", "rejection-reasons"],
-    queryFn:  () => rejectionReasonsAPI.getAll({ limit: 100 }).then((r) => r.data.data),
+    queryFn:  () => rejectionReasonsAPI.getAll({ limit: 100 }).then((r) => r.data),
   });
 
   const invalidate = () => qc.invalidateQueries({ queryKey: ["settings", "rejection-reasons"] });
@@ -457,12 +458,144 @@ const RejectionReasonsTab = () => {
   );
 };
 
+// ─── Interests tab ────────────────────────────────────────────────────────────
+
+const InterestsTab = () => {
+  const qc = useQueryClient();
+  const [adding, setAdding]     = useState(false);
+  const [editId, setEditId]     = useState(null);
+  const [deleteId, setDeleteId] = useState(null);
+  const [form, setForm]         = useState({ name: "" });
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["settings", "interests"],
+    queryFn:  () => interestsAPI.getAll({ limit: 100 }).then((r) => r.data),
+  });
+
+  const invalidate = () => {
+    qc.invalidateQueries({ queryKey: ["settings", "interests"] });
+    qc.invalidateQueries({ queryKey: ["select-options", "interest_type"] });
+  };
+
+  const createMut = useMutation({
+    mutationFn: (d) => interestsAPI.create(d),
+    onSuccess: () => { toast.success("Qiziqish qo'shildi"); invalidate(); setAdding(false); setForm({ name: "" }); },
+    onError:   (e) => toast.error(e.response?.data?.message || "Xatolik"),
+  });
+
+  const updateMut = useMutation({
+    mutationFn: ({ id, d }) => interestsAPI.update(id, d),
+    onSuccess: () => { toast.success("Yangilandi"); invalidate(); setEditId(null); },
+    onError:   (e) => toast.error(e.response?.data?.message || "Xatolik"),
+  });
+
+  const deleteMut = useMutation({
+    mutationFn: (id) => interestsAPI.delete(id),
+    onSuccess: () => { toast.success("O'chirildi"); invalidate(); setDeleteId(null); },
+    onError:   (e) => toast.error(e.response?.data?.message || "Xatolik"),
+  });
+
+  const fields = [{ key: "name", placeholder: "Qiziqish nomi (masalan: Frontend) *" }];
+  const items = data?.interests ?? [];
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-xs text-gray-400">{items.length} ta qiziqish</p>
+        {!adding && (
+          <button
+            onClick={() => { setAdding(true); setForm({ name: "" }); }}
+            className="flex items-center gap-1.5 text-xs px-3 py-1.5 bg-brown-800 text-white rounded hover:bg-brown-700"
+          >
+            <Plus size={12} /> Qo'shish
+          </button>
+        )}
+      </div>
+
+      {adding && (
+        <div className="mb-3 p-3 bg-gray-50 border border-gray-200 rounded">
+          <EditRow
+            value={form}
+            onChange={(k, v) => setForm((p) => ({ ...p, [k]: v }))}
+            onSave={() => { if (!form.name.trim()) return toast.error("Nom kiritilishi shart"); createMut.mutate({ name: form.name.trim() }); }}
+            onCancel={() => setAdding(false)}
+            fields={fields}
+          />
+        </div>
+      )}
+
+      {isLoading ? (
+        <div className="space-y-2">
+          {[1,2,3].map((i) => <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />)}
+        </div>
+      ) : items.length === 0 ? (
+        <p className="text-sm text-gray-400 text-center py-8">Qiziqishlar yo'q</p>
+      ) : (
+        <div className="divide-y divide-gray-100">
+          {items.map((item) => (
+            <div key={item._id}>
+              {editId === item._id ? (
+                <EditRow
+                  value={form}
+                  onChange={(k, v) => setForm((p) => ({ ...p, [k]: v }))}
+                  onSave={() => { if (!form.name.trim()) return toast.error("Nom kiritilishi shart"); updateMut.mutate({ id: item._id, d: { name: form.name.trim() } }); }}
+                  onCancel={() => setEditId(null)}
+                  fields={fields}
+                />
+              ) : (
+                <div className="flex items-center justify-between py-2.5 gap-3">
+                  <p className="text-sm font-medium text-gray-900 flex-1 min-w-0">{item.name}</p>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      aria-label="Tahrirlash"
+                      onClick={() => { setEditId(item._id); setForm({ name: item.name }); }}
+                      className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded"
+                    >
+                      <Pencil size={13} />
+                    </button>
+                    {deleteId === item._id ? (
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => deleteMut.mutate(item._id)}
+                          disabled={deleteMut.isPending}
+                          className="text-[11px] px-2 py-0.5 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-60"
+                        >
+                          Ha
+                        </button>
+                        <button
+                          onClick={() => setDeleteId(null)}
+                          className="text-[11px] px-2 py-0.5 border border-gray-200 text-gray-600 rounded hover:bg-gray-50"
+                        >
+                          Yo'q
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        aria-label="O'chirish"
+                        onClick={() => setDeleteId(item._id)}
+                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 const TABS = [
-  { key: "sources", label: "Lead manbalar",      icon: MapPin,      component: LeadSourcesTab },
-  { key: "types",   label: "Kurs turlari",        icon: BookOpen,    component: CourseTypesTab },
-  { key: "reasons", label: "Rad etish sabablari", icon: AlertCircle, component: RejectionReasonsTab },
+  { key: "sources",   label: "Lead manbalar",      icon: MapPin,      component: LeadSourcesTab },
+  { key: "interests", label: "Qiziqishlar",         icon: Star,        component: InterestsTab },
+  { key: "types",     label: "Kurs turlari",        icon: BookOpen,    component: CourseTypesTab },
+  { key: "reasons",   label: "Rad etish sabablari", icon: AlertCircle, component: RejectionReasonsTab },
 ];
 
 const SettingsPage = () => {
@@ -473,7 +606,7 @@ const SettingsPage = () => {
     <div>
       <div className="mb-5">
         <h1 className="text-xl font-bold text-gray-900">Sozlamalar</h1>
-        <p className="text-sm text-gray-400 mt-0.5">Lead manbalar, kurs turlari va rad etish sabablari</p>
+        <p className="text-sm text-gray-400 mt-0.5">Lead manbalar, qiziqishlar, kurs turlari va rad etish sabablari</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">

@@ -14,6 +14,7 @@ import { rejectionReasonsAPI } from "@/features/settings/api/rejectionReasons.ap
 // Hooks
 import { useLeadSources } from "@/features/settings/hooks/useLeadSources";
 import { useCourseTypes } from "@/features/settings/hooks/useCourseTypes";
+import { useInterests }   from "@/features/settings/hooks/useInterests";
 
 // Components
 import LeadStatusBadge from "./LeadStatusBadge";
@@ -59,7 +60,7 @@ const resolveId = (field) => {
 
 // ─── Edit form ────────────────────────────────────────────────────────────────
 
-const EditForm = ({ lead, sources, courseTypes, onSave, onCancel, isPending }) => {
+const EditForm = ({ lead, sources, courseTypes, interests, onSave, onCancel, isPending }) => {
   const [form, setForm] = useState({
     firstName:  lead.firstName  ?? "",
     phone:      lead.phone      ?? "",
@@ -67,7 +68,7 @@ const EditForm = ({ lead, sources, courseTypes, onSave, onCancel, isPending }) =
     gender:     lead.gender     ?? "",
     source:     resolveId(lead.source),
     courseType: resolveId(lead.courseType),
-    interest:   typeof lead.interest === "object" ? (lead.interest?.name ?? "") : (lead.interest ?? ""),
+    interest:   resolveId(lead.interest),
     notes:      lead.notes      ?? "",
   });
 
@@ -134,7 +135,12 @@ const EditForm = ({ lead, sources, courseTypes, onSave, onCancel, isPending }) =
 
       <div>
         <label className={labelCls}>Qiziqish</label>
-        <input className={inputCls} value={form.interest} onChange={(e) => set("interest", e.target.value)} placeholder="Qaysi kursga qiziqmoqda" />
+        <select className={selectCls} value={form.interest} onChange={(e) => set("interest", e.target.value)}>
+          <option value="">Tanlang</option>
+          {interests.map((i) => (
+            <option key={i._id} value={i._id}>{i.name}</option>
+          ))}
+        </select>
       </div>
 
       <div>
@@ -179,6 +185,7 @@ const LeadDetailModal = ({ lead, open, onClose }) => {
 
   const { sources }     = useLeadSources({ enabled: open });
   const { courseTypes } = useCourseTypes({ enabled: open });
+  const { interests }   = useInterests({ enabled: open });
 
   // Fetch rejection reasons lazily
   const { data: reasonsData } = useQuery({
@@ -213,6 +220,7 @@ const LeadDetailModal = ({ lead, open, onClose }) => {
 
   const sourceName     = resolveName(lead.source,     sources)     ?? "—";
   const courseTypeName = resolveName(lead.courseType, courseTypes) ?? null;
+  const interestName   = resolveName(lead.interest,   interests)   ?? null;
 
   const changeStatus = (status) => {
     if (status === "rejected") { setIsRejecting(true); return; }
@@ -289,6 +297,7 @@ const LeadDetailModal = ({ lead, open, onClose }) => {
               lead={lead}
               sources={sources}
               courseTypes={courseTypes}
+              interests={interests}
               onSave={handleSaveEdit}
               onCancel={() => setIsEditing(false)}
               isPending={updateMutation.isPending}
@@ -307,12 +316,10 @@ const LeadDetailModal = ({ lead, open, onClose }) => {
                 <InfoRow icon={<Calendar size={13} />} label="Yaratilgan" value={lead.createdAt ? formatDateUZ(lead.createdAt) : "—"} />
               </div>
 
-              {lead.interest && (
+              {interestName && (
                 <div className="p-3 bg-gray-50 rounded-md">
                   <p className="text-xs text-gray-400 mb-1">Qiziqish</p>
-                  <p className="text-sm font-medium text-gray-800">
-                    {typeof lead.interest === "object" ? lead.interest.name : lead.interest}
-                  </p>
+                  <p className="text-sm font-medium text-gray-800">{interestName}</p>
                 </div>
               )}
 

@@ -1,5 +1,6 @@
 // Hooks
 import { useLeadSources } from "@/features/settings/hooks/useLeadSources";
+import { useInterests }   from "@/features/settings/hooks/useInterests";
 
 // Data
 import { STATUS_OPTIONS } from "../data/leads.data";
@@ -8,9 +9,10 @@ import { STATUS_OPTIONS } from "../data/leads.data";
 import { Search, X } from "lucide-react";
 
 const LeadsFilters = ({ filters, onChange, onReset }) => {
-  const hasFilters = filters.status || filters.source || filters.search;
+  const hasFilters = filters.status || filters.source || filters.interest || filters.search;
 
-  const { sources } = useLeadSources();
+  const { sources }   = useLeadSources();
+  const { interests } = useInterests();
 
   return (
     <div className="flex flex-wrap items-center gap-3">
@@ -47,6 +49,20 @@ const LeadsFilters = ({ filters, onChange, onReset }) => {
           <option key={s._id} value={s._id}>{s.name}</option>
         ))}
       </select>
+
+      {/* Interest filter */}
+      {interests.length > 0 && (
+        <select
+          value={filters.interest || ""}
+          onChange={(e) => onChange("interest", e.target.value)}
+          className="py-2 px-3 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
+        >
+          <option value="">Barcha qiziqishlar</option>
+          {interests.map((i) => (
+            <option key={i._id} value={i._id}>{i.name}</option>
+          ))}
+        </select>
+      )}
 
       {/* Reset */}
       {hasFilters && (

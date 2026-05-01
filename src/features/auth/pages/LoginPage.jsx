@@ -11,14 +11,17 @@ import { useNavigate } from "react-router-dom";
 import platforms from "../data/platforms.data";
 
 // Icons
-import { Check, Phone, Lock, Eye, EyeOff, ChevronLeft } from "lucide-react";
+import { Check, ChevronLeft } from "lucide-react";
 
 // API
 import { authAPI } from "@/features/auth/api/auth.api";
 
 // Hooks
 import useObjectState from "@/shared/hooks/useObjectState";
-import Input from "@/shared/components/form/input";
+
+// Shared UI components
+import InputTel from "@/shared/components/ui/input/InputTel";
+import InputPwd from "@/shared/components/ui/input/InputPwd";
 
 const LoginPage = () => {
   const { setField, showLoginForm, currentPlatform } = useObjectState({
@@ -109,24 +112,21 @@ const PlatformSelectForm = ({
 const LoginForm = ({ onShowLoginForm }) => {
   const navigate = useNavigate();
 
-  const { phone, password, setField, isLoading, showPassword } = useObjectState({
+  const { phone, password, setField, isLoading } = useObjectState({
     phone: "",
     password: "",
     isLoading: false,
-    showPassword: false,
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setField("isLoading", true);
 
-    const data = {
-      phone: Number(phone),
-      password: password?.trim(),
-    };
+    // Strip formatting — send only digits as a number (e.g. 998901234567)
+    const phoneNumber = Number(phone.replace(/\D/g, ""));
 
     authAPI
-      .login(data)
+      .login({ phone: phoneNumber, password: password?.trim() })
       .then((response) => {
         const token = response.data?.token ?? response.data?.accessToken;
         localStorage.setItem("token", token);
@@ -142,15 +142,21 @@ const LoginForm = ({ onShowLoginForm }) => {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2 mb-5">
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-6">
         <button
           type="button"
           onClick={onShowLoginForm}
-          className="flex items-center justify-center w-7 h-7 border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors"
+          className="flex items-center justify-center w-7 h-7 border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors shrink-0"
         >
           <ChevronLeft size={14} />
         </button>
-        <h2 className="text-sm font-semibold text-gray-700">Tizimga kirish</h2>
+        <div>
+          <h2 className="text-xl font-bold text-gray-900">Xush kelibsiz!</h2>
+          <p className="text-sm text-gray-500 mt-0.5">
+            Admin sifatida tizimga kiring
+          </p>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -159,22 +165,14 @@ const LoginForm = ({ onShowLoginForm }) => {
           <label htmlFor="phone" className="text-sm font-medium text-gray-700">
             Telefon raqam
           </label>
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
-              <Phone size={14} />
-            </span>
-            <input
-              id="phone"
-              type="text"
-              inputMode="numeric"
-              autoComplete="tel"
-              required
-              value={phone}
-              placeholder="Faqat raqamlar"
-              onChange={(e) => setField("phone", e.target.value.trim())}
-              className="w-full h-10 pl-9 pr-3 rounded-sm border border-gray-300 bg-white text-sm text-gray-900 placeholder:text-gray-400 outline-none focus:border-brown-800 transition-colors"
-            />
-          </div>
+          <InputTel
+            id="phone"
+            name="phone"
+            value={phone}
+            autoFocus
+            required
+            onChange={(e) => setField("phone", e.target.value)}
+          />
         </div>
 
         {/* Password */}
@@ -182,33 +180,19 @@ const LoginForm = ({ onShowLoginForm }) => {
           <label htmlFor="login-password" className="text-sm font-medium text-gray-700">
             Parol
           </label>
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
-              <Lock size={14} />
-            </span>
-            <input
-              id="login-password"
-              type={showPassword ? "text" : "password"}
-              autoComplete="current-password"
-              required
-              value={password}
-              onChange={(e) => setField("password", e.target.value.trim())}
-              className="w-full h-10 pl-9 pr-10 rounded-sm border border-gray-300 bg-white text-sm text-gray-900 placeholder:text-gray-400 outline-none focus:border-brown-800 transition-colors"
-            />
-            <button
-              type="button"
-              onClick={() => setField("showPassword", !showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
-            </button>
-          </div>
+          <InputPwd
+            id="login-password"
+            name="password"
+            value={password}
+            required
+            onChange={(e) => setField("password", e.target.value)}
+          />
         </div>
 
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full h-10 bg-brown-800 text-white text-sm font-medium hover:bg-brown-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed mt-1"
+          className="w-full h-10 bg-brown-800 text-white text-sm font-medium hover:bg-brown-900 transition-colors disabled:opacity-60 disabled:cursor-not-allowed mt-1"
         >
           {isLoading ? "Kirish..." : "Kirish"}
         </button>

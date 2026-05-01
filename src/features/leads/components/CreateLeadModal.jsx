@@ -13,6 +13,7 @@ import { leadsAPI } from "../api/leads.api";
 // Settings hooks
 import { useLeadSources } from "@/features/settings/hooks/useLeadSources";
 import { useCourseTypes } from "@/features/settings/hooks/useCourseTypes";
+import { useInterests }   from "@/features/settings/hooks/useInterests";
 
 // Shadcn
 import {
@@ -39,6 +40,7 @@ const CreateLeadModal = ({ open, onClose }) => {
 
   const { sources }     = useLeadSources({ enabled: open });
   const { courseTypes } = useCourseTypes({ enabled: open });
+  const { interests }   = useInterests({ enabled: open });
 
   const createMut = useMutation({
     mutationFn: (data) => leadsAPI.create(data),
@@ -141,7 +143,10 @@ const CreateLeadModal = ({ open, onClose }) => {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className={labelCls}>Qiziqishi</label>
-                <input className={inputCls} placeholder="Qaysi kursga qiziqmoqda" value={form.interest} onChange={(e) => set("interest", e.target.value)} />
+                <select className={selectCls} value={form.interest} onChange={(e) => set("interest", e.target.value)}>
+                  <option value="">Qiziqish tanlang</option>
+                  {interests.map((i) => <option key={i._id} value={i._id}>{i.name}</option>)}
+                </select>
               </div>
               <div>
                 <label className={labelCls}>Daraja</label>

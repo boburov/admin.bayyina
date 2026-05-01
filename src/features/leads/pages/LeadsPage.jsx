@@ -44,8 +44,8 @@ const LeadsPage = () => {
   const [view, setView]               = useState("table");
   const [updatingId, setUpdatingId]   = useState(null);
 
-  const { status, source, search, setField, resetState } = useObjectState({
-    status: "", source: "", search: "",
+  const { status, source, interest, search, setField, resetState } = useObjectState({
+    status: "", source: "", interest: "", search: "",
   });
 
   const [debouncedSearch, setDebouncedSearch] = useState(search);
@@ -63,8 +63,9 @@ const LeadsPage = () => {
   const params = {
     page,
     limit: PAGE_SIZE,
-    ...(status         && { status }),
-    ...(source         && { source }),
+    ...(status          && { status }),
+    ...(source          && { source }),
+    ...(interest        && { interest }),
     ...(debouncedSearch && { search: debouncedSearch }),
   };
 
@@ -170,7 +171,7 @@ const LeadsPage = () => {
         <>
           <Card className="mb-4">
             <LeadsFilters
-              filters={{ status, source, search }}
+              filters={{ status, source, interest, search }}
               onChange={handleFilterChange}
               onReset={handleReset}
             />

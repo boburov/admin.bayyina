@@ -5,7 +5,7 @@ import {
   PieChart, Pie, Cell,
   FunnelChart, Funnel, LabelList,
   XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer,
+  ResponsiveContainer, Legend,
 } from "recharts";
 
 import { useAppQuery } from "@/shared/lib/query/query-hooks";
@@ -15,7 +15,7 @@ import { Skeleton } from "@/shared/components/shadcn/skeleton";
 import {
   Users, TrendingUp, XCircle, CheckCircle2,
   AlertTriangle, BarChart2, Calendar, UserCheck,
-  ArrowRight, Minus,
+  ArrowRight, Minus, Sparkles,
 } from "lucide-react";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -42,6 +42,7 @@ const FUNNEL_STEPS = ["new", "contacted", "interested", "scheduled", "converted"
 
 const REJECTION_COLORS = ["#ef4444","#f97316","#f59e0b","#8b5cf6","#64748b"];
 const SOURCE_COLORS    = ["#6366f1","#3b82f6","#10b981","#f59e0b","#ec4899","#14b8a6"];
+const INTEREST_COLORS  = ["#8b5cf6","#06b6d4","#f97316","#84cc16","#e11d48","#0ea5e9","#a855f7","#22c55e"];
 
 const TT = {
   contentStyle: {
@@ -234,6 +235,13 @@ const LeadAnalyticsPage = () => {
     staleTime: 60_000,
   });
 
+  const { data: interestStats, isLoading: il } = useAppQuery({
+    queryKey: ["statistics", "interests", params],
+    queryFn:  () => statisticsAPI.getInterestStats(params),
+    select:   (r) => r.data,
+    staleTime: 60_000,
+  });
+
   const applyPreset = (idx, preset) => {
     setActivePreset(idx);
     if (idx >= 0) setDateRange(preset.getDates());
@@ -275,6 +283,12 @@ const LeadAnalyticsPage = () => {
     }));
 
   const managerList = managers?.managers ?? [];
+
+  const interestData = (interestStats?.byInterest ?? []).map((d, i) => ({
+    name:  d.name,
+    count: d.count,
+    color: INTEREST_COLORS[i % INTEREST_COLORS.length],
+  }));
 
   return (
     <div className="space-y-6 pb-16">
@@ -460,6 +474,69 @@ const LeadAnalyticsPage = () => {
           )}
         </GlassCard>
       </div>
+
+      {/* Interest Analytics */}
+      <GlassCard accent="bg-gradient-to-r from-violet-500 to-purple-600">
+        <CardTitle
+          icon={Sparkles}
+          iconBg="bg-violet-50 text-violet-600"
+          title="Qiziqishlar tahlili"
+          sub="Qaysi kurslarga talab ko'proq ekanligini ko'ring"
+        />
+        {il ? <Loader h={220} /> : !interestData.length ? (
+          <Empty h={220} />
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={interestData} margin={{ top: 4, right: 8, left: -20, bottom: 40 }}>
+                <CartesianGrid vertical={false} {...grid} />
+                <XAxis
+                  dataKey="name"
+                  axisLine={false}
+                  tickLine={false}
+                  dy={8}
+                  tick={{ fontSize: 10, fill: "#94A3B8" }}
+                  angle={-30}
+                  textAnchor="end"
+                />
+                <YAxis axisLine={false} tickLine={false} tick={tick} allowDecimals={false} />
+                <Tooltip
+                  {...TT}
+                  formatter={(v) => [v, "Lead soni"]}
+                />
+                <Bar dataKey="count" radius={[6, 6, 0, 0]} maxBarSize={48}>
+                  {interestData.map((entry, i) => (
+                    <Cell key={i} fill={entry.color} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+
+            <div className="flex flex-col justify-center gap-2.5">
+              {interestData.map((item) => {
+                const total = interestData.reduce((s, d) => s + d.count, 0);
+                const pct   = total > 0 ? Math.round((item.count / total) * 100) : 0;
+                return (
+                  <div key={item.name}>
+                    <div className="flex justify-between text-xs mb-1">
+                      <span className="font-semibold text-slate-700 truncate max-w-[160px]">{item.name}</span>
+                      <span className="font-black tabular-nums text-slate-800">
+                        {item.count} <span className="text-slate-400 font-normal">({pct}%)</span>
+                      </span>
+                    </div>
+                    <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                      <div
+                        className="h-full rounded-full transition-all duration-700"
+                        style={{ width: `${pct}%`, background: item.color }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </GlassCard>
 
       {/* Manager Performance */}
       <GlassCard accent="bg-gradient-to-r from-amber-400 to-yellow-400">

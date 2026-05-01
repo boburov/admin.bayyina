@@ -35,6 +35,7 @@ import PaymentsPage from "@/features/payments/PaymentsPage";
 import NotificationsPage from "@/features/notifications/pages/NotificationsPage";
 import RecordsPage    from "@/features/records/pages/RecordsPage";
 import SalariesPage   from "@/features/salaries/pages/SalariesPage";
+import SettingsPage   from "@/features/settings/pages/SettingsPage";
 
 const Routes = () => {
   return (
@@ -82,6 +83,9 @@ const Routes = () => {
 
           {/* Salaries */}
           <Route path="/salaries" element={<SalariesPage />} />
+
+          {/* Settings */}
+          <Route path="/settings" element={<SettingsPage />} />
         </Route>
       </Route>
 

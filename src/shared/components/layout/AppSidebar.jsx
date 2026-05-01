@@ -22,6 +22,7 @@ import {
   HistoryIcon,
   LineChart,
   TrendingUp,
+  Settings,
 } from "lucide-react";
 
 // Hooks
@@ -45,6 +46,7 @@ const NAV_ITEMS = [
   { title: "Oyliklar", url: "/salaries", icon: Banknote },
   { title: "Xabarnomalar", url: "/notifications", icon: Bell },
   { title: "Tarix", url: "/records", icon: HistoryIcon },
+  { title: "Sozlamalar", url: "/settings", icon: Settings },
 ];
 
 function getUserInitials(user) {
