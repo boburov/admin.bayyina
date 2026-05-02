@@ -25,52 +25,45 @@ import {
   BookOpen,
   GraduationCap,
   LogOut,
-  CheckCircle2,
   ArrowRightLeft,
-  User,
   AlertTriangle,
+  ChevronRight,
 } from "lucide-react";
 
 // ─── Static data ──────────────────────────────────────────────────────────────
 
 const STATUS_OPTIONS = [
   {
-    value: "active",
-    label: "O'qiyapti",
-    desc: "O'quvchi faol holda o'qishni davom ettirmoqda",
-    icon: BookOpen,
-    selectedBorder: "border-blue-500",
-    selectedBg: "bg-blue-50",
-    iconClass: "text-blue-500",
-    checkClass: "text-blue-500",
+    value:       "active",
+    label:       "O'qiyapti",
+    shortLabel:  "Faol",
+    desc:        "O'quvchi faol holda o'qishni davom ettirmoqda",
+    icon:        BookOpen,
+    activeCls:   "bg-white shadow-sm border-blue-200 text-blue-700",
+    activeIcon:  "text-blue-500",
+    badgeCls:    "bg-blue-50 text-blue-700",
   },
   {
-    value: "completed",
-    label: "Kursni bitirdi",
-    desc: "O'quvchi kursni muvaffaqiyatli yakunladi",
-    icon: GraduationCap,
-    selectedBorder: "border-green-500",
-    selectedBg: "bg-green-50",
-    iconClass: "text-green-600",
-    checkClass: "text-green-500",
+    value:       "completed",
+    label:       "Kursni bitirdi",
+    shortLabel:  "Bitirdi",
+    desc:        "O'quvchi kursni muvaffaqiyatli yakunladi",
+    icon:        GraduationCap,
+    activeCls:   "bg-white shadow-sm border-green-200 text-green-700",
+    activeIcon:  "text-green-600",
+    badgeCls:    "bg-green-50 text-green-700",
   },
   {
-    value: "dropped",
-    label: "Kursni tashlab ketdi",
-    desc: "O'quvchi kursni tugatmasdan chiqib ketdi",
-    icon: LogOut,
-    selectedBorder: "border-red-400",
-    selectedBg: "bg-red-50",
-    iconClass: "text-red-500",
-    checkClass: "text-red-400",
+    value:       "dropped",
+    label:       "Tashlab ketdi",
+    shortLabel:  "Tashlab ketdi",
+    desc:        "O'quvchi kursni tugatmasdan chiqib ketdi. Sababini ko'rsating.",
+    icon:        LogOut,
+    activeCls:   "bg-white shadow-sm border-red-200 text-red-600",
+    activeIcon:  "text-red-500",
+    badgeCls:    "bg-red-50 text-red-600",
   },
 ];
-
-const STATUS_LABELS = {
-  active: "Faol",
-  completed: "Kursni bitirdi",
-  dropped: "Tashlab ketdi",
-};
 
 // ─── Modal wrapper ────────────────────────────────────────────────────────────
 
@@ -80,6 +73,19 @@ const EnrollmentManageModal = () => (
   </ResponsiveModal>
 );
 
+// ─── Status badge ─────────────────────────────────────────────────────────────
+
+function StatusBadge({ status }) {
+  const opt = STATUS_OPTIONS.find((o) => o.value === status);
+  if (!opt) return null;
+  return (
+    <span className={cn("inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full", opt.badgeCls)}>
+      <opt.icon className="size-3" strokeWidth={2} />
+      {opt.shortLabel}
+    </span>
+  );
+}
+
 // ─── Content ──────────────────────────────────────────────────────────────────
 
 const Content = ({
@@ -87,9 +93,9 @@ const Content = ({
   isLoading,
   setIsLoading,
   enrollmentId,
-  studentName,
+  studentName     = "",
   currentGroupId,
-  currentStatus = "active",
+  currentStatus   = "active",
   currentDropReasonId,
   studentId,
   discount,
@@ -100,11 +106,11 @@ const Content = ({
 }) => {
   const qc = useQueryClient();
 
-  const [status, setStatus]               = useState(currentStatus);
-  const [dropReasonId, setDropReasonId]   = useState(currentDropReasonId ?? "");
+  const [status,        setStatus]        = useState(currentStatus);
+  const [dropReasonId,  setDropReasonId]  = useState(currentDropReasonId ?? "");
   const [targetGroupId, setTargetGroupId] = useState("");
 
-  // Rejection reasons — only fetched when "dropped" selected
+  // Rejection reasons — fetched only when "dropped" tab is active
   const { data: reasonsData, isLoading: reasonsLoading } = useQuery({
     queryKey: ["settings", "rejection-reasons"],
     queryFn:  () => rejectionReasonsAPI.getAll({ limit: 100 }).then((r) => r.data),
@@ -112,7 +118,7 @@ const Content = ({
   });
   const reasons = reasonsData?.rejectionReasons ?? [];
 
-  // All groups for transfer — only fetched when status stays "active"
+  // Groups for transfer — fetched only when status stays "active"
   const { data: groupsData, isLoading: groupsLoading } = useQuery({
     queryKey: ["all-groups-for-transfer"],
     queryFn:  () => classesAPI.getAll({ limit: 200 }).then((res) => res.data),
@@ -129,7 +135,15 @@ const Content = ({
   const hasAction          = statusChanged || hasTransfer;
   const isValid            = hasAction && !droppedNeedsReason;
 
-  // ── Submit ────────────────────────────────────────────────────────────────
+  const selectedOpt = STATUS_OPTIONS.find((o) => o.value === status);
+
+  // ── Handlers ──────────────────────────────────────────────────────────────
+  const pickStatus = (val) => {
+    setStatus(val);
+    if (val !== "dropped") setDropReasonId("");
+    if (val !== "active")  setTargetGroupId("");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isValid) return;
@@ -153,11 +167,11 @@ const Content = ({
           status,
           dropReason: status === "dropped" ? dropReasonId : null,
         });
-        const msg =
-          status === "completed" ? "Kurs bitirdi deb belgilandi" :
-          status === "dropped"   ? "O'quvchi kursdan chiqarildi" :
-                                   "Holat yangilandi";
-        toast.success(msg);
+        toast.success(
+          status === "completed" ? "Kurs tugatildi deb belgilandi"  :
+          status === "dropped"   ? "O'quvchi kursdan chiqarildi"    :
+                                   "Holat muvaffaqiyatli yangilandi"
+        );
       }
       qc.invalidateQueries({ queryKey: ["group-detail"] });
       close();
@@ -171,26 +185,28 @@ const Content = ({
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
 
-      {/* ── Student info ── */}
-      <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-background-secondary border border-border-secondary">
-        <div className="flex items-center justify-center size-9 rounded-full bg-border text-secondary shrink-0">
-          <User className="size-4" strokeWidth={1.5} />
+      {/* ── Student info card ── */}
+      <div className="flex items-center gap-3 rounded-lg bg-background-secondary border border-border-secondary px-4 py-3">
+        <div className="size-9 rounded-full bg-brown-100 flex items-center justify-center shrink-0">
+          <span className="text-sm font-semibold text-brown-700">
+            {studentName?.[0]?.toUpperCase() ?? "?"}
+          </span>
         </div>
-        <div className="min-w-0">
+        <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-primary truncate">{studentName}</p>
-          <p className="text-xs text-secondary">
-            {STATUS_LABELS[currentStatus] ?? currentStatus}
-          </p>
+          <p className="text-xs text-secondary mt-0.5">Joriy holat:</p>
         </div>
+        <StatusBadge status={currentStatus} />
       </div>
 
-      {/* ── Status section ── */}
-      <div className="space-y-2">
-        <p className="text-[10px] font-semibold text-secondary uppercase tracking-widest">
-          Holat o'zgartirish
+      {/* ── Status segmented control ── */}
+      <div className="space-y-2.5">
+        <p className="text-xs font-semibold text-secondary uppercase tracking-widest">
+          Yangi holat
         </p>
 
-        <div className="space-y-2">
+        {/* Pill tabs */}
+        <div className="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-background-secondary border border-border-secondary">
           {STATUS_OPTIONS.map((opt) => {
             const Icon       = opt.icon;
             const isSelected = status === opt.value;
@@ -198,85 +214,94 @@ const Content = ({
               <button
                 key={opt.value}
                 type="button"
-                onClick={() => {
-                  setStatus(opt.value);
-                  if (opt.value !== "dropped") setDropReasonId("");
-                  if (opt.value !== "active")  setTargetGroupId("");
-                }}
+                onClick={() => pickStatus(opt.value)}
                 className={cn(
-                  "w-full flex items-center gap-3 px-4 py-3 rounded-lg border text-left transition-all",
+                  "flex flex-col items-center gap-1.5 py-3 px-1 rounded-lg border text-xs font-medium transition-all duration-150",
                   isSelected
-                    ? cn(opt.selectedBorder, opt.selectedBg)
-                    : "border-border-secondary hover:border-border bg-white"
+                    ? cn(opt.activeCls, "border")
+                    : "border-transparent text-secondary hover:text-primary hover:bg-white/70"
                 )}
               >
                 <Icon
-                  className={cn("size-4 shrink-0", isSelected ? opt.iconClass : "text-secondary")}
+                  className={cn("size-4", isSelected ? opt.activeIcon : "text-secondary")}
                   strokeWidth={1.5}
                 />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-primary">{opt.label}</p>
-                  <p className="text-xs text-secondary truncate">{opt.desc}</p>
-                </div>
-                {isSelected && (
-                  <CheckCircle2 className={cn("size-4 shrink-0", opt.checkClass)} />
-                )}
+                <span className="text-center leading-tight">{opt.label}</span>
               </button>
             );
           })}
         </div>
 
-        {/* Rejection reason — only when "dropped" */}
-        {status === "dropped" && (
-          <div className="pt-1 space-y-2">
-            <p className="text-xs font-medium text-secondary">
-              Sababni tanlang <span className="text-red-500">*</span>
-            </p>
-            {reasonsLoading ? (
-              <p className="text-sm text-secondary py-1">Yuklanmoqda...</p>
-            ) : reasons.length === 0 ? (
-              <p className="text-xs text-secondary italic">
-                Sabablar topilmadi. Sozlamalar → Rad etish sabablari bo'limidan qo'shing.
-              </p>
-            ) : (
-              <div className="grid grid-cols-1 gap-1.5">
-                {reasons.map((r) => (
-                  <button
-                    key={r._id}
-                    type="button"
-                    onClick={() => setDropReasonId(r._id)}
-                    className={cn(
-                      "text-left text-sm px-3 py-2 border rounded-lg transition-all",
-                      dropReasonId === r._id
-                        ? "border-red-400 bg-red-50 text-red-800 font-medium"
-                        : "border-border-secondary hover:border-red-300 hover:bg-red-50/50 text-primary"
-                    )}
-                  >
-                    {r.title}
-                  </button>
-                ))}
-              </div>
-            )}
+        {/* Selected status description */}
+        {selectedOpt && (
+          <div className="flex items-start gap-2 px-3 py-2 rounded-lg bg-background-secondary border border-border-secondary">
+            <ChevronRight className="size-3.5 text-secondary shrink-0 mt-0.5" />
+            <p className="text-xs text-secondary leading-relaxed">{selectedOpt.desc}</p>
           </div>
         )}
       </div>
 
-      {/* ── Transfer section — only when status stays "active" ── */}
+      {/* ── Rejection reasons — shown only when "dropped" ── */}
+      {status === "dropped" && (
+        <div className="space-y-2">
+          <p className="text-xs font-semibold text-secondary uppercase tracking-widest">
+            Sabab tanlang <span className="text-red-500 normal-case tracking-normal font-normal">*</span>
+          </p>
+
+          {reasonsLoading ? (
+            <div className="grid grid-cols-2 gap-1.5">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="h-9 rounded-lg bg-background-secondary border border-border-secondary animate-pulse" />
+              ))}
+            </div>
+          ) : reasons.length === 0 ? (
+            <div className="flex items-start gap-2 px-3 py-2.5 rounded-lg bg-amber-50 border border-amber-200">
+              <AlertTriangle className="size-3.5 text-amber-600 shrink-0 mt-0.5" strokeWidth={1.5} />
+              <p className="text-xs text-amber-800">
+                Sabablar topilmadi. Sozlamalar → Rad etish sabablari bo'limidan qo'shing.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-1.5">
+              {reasons.map((r) => (
+                <button
+                  key={r._id}
+                  type="button"
+                  onClick={() => setDropReasonId(r._id)}
+                  className={cn(
+                    "px-3 py-2.5 rounded-lg border text-xs font-medium text-left leading-snug transition-all duration-150",
+                    dropReasonId === r._id
+                      ? "bg-red-50 border-red-300 text-red-700 ring-1 ring-red-200"
+                      : "border-border-secondary bg-white text-secondary hover:border-border hover:text-primary hover:bg-background-secondary"
+                  )}
+                >
+                  {r.title}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Transfer section — shown only when status stays "active" ── */}
       {status === "active" && (
-        <div className="space-y-3 pt-3 border-t border-border-secondary">
-          <div className="flex items-center gap-2">
+        <div className="space-y-3 pt-1">
+          <div className="flex items-center gap-2 pb-1 border-b border-border-secondary">
             <ArrowRightLeft className="size-3.5 text-secondary" strokeWidth={1.5} />
-            <p className="text-[10px] font-semibold text-secondary uppercase tracking-widest">
+            <p className="text-xs font-semibold text-secondary uppercase tracking-widest">
               Boshqa guruhga o'tkazish
             </p>
+            <span className="ml-auto text-[10px] text-secondary font-normal normal-case tracking-normal">
+              ixtiyoriy
+            </span>
           </div>
 
           <SelectField
-            label="Yangi guruh (ixtiyoriy)"
+            label=""
             value={targetGroupId}
             options={allGroups}
             onChange={setTargetGroupId}
-            placeholder={groupsLoading ? "Yuklanmoqda..." : "Guruh tanlang"}
+            placeholder={groupsLoading ? "Guruhlar yuklanmoqda..." : "Guruh tanlang"}
             disabled={groupsLoading}
             searchable
           />
@@ -284,27 +309,27 @@ const Content = ({
           {targetGroupId && (
             <div className="flex items-start gap-2 px-3 py-2.5 rounded-lg bg-amber-50 border border-amber-200">
               <AlertTriangle className="size-3.5 text-amber-600 shrink-0 mt-0.5" strokeWidth={1.5} />
-              <p className="text-xs text-amber-800">
-                O'quvchi tanlangan guruhga o'tkaziladi. Joriy yozilish o'chiriladi.
+              <p className="text-xs text-amber-800 leading-relaxed">
+                O'quvchi yangi guruhga o'tkaziladi. Joriy yozilish o'chiriladi va moliyaviy ma'lumotlar ko'chiriladi.
               </p>
             </div>
           )}
         </div>
       )}
 
-      {/* ── Action buttons ── */}
-      <div className="flex flex-col-reverse gap-3 xs:flex-row xs:justify-end pt-1">
+      {/* ── Actions ── */}
+      <div className="flex flex-col-reverse gap-2.5 xs:flex-row xs:justify-end pt-1 border-t border-border-secondary">
         <Button
           type="button"
           variant="secondary"
-          className="w-full xs:w-32"
+          className="w-full xs:w-auto"
           onClick={() => close()}
           disabled={isLoading}
         >
           Bekor qilish
         </Button>
         <Button
-          className="w-full xs:w-auto xs:px-5"
+          className="w-full xs:w-auto xs:px-6"
           disabled={isLoading || !isValid}
         >
           {isLoading
