@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { Trophy, Star, RefreshCw, Download } from "lucide-react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { Trophy, RefreshCw, Download } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 import { ratingsAPI } from "@/features/ratings/api/ratings.api";
 import { periodOptions } from "@/features/ratings/data/ratings.data";
@@ -26,89 +25,24 @@ function RankBadge({ rank }) {
   return <span className="font-mono text-gray-500 text-sm">{rank}</span>;
 }
 
-function StarsDisplay({ avg }) {
+function GradeDisplay({ avg }) {
   if (avg == null) return <span className="text-gray-300 text-xs">—</span>;
+  const color =
+    avg >= 4.5 ? "text-emerald-600" :
+    avg >= 3.5 ? "text-blue-600" :
+    avg >= 2.5 ? "text-amber-600" :
+    "text-rose-600";
   return (
-    <span className="text-amber-400 font-medium text-sm">
-      {"★".repeat(Math.round(avg))}
-      <span className="text-gray-400 text-xs ml-1">{avg.toFixed(1)}</span>
+    <span className={`font-bold text-sm ${color}`}>
+      {avg.toFixed(1)}
     </span>
-  );
-}
-
-function ScoreBar({ score, max }) {
-  const pct = max > 0 ? Math.round((score / max) * 100) : 0;
-  return (
-    <div className="flex items-center gap-2">
-      <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden min-w-[80px]">
-        <div
-          className="h-full bg-amber-400 rounded-full"
-          style={{ width: `${pct}%` }}
-        />
-      </div>
-      <span className="text-xs font-mono text-gray-600 w-10 text-right">{score}</span>
-    </div>
-  );
-}
-
-// ─── Config modal ─────────────────────────────────────────────────────────────
-
-function ConfigPanel({ config, onSave }) {
-  const [form, setForm] = useState({
-    attendedDayPoints: config?.attendedDayPoints ?? 10,
-    starMultiplier:    config?.starMultiplier    ?? 2,
-    lookbackDays:      config?.lookbackDays      ?? 30,
-  });
-
-  return (
-    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
-      <p className="text-xs font-semibold text-amber-700 uppercase tracking-wide mb-3">
-        Ball formulasi sozlamalari
-      </p>
-      <div className="flex flex-wrap gap-4 mb-3">
-        <label className="flex flex-col gap-1 text-xs text-gray-600">
-          Kun bali
-          <input
-            type="number"
-            min={0}
-            value={form.attendedDayPoints}
-            onChange={(e) => setForm((p) => ({ ...p, attendedDayPoints: Number(e.target.value) }))}
-            className="w-20 h-8 px-2 border border-gray-200 rounded text-sm focus:outline-none"
-          />
-        </label>
-        <label className="flex flex-col gap-1 text-xs text-gray-600">
-          Yulduz ko'paytmasi
-          <input
-            type="number"
-            min={0}
-            value={form.starMultiplier}
-            onChange={(e) => setForm((p) => ({ ...p, starMultiplier: Number(e.target.value) }))}
-            className="w-20 h-8 px-2 border border-gray-200 rounded text-sm focus:outline-none"
-          />
-        </label>
-        <label className="flex flex-col gap-1 text-xs text-gray-600">
-          Standart kunlar
-          <input
-            type="number"
-            min={1}
-            value={form.lookbackDays}
-            onChange={(e) => setForm((p) => ({ ...p, lookbackDays: Number(e.target.value) }))}
-            className="w-20 h-8 px-2 border border-gray-200 rounded text-sm focus:outline-none"
-          />
-        </label>
-      </div>
-      <p className="text-xs text-gray-500 mb-3">
-        Ball = (qatnashgan kun × {form.attendedDayPoints}) + (yulduzlar × {form.starMultiplier})
-      </p>
-      <Button size="sm" onClick={() => onSave(form)}>Saqlash</Button>
-    </div>
   );
 }
 
 // ─── CSV export ───────────────────────────────────────────────────────────────
 
 function exportCSV(stats, from, to) {
-  const header = "O'rin,Ism,Guruh,Qatnashgan,Jami,Qatnashmagan,O'rtacha yulduz,Ball";
+  const header = "O'rin,Ism,Guruh,Qatnashgan,Jami,Qatnashmagan,O'rtacha baho";
   const rows = stats.map((s) => [
     s.rankGlobal,
     `${s.student.firstName} ${s.student.lastName}`,
@@ -116,8 +50,7 @@ function exportCSV(stats, from, to) {
     s.totalPresent,
     s.totalSessions,
     s.totalAbsent,
-    s.avgStars?.toFixed(2) ?? "",
-    s.score,
+    s.avgGrade?.toFixed(2) ?? "",
   ].join(","));
   const csv = [header, ...rows].join("\n");
   const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
@@ -132,13 +65,11 @@ function exportCSV(stats, from, to) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 const RatingsPage = () => {
-  const queryClient = useQueryClient();
   const today   = toISO(new Date());
   const [from,  setFrom]     = useState(daysAgo(30));
   const [to,    setTo]       = useState(today);
   const [group, setGroup]    = useState("");
   const [applied, setApplied] = useState({ from: daysAgo(30), to: today, group: "" });
-  const [showConfig, setShowConfig] = useState(false);
 
   const { data: statsRes, isLoading, isError, refetch } = useQuery({
     queryKey: ["der-stats", applied],
@@ -150,26 +81,7 @@ const RatingsPage = () => {
     select: (res) => res.data,
   });
 
-  const { data: configRes } = useQuery({
-    queryKey: ["der-config"],
-    queryFn:  () => ratingsAPI.getConfig(),
-    select:   (res) => res.data,
-    enabled:  showConfig,
-  });
-
-  const { mutate: saveConfig, isPending: savingConfig } = useMutation({
-    mutationFn: (data) => ratingsAPI.updateConfig(data),
-    onSuccess: () => {
-      toast.success("Sozlamalar saqlandi");
-      queryClient.invalidateQueries({ queryKey: ["der-config"] });
-      queryClient.invalidateQueries({ queryKey: ["der-stats"] });
-    },
-    onError: () => toast.error("Xatolik yuz berdi"),
-  });
-
-  const stats    = statsRes?.stats ?? [];
-  const maxScore = stats.length > 0 ? stats[0].score : 0;
-  const cfgData  = configRes?.config;
+  const stats = statsRes?.stats ?? [];
 
   return (
     <div className="space-y-4">
@@ -179,36 +91,18 @@ const RatingsPage = () => {
           <Trophy size={20} className="text-amber-500" />
           <h1 className="text-lg font-semibold text-gray-900">Faollik Reytingi</h1>
         </div>
-        <div className="flex gap-2">
+        {stats.length > 0 && (
           <Button
             size="sm"
             variant="outline"
-            onClick={() => setShowConfig((v) => !v)}
+            onClick={() => exportCSV(stats, applied.from, applied.to)}
+            className="flex items-center gap-1.5"
           >
-            Sozlamalar
+            <Download size={13} />
+            CSV
           </Button>
-          {stats.length > 0 && (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => exportCSV(stats, applied.from, applied.to)}
-              className="flex items-center gap-1.5"
-            >
-              <Download size={13} />
-              CSV
-            </Button>
-          )}
-        </div>
+        )}
       </div>
-
-      {/* Config panel */}
-      {showConfig && (
-        <ConfigPanel
-          config={cfgData}
-          onSave={(data) => saveConfig(data)}
-          saving={savingConfig}
-        />
-      )}
 
       {/* Filters */}
       <div className="flex flex-wrap items-end gap-3 p-4 bg-white border border-gray-200 rounded-lg">
@@ -256,12 +150,7 @@ const RatingsPage = () => {
               <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500">O'quvchi</th>
               <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 hidden md:table-cell">Guruh</th>
               <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500">Davomat</th>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 hidden sm:table-cell">
-                <span className="flex items-center gap-1">
-                  <Star size={11} className="text-amber-400" />O'rtacha
-                </span>
-              </th>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500">Ball</th>
+              <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500">O'rtacha baho</th>
             </tr>
           </thead>
           <tbody>
@@ -338,11 +227,8 @@ const RatingsPage = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 hidden sm:table-cell">
-                      <StarsDisplay avg={s.avgStars} />
-                    </td>
                     <td className="px-4 py-3">
-                      <ScoreBar score={s.score} max={maxScore} />
+                      <GradeDisplay avg={s.avgGrade} />
                     </td>
                   </tr>
                 );
@@ -351,10 +237,9 @@ const RatingsPage = () => {
           </tbody>
         </table>
 
-        {!isLoading && !isError && stats.length > 0 && statsRes?.config && (
+        {!isLoading && !isError && stats.length > 0 && (
           <div className="px-4 py-2.5 border-t border-gray-100 bg-gray-50 text-xs text-gray-400">
-            Ball = (kun × {statsRes.config.attendedDayPoints}) + (yulduz × {statsRes.config.starMultiplier})
-            · {formatUzDate(applied.from)} – {formatUzDate(applied.to)}
+            {formatUzDate(applied.from)} – {formatUzDate(applied.to)}
           </div>
         )}
       </div>
