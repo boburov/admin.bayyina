@@ -34,34 +34,37 @@ import {
 
 const STATUS_OPTIONS = [
   {
-    value:       "active",
-    label:       "O'qiyapti",
-    shortLabel:  "Faol",
-    desc:        "O'quvchi faol holda o'qishni davom ettirmoqda",
-    icon:        BookOpen,
-    activeCls:   "bg-white shadow-sm border-blue-200 text-blue-700",
-    activeIcon:  "text-blue-500",
-    badgeCls:    "bg-blue-50 text-blue-700",
+    value:      "active",
+    label:      "O'qiyapti",
+    desc:       "O'quvchi faol holda o'qishni davom ettirmoqda",
+    icon:       BookOpen,
+    activeCls:  "bg-white border-blue-300 shadow-sm",
+    labelCls:   "text-blue-700",
+    activeIcon: "text-blue-500",
+    badgeBg:    "bg-blue-50",
+    badgeText:  "text-blue-700",
   },
   {
-    value:       "completed",
-    label:       "Kursni bitirdi",
-    shortLabel:  "Bitirdi",
-    desc:        "O'quvchi kursni muvaffaqiyatli yakunladi",
-    icon:        GraduationCap,
-    activeCls:   "bg-white shadow-sm border-green-200 text-green-700",
-    activeIcon:  "text-green-600",
-    badgeCls:    "bg-green-50 text-green-700",
+    value:      "completed",
+    label:      "Kursni bitirdi",
+    desc:       "O'quvchi kursni muvaffaqiyatli yakunladi",
+    icon:       GraduationCap,
+    activeCls:  "bg-white border-green-300 shadow-sm",
+    labelCls:   "text-green-700",
+    activeIcon: "text-green-600",
+    badgeBg:    "bg-green-50",
+    badgeText:  "text-green-700",
   },
   {
-    value:       "dropped",
-    label:       "Tashlab ketdi",
-    shortLabel:  "Tashlab ketdi",
-    desc:        "O'quvchi kursni tugatmasdan chiqib ketdi. Sababini ko'rsating.",
-    icon:        LogOut,
-    activeCls:   "bg-white shadow-sm border-red-200 text-red-600",
-    activeIcon:  "text-red-500",
-    badgeCls:    "bg-red-50 text-red-600",
+    value:      "dropped",
+    label:      "Tashlab ketdi",
+    desc:       "O'quvchi kursni tugatmasdan chiqib ketdi. Sababini ko'rsating.",
+    icon:       LogOut,
+    activeCls:  "bg-white border-red-300 shadow-sm",
+    labelCls:   "text-red-600",
+    activeIcon: "text-red-500",
+    badgeBg:    "bg-red-50",
+    badgeText:  "text-red-600",
   },
 ];
 
@@ -79,9 +82,14 @@ function StatusBadge({ status }) {
   const opt = STATUS_OPTIONS.find((o) => o.value === status);
   if (!opt) return null;
   return (
-    <span className={cn("inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full", opt.badgeCls)}>
+    <span className={cn(
+      "inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full border",
+      opt.badgeBg, opt.badgeText,
+      status === "active"    ? "border-blue-200"  :
+      status === "completed" ? "border-green-200" : "border-red-200"
+    )}>
       <opt.icon className="size-3" strokeWidth={2} />
-      {opt.shortLabel}
+      {opt.label}
     </span>
   );
 }
@@ -93,9 +101,9 @@ const Content = ({
   isLoading,
   setIsLoading,
   enrollmentId,
-  studentName     = "",
+  studentName       = "",
   currentGroupId,
-  currentStatus   = "active",
+  currentStatus     = "active",
   currentDropReasonId,
   studentId,
   discount,
@@ -186,27 +194,27 @@ const Content = ({
     <form onSubmit={handleSubmit} className="space-y-5">
 
       {/* ── Student info card ── */}
-      <div className="flex items-center gap-3 rounded-lg bg-background-secondary border border-border-secondary px-4 py-3">
+      <div className="flex items-center gap-3 rounded-lg bg-gray-50 border border-gray-200 px-4 py-3">
         <div className="size-9 rounded-full bg-brown-100 flex items-center justify-center shrink-0">
           <span className="text-sm font-semibold text-brown-700">
             {studentName?.[0]?.toUpperCase() ?? "?"}
           </span>
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-primary truncate">{studentName}</p>
-          <p className="text-xs text-secondary mt-0.5">Joriy holat:</p>
+          <p className="text-sm font-semibold text-gray-900 truncate">{studentName}</p>
+          <p className="text-xs text-gray-500 mt-0.5">Joriy holat:</p>
         </div>
         <StatusBadge status={currentStatus} />
       </div>
 
       {/* ── Status segmented control ── */}
       <div className="space-y-2.5">
-        <p className="text-xs font-semibold text-secondary uppercase tracking-widest">
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest">
           Yangi holat
         </p>
 
-        {/* Pill tabs */}
-        <div className="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-background-secondary border border-border-secondary">
+        {/* 3-column pill tabs */}
+        <div className="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-gray-100 border border-gray-200">
           {STATUS_OPTIONS.map((opt) => {
             const Icon       = opt.icon;
             const isSelected = status === opt.value;
@@ -218,12 +226,12 @@ const Content = ({
                 className={cn(
                   "flex flex-col items-center gap-1.5 py-3 px-1 rounded-lg border text-xs font-medium transition-all duration-150",
                   isSelected
-                    ? cn(opt.activeCls, "border")
-                    : "border-transparent text-secondary hover:text-primary hover:bg-white/70"
+                    ? cn(opt.activeCls, opt.labelCls)
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:bg-white/70"
                 )}
               >
                 <Icon
-                  className={cn("size-4", isSelected ? opt.activeIcon : "text-secondary")}
+                  className={cn("size-4", isSelected ? opt.activeIcon : "text-gray-400")}
                   strokeWidth={1.5}
                 />
                 <span className="text-center leading-tight">{opt.label}</span>
@@ -232,11 +240,11 @@ const Content = ({
           })}
         </div>
 
-        {/* Selected status description */}
+        {/* Description of selected status */}
         {selectedOpt && (
-          <div className="flex items-start gap-2 px-3 py-2 rounded-lg bg-background-secondary border border-border-secondary">
-            <ChevronRight className="size-3.5 text-secondary shrink-0 mt-0.5" />
-            <p className="text-xs text-secondary leading-relaxed">{selectedOpt.desc}</p>
+          <div className="flex items-start gap-2 px-3 py-2 rounded-lg bg-gray-50 border border-gray-200">
+            <ChevronRight className="size-3.5 text-gray-400 shrink-0 mt-0.5" />
+            <p className="text-xs text-gray-600 leading-relaxed">{selectedOpt.desc}</p>
           </div>
         )}
       </div>
@@ -244,14 +252,18 @@ const Content = ({
       {/* ── Rejection reasons — shown only when "dropped" ── */}
       {status === "dropped" && (
         <div className="space-y-2">
-          <p className="text-xs font-semibold text-secondary uppercase tracking-widest">
-            Sabab tanlang <span className="text-red-500 normal-case tracking-normal font-normal">*</span>
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest">
+            Sabab tanlang{" "}
+            <span className="text-red-500 normal-case tracking-normal font-normal">*</span>
           </p>
 
           {reasonsLoading ? (
             <div className="grid grid-cols-2 gap-1.5">
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="h-9 rounded-lg bg-background-secondary border border-border-secondary animate-pulse" />
+                <div
+                  key={i}
+                  className="h-9 rounded-lg bg-gray-100 border border-gray-200 animate-pulse"
+                />
               ))}
             </div>
           ) : reasons.length === 0 ? (
@@ -272,7 +284,7 @@ const Content = ({
                     "px-3 py-2.5 rounded-lg border text-xs font-medium text-left leading-snug transition-all duration-150",
                     dropReasonId === r._id
                       ? "bg-red-50 border-red-300 text-red-700 ring-1 ring-red-200"
-                      : "border-border-secondary bg-white text-secondary hover:border-border hover:text-primary hover:bg-background-secondary"
+                      : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
                   )}
                 >
                   {r.title}
@@ -286,12 +298,12 @@ const Content = ({
       {/* ── Transfer section — shown only when status stays "active" ── */}
       {status === "active" && (
         <div className="space-y-3 pt-1">
-          <div className="flex items-center gap-2 pb-1 border-b border-border-secondary">
-            <ArrowRightLeft className="size-3.5 text-secondary" strokeWidth={1.5} />
-            <p className="text-xs font-semibold text-secondary uppercase tracking-widest">
+          <div className="flex items-center gap-2 pb-2 border-b border-gray-200">
+            <ArrowRightLeft className="size-3.5 text-gray-400" strokeWidth={1.5} />
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest">
               Boshqa guruhga o'tkazish
             </p>
-            <span className="ml-auto text-[10px] text-secondary font-normal normal-case tracking-normal">
+            <span className="ml-auto text-[10px] text-gray-400 font-normal normal-case tracking-normal">
               ixtiyoriy
             </span>
           </div>
@@ -318,7 +330,7 @@ const Content = ({
       )}
 
       {/* ── Actions ── */}
-      <div className="flex flex-col-reverse gap-2.5 xs:flex-row xs:justify-end pt-1 border-t border-border-secondary">
+      <div className="flex flex-col-reverse gap-2.5 xs:flex-row xs:justify-end pt-2 border-t border-gray-200">
         <Button
           type="button"
           variant="secondary"
