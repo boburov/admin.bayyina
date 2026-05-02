@@ -253,43 +253,51 @@ const LeadDetailModal = ({ lead, open, onClose }) => {
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
-      <DialogContent className="sm:max-w-lg p-0 gap-0 overflow-hidden">
+      <DialogContent className="sm:max-w-lg p-0 gap-0 overflow-hidden" showClose={false}>
 
         {/* Header */}
-        <DialogHeader className="px-6 pt-5 pb-4 border-b border-gray-100">
-          <div className="flex items-start justify-between">
-            <div>
-              <DialogTitle className="text-base font-semibold text-gray-900">
+        <DialogHeader className="px-5 pt-4 pb-3.5 border-b border-gray-100">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <DialogTitle className="text-base font-semibold text-gray-900 truncate">
                 {lead.firstName}
               </DialogTitle>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-1 flex-wrap">
                 <LeadStatusBadge status={lead.status} />
                 {sourceName !== "—" && (
                   <span className="text-xs text-gray-400">{sourceName}</span>
                 )}
               </div>
             </div>
-            {!isEditing && (
+            <div className="flex items-center gap-1.5 shrink-0">
+              {isEditing ? (
+                <button
+                  onClick={() => setIsEditing(false)}
+                  className="text-xs text-gray-500 hover:text-gray-800 border border-gray-200 rounded px-2 py-1 hover:bg-gray-50 transition-colors"
+                >
+                  Bekor
+                </button>
+              ) : (
+                <button
+                  onClick={() => { setIsRejecting(false); setIsEditing(true); }}
+                  className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-700 border border-gray-200 rounded px-2 py-1 hover:bg-gray-50 transition-colors"
+                >
+                  <Pencil size={11} />
+                  Tahrirlash
+                </button>
+              )}
               <button
-                onClick={() => { setIsRejecting(false); setIsEditing(true); }}
-                className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-700 border border-gray-200 rounded px-2 py-1 hover:bg-gray-50 transition-colors"
-              >
-                <Pencil size={11} />
-                Tahrirlash
-              </button>
-            )}
-            {isEditing && (
-              <button
-                onClick={() => setIsEditing(false)}
-                className="p-1 text-gray-400 hover:text-gray-700"
+                onClick={handleClose}
+                aria-label="Yopish"
+                className="flex items-center justify-center w-7 h-7 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded transition-colors"
               >
                 <X size={15} />
               </button>
-            )}
+            </div>
           </div>
         </DialogHeader>
 
-        <div className="px-6 py-4 space-y-4 max-h-[60vh] overflow-y-auto">
+        <div className="px-5 py-4 space-y-4 max-h-[65vh] overflow-y-auto">
 
           {/* ── Edit mode ── */}
           {isEditing ? (
@@ -394,41 +402,47 @@ const LeadDetailModal = ({ lead, open, onClose }) => {
         </div>
 
         {/* Footer */}
-        {!isEditing && (
-          <div className="px-6 py-4 border-t border-gray-100 flex justify-between items-center">
-            {isConfirmingDelete ? (
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-600">Rostdan o'chirasizmi?</span>
+        <div className="px-5 py-3.5 border-t border-gray-100 flex justify-between items-center gap-3">
+          {!isEditing ? (
+            <>
+              {isConfirmingDelete ? (
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-xs text-gray-600">Rostdan o'chirasizmi?</span>
+                  <button
+                    onClick={() => deleteMutation.mutate(lead._id)}
+                    disabled={deleteMutation.isPending}
+                    className="text-xs px-2.5 py-1 bg-red-600 text-white rounded hover:bg-red-700 font-medium disabled:opacity-60"
+                  >
+                    {deleteMutation.isPending ? "..." : "Ha, o'chirish"}
+                  </button>
+                  <button
+                    onClick={() => setIsConfirmingDelete(false)}
+                    className="text-xs px-2.5 py-1 border border-gray-200 text-gray-600 rounded hover:bg-gray-50"
+                  >
+                    Bekor
+                  </button>
+                </div>
+              ) : (
                 <button
-                  onClick={() => deleteMutation.mutate(lead._id)}
-                  disabled={deleteMutation.isPending}
-                  className="text-xs px-2.5 py-1 bg-red-600 text-white rounded hover:bg-red-700 font-medium disabled:opacity-60"
+                  onClick={() => setIsConfirmingDelete(true)}
+                  className="text-xs text-red-500 hover:text-red-700 font-medium"
                 >
-                  {deleteMutation.isPending ? "..." : "Ha, o'chirish"}
+                  O'chirish
                 </button>
-                <button
-                  onClick={() => setIsConfirmingDelete(false)}
-                  className="text-xs px-2.5 py-1 border border-gray-200 text-gray-600 rounded hover:bg-gray-50"
-                >
-                  Bekor
-                </button>
-              </div>
-            ) : (
+              )}
               <button
-                onClick={() => setIsConfirmingDelete(true)}
-                className="text-xs text-red-500 hover:text-red-700 font-medium"
+                onClick={handleClose}
+                className="text-xs px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-700 font-medium ml-auto"
               >
-                O'chirish
+                Yopish
               </button>
-            )}
-            <button
-              onClick={handleClose}
-              className="text-xs px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-700 font-medium"
-            >
-              Yopish
-            </button>
-          </div>
-        )}
+            </>
+          ) : (
+            <p className="text-xs text-gray-400 italic">
+              O'zgarishlarni saqlash yoki bekor qilish uchun yuqoridagi tugmalardan foydalaning.
+            </p>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );

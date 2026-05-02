@@ -28,21 +28,21 @@ import { salaryTypeOptions } from "@/features/classes/data/classes.data";
 import useModal from "@/shared/hooks/useModal";
 
 // Components
-import Button                    from "@/shared/components/ui/button/Button";
-import Select                    from "@/shared/components/ui/select/Select";
-import TransferEnrollmentModal   from "@/features/classes/components/TransferEnrollmentModal";
-import CompleteEnrollmentModal   from "@/features/classes/components/CompleteEnrollmentModal";
+import Button                   from "@/shared/components/ui/button/Button";
+import Select                   from "@/shared/components/ui/select/Select";
+import EnrollmentManageModal    from "@/features/classes/components/EnrollmentManageModal";
 
 // Icons
 import {
   ArrowLeft,
-  ArrowRightLeft,
+  Settings2,
   GraduationCap,
   Users,
   CheckCircle2,
   XCircle,
   Eye,
   EyeOff,
+  LogOut,
 } from "lucide-react";
 
 // ─── Helper ───────────────────────────────────────────────────────────────────
@@ -61,8 +61,7 @@ const ClassDetailPage = () => {
   const { classId }    = useParams();
   const navigate       = useNavigate();
   const queryClient    = useQueryClient();
-  const { openModal }  = useModal("transferEnrollment");
-  const { openModal: openCompleteModal } = useModal("completeEnrollment");
+  const { openModal: openManageModal } = useModal("enrollmentManage");
 
   const [selectedMonth, setSelectedMonth] = useState(monthOptions[0].value);
   const [togglingPayments, setTogglingPayments] = useState(false);
@@ -319,59 +318,44 @@ const ClassDetailPage = () => {
                         {enrollment.status === "completed" ? (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full bg-green-100 text-green-700">
                             <GraduationCap className="size-3" strokeWidth={2} />
-                            Tugallangan
+                            Bitirdi
                           </span>
                         ) : enrollment.status === "dropped" ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full bg-gray-100 text-gray-500">
-                            Tashlab ketilgan
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full bg-red-100 text-red-600">
+                            <LogOut className="size-3" strokeWidth={2} />
+                            Tashlab ketdi
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full bg-blue-50 text-blue-700">
-                            Faol
+                            O'qiyapti
                           </span>
                         )}
                       </td>
 
                       {/* Amallar */}
                       <td className="text-center">
-                        {enrollment.status === "active" && (
-                          <div className="flex items-center justify-center gap-1">
-                            <button
-                              type="button"
-                              title="Kursni tugatdi deb belgilash"
-                              className="p-1.5 rounded hover:bg-green-50 text-gray-400 hover:text-green-600 transition-colors"
-                              onClick={() =>
-                                openCompleteModal("completeEnrollment", {
-                                  enrollmentId: enrollment._id,
-                                  studentName:  `${s.firstName} ${s.lastName}`,
-                                  groupName:    group.name,
-                                })
-                              }
-                            >
-                              <GraduationCap className="size-4" strokeWidth={1.5} />
-                            </button>
-                            <button
-                              type="button"
-                              title="Boshqa guruhga o'tkazish"
-                              className="p-1.5 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition-colors"
-                              onClick={() =>
-                                openModal("transferEnrollment", {
-                                  enrollmentId:   enrollment._id,
-                                  studentId:      s._id,
-                                  studentName:    `${s.firstName} ${s.lastName}`,
-                                  currentGroupId: classId,
-                                  discount:       enrollment.discount,
-                                  discountReason: enrollment.discountReason,
-                                  paymentDay:     enrollment.paymentDay,
-                                  debt:           enrollment.debt,
-                                  balance:        enrollment.balance,
-                                })
-                              }
-                            >
-                              <ArrowRightLeft className="size-4" strokeWidth={1.5} />
-                            </button>
-                          </div>
-                        )}
+                        <button
+                          type="button"
+                          title="O'quvchini boshqarish"
+                          className="p-1.5 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition-colors"
+                          onClick={() =>
+                            openManageModal("enrollmentManage", {
+                              enrollmentId:       enrollment._id,
+                              studentId:          s._id,
+                              studentName:        `${s.firstName} ${s.lastName}`,
+                              currentGroupId:     classId,
+                              currentStatus:      enrollment.status,
+                              currentDropReasonId: enrollment.dropReason ?? "",
+                              discount:           enrollment.discount,
+                              discountReason:     enrollment.discountReason,
+                              paymentDay:         enrollment.paymentDay,
+                              debt:               enrollment.debt,
+                              balance:            enrollment.balance,
+                            })
+                          }
+                        >
+                          <Settings2 className="size-4" strokeWidth={1.5} />
+                        </button>
                       </td>
                     </tr>
                   );
@@ -382,8 +366,7 @@ const ClassDetailPage = () => {
         </div>
       )}
 
-      <TransferEnrollmentModal />
-      <CompleteEnrollmentModal />
+      <EnrollmentManageModal />
     </div>
   );
 };

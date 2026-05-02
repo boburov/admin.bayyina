@@ -91,6 +91,7 @@ const initialState = {
   setEnrollmentDiscount: initialModalData,
   transferEnrollment: initialModalData,
   completeEnrollment: initialModalData,
+  enrollmentManage: initialModalData,
 
   // Payments
   createPayment: initialModalData,
