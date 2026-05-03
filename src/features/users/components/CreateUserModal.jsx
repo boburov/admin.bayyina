@@ -13,15 +13,13 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 // Components
 import Input           from "@/shared/components/form/input";
 import Select          from "@/shared/components/form/select";
+import SourceSelect    from "@/shared/components/form/SourceSelect";
 import Button          from "@/shared/components/form/button";
 import ResponsiveModal from "@/shared/components/ui/ResponsiveModal";
 
 // Data
 import { genderOptions, roleOptions } from "../data/users.data";
 import { monthOptions, salariesKeys } from "@/features/salaries/data/salaries.data";
-
-// Settings hooks
-import { useLeadSources } from "@/features/settings/hooks/useLeadSources";
 
 // Hooks
 import useObjectState from "@/shared/hooks/useObjectState";
@@ -71,7 +69,6 @@ const Content = ({ close, isLoading, setIsLoading, defaultRole }) => {
     age: "",
   });
 
-  const { sources } = useLeadSources();
 
   const { data: groupsData, isLoading: groupsLoading } = useQuery({
     queryKey: ["classes"],
@@ -226,12 +223,10 @@ const Content = ({ close, isLoading, setIsLoading, defaultRole }) => {
           onChange={(v) => setField("gender", v)}
           options={genderOptions}
         />
-        <Select
+        <SourceSelect
           label="Qayerdan"
           value={source}
-          placeholder="Tanlang"
           onChange={(v) => setField("source", v)}
-          options={sources.map((s) => ({ value: s.name, label: s.name }))}
         />
       </div>
 

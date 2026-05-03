@@ -1,56 +1,297 @@
 import { useState } from "react";
-import { Phone, BookOpen, Calendar, MessageSquare, Pencil, X, GraduationCap } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import {
+  Phone, Calendar, MessageSquare, X, GraduationCap,
+  BookOpen, CreditCard, Wallet, AlertCircle,
+} from "lucide-react";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/shared/components/shadcn/dialog";
-import { STATUS_MAP, INTEREST_COLOR } from "../data/leads-crm.data";
-import { formatDateUZ } from "@/shared/utils/date.utils";
+import { STATUS_MAP, FORM_STATUS_OPTIONS } from "../data/leads-crm.data";
+import { formatDateUZ }    from "@/shared/utils/date.utils";
+import { usersAPI }        from "@/features/users/api/users.api";
+import { enrollmentsAPI }  from "@/features/enrollments/api/enrollments.api";
+import { paymentsAPI }     from "@/features/payments/api/payments.api";
+import { rejectionReasonsAPI } from "@/features/settings/api/rejectionReasons.api";
 
-const NON_STUDENT_ACTIONS = [
-  { status: "yangi",          label: "⏳ Yangi"          },
-  { status: "aloqa_qilingan", label: "📞 Aloqa qilingan" },
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+const fmt = (n) => Number(n || 0).toLocaleString("uz-UZ");
+
+const MONTH_NAMES = [
+  "Yanvar","Fevral","Mart","Aprel","May","Iyun",
+  "Iyul","Avgust","Sentyabr","Oktyabr","Noyabr","Dekabr",
 ];
 
-const InterestBar = ({ value }) => (
-  <div className="flex items-center gap-2">
-    <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-      <div
-        className={`h-full rounded-full transition-all ${INTEREST_COLOR(value)}`}
-        style={{ width: `${value}%` }}
-      />
-    </div>
-    <span className="text-sm font-semibold text-gray-700 shrink-0 w-10 text-right">{value}%</span>
+const formatMonth = (date) => {
+  if (!date) return "—";
+  const d = new Date(date);
+  return `${MONTH_NAMES[d.getMonth()]} ${d.getFullYear()}`;
+};
+
+const InfoRow = ({ icon, label, value }) => (
+  <div>
+    <p className="flex items-center gap-1 text-xs text-gray-400 mb-0.5">{icon} {label}</p>
+    <p className="text-sm font-medium text-gray-900">{value}</p>
   </div>
 );
 
-const LeadDetailModal = ({ lead, open, onClose, onEdit, onSetStatus }) => {
-  const [converting, setConverting] = useState(false);
+// ─── Student section (for converted leads) ────────────────────────────────────
 
-  if (!lead) return null;
+const StudentSection = ({ lead }) => {
+  const phone = String(lead.phone ?? "");
 
-  const badge = STATUS_MAP[lead.status];
-  const isStudent = lead.status === "student";
+  const { data: userData, isLoading: userLoading } = useQuery({
+    queryKey: ["student-by-phone", phone],
+    queryFn: () =>
+      usersAPI.searchStudents({ q: phone, limit: 1 }).then((r) => r.data),
+    enabled: !!phone,
+    staleTime: 2 * 60_000,
+  });
 
-  const handleConvert = () => {
-    onSetStatus(lead.id, "student");
-    setConverting(false);
-  };
+  const student = userData?.users?.[0];
 
-  const handleClose = () => {
-    setConverting(false);
-    onClose();
-  };
+  const { data: enrollData, isLoading: enrollLoading } = useQuery({
+    queryKey: ["enrollments", student?._id],
+    queryFn: () =>
+      enrollmentsAPI.getAll({ student: student._id }).then((r) => r.data),
+    enabled: !!student?._id,
+    staleTime: 60_000,
+  });
+
+  const { data: payData, isLoading: payLoading } = useQuery({
+    queryKey: ["payments-lead", student?._id],
+    queryFn: () =>
+      paymentsAPI.getAll({ student: student._id, limit: 20 }).then((r) => r.data),
+    enabled: !!student?._id,
+    staleTime: 60_000,
+  });
+
+  const enrollments = enrollData?.enrollments ?? [];
+  const payments    = payData?.payments ?? [];
+
+  if (userLoading) {
+    return (
+      <div className="flex justify-center py-6">
+        <div className="w-5 h-5 border-2 border-gray-200 border-t-gray-600 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!student) {
+    return (
+      <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded text-sm text-amber-700">
+        <AlertCircle size={14} />
+        Tizimda o'quvchi topilmadi (telefon bo'yicha)
+      </div>
+    );
+  }
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
-      <DialogContent className="sm:max-w-lg p-0 gap-0 overflow-hidden" showClose={false}>
+    <div className="space-y-4">
+
+      {/* Student name */}
+      <div className="flex items-center gap-3 p-3 bg-green-50 border border-green-100 rounded">
+        <div className="w-8 h-8 bg-green-100 border border-green-200 flex items-center justify-center text-sm font-semibold text-green-800">
+          {student.firstName?.[0]?.toUpperCase() ?? "?"}
+        </div>
+        <div>
+          <p className="text-sm font-semibold text-gray-900">
+            {student.firstName} {student.lastName}
+          </p>
+          <p className="text-xs text-green-600">O'quvchi sifatida qabul qilingan</p>
+        </div>
+      </div>
+
+      {/* Enrollments */}
+      <div>
+        <p className="flex items-center gap-1.5 text-xs font-medium text-gray-500 mb-2">
+          <BookOpen size={12} /> Guruhlar
+        </p>
+        {enrollLoading ? (
+          <div className="h-8 bg-gray-100 rounded animate-pulse" />
+        ) : enrollments.length === 0 ? (
+          <p className="text-xs text-gray-400">Guruhga biriktirilmagan</p>
+        ) : (
+          <div className="space-y-2">
+            {enrollments.map((en) => (
+              <div key={en._id} className="p-3 border border-gray-200 rounded bg-white">
+                <div className="flex items-center justify-between mb-1.5">
+                  <p className="text-sm font-medium text-gray-900">{en.group?.name ?? "—"}</p>
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${
+                    en.status === "active"    ? "bg-green-50 text-green-700" :
+                    en.status === "completed" ? "bg-blue-50 text-blue-700"  :
+                    "bg-red-50 text-red-700"
+                  }`}>
+                    {en.status === "active" ? "Faol" : en.status === "completed" ? "Yakunlangan" : "Tark etgan"}
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-xs">
+                  <div>
+                    <p className="text-gray-400">Chegirma</p>
+                    <p className="font-medium">{en.discount ? `${en.discount}%` : "Yo'q"}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-400 flex items-center gap-0.5"><AlertCircle size={10}/> Qarz</p>
+                    <p className={`font-medium ${en.debt > 0 ? "text-red-600" : "text-gray-700"}`}>
+                      {fmt(en.debt)} so'm
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-gray-400 flex items-center gap-0.5"><Wallet size={10}/> Balans</p>
+                    <p className={`font-medium ${en.balance > 0 ? "text-green-600" : "text-gray-700"}`}>
+                      {fmt(en.balance)} so'm
+                    </p>
+                  </div>
+                </div>
+                {en.nextPaymentDate && (
+                  <p className="mt-1.5 text-[10px] text-gray-400">
+                    Keyingi to'lov: {formatDateUZ(en.nextPaymentDate)}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Payment history */}
+      <div>
+        <p className="flex items-center gap-1.5 text-xs font-medium text-gray-500 mb-2">
+          <CreditCard size={12} /> To'lovlar tarixi
+        </p>
+        {payLoading ? (
+          <div className="h-8 bg-gray-100 rounded animate-pulse" />
+        ) : payments.length === 0 ? (
+          <p className="text-xs text-gray-400">To'lovlar yo'q</p>
+        ) : (
+          <div className="divide-y divide-gray-100 border border-gray-200 rounded overflow-hidden">
+            {payments.map((p) => (
+              <div key={p._id} className="flex items-center justify-between px-3 py-2 bg-white">
+                <div>
+                  <p className="text-xs font-medium text-gray-800">{formatMonth(p.month)}</p>
+                  {p.note && <p className="text-[10px] text-gray-400">{p.note}</p>}
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-semibold text-gray-900">{fmt(p.amount)} so'm</p>
+                  <p className={`text-[10px] ${
+                    p.status === "paid"    ? "text-green-600" :
+                    p.status === "overdue" ? "text-red-500"   : "text-amber-500"
+                  }`}>
+                    {p.status === "paid" ? "To'langan" : p.status === "overdue" ? "Muddati o'tgan" : "Kutilmoqda"}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ─── Status change section ────────────────────────────────────────────────────
+
+const StatusChangeSection = ({ lead, onSetStatus }) => {
+  const [pendingStatus, setPendingStatus] = useState(null);
+  const [rejectionReason, setRejectionReason] = useState("");
+
+  const { data: rrData } = useQuery({
+    queryKey: ["rejection-reasons"],
+    queryFn: () => rejectionReasonsAPI.getAll().then((r) => r.data),
+    staleTime: 10 * 60_000,
+    enabled: pendingStatus === "rejected",
+  });
+
+  const reasons = rrData?.rejectionReasons ?? rrData?.reasons ?? [];
+
+  const handleStatusClick = (status) => {
+    if (status === "rejected") {
+      setPendingStatus("rejected");
+    } else {
+      onSetStatus(lead._id, status);
+      setPendingStatus(null);
+    }
+  };
+
+  const confirmReject = () => {
+    onSetStatus(lead._id, "rejected", rejectionReason || undefined);
+    setPendingStatus(null);
+    setRejectionReason("");
+  };
+
+  const changeOptions = FORM_STATUS_OPTIONS.filter((s) => s.value !== lead.status);
+
+  if (pendingStatus === "rejected") {
+    return (
+      <div className="p-3 bg-red-50 border border-red-200 rounded space-y-2">
+        <p className="text-xs font-medium text-red-700">Bekor qilish sababi:</p>
+        <select
+          value={rejectionReason}
+          onChange={(e) => setRejectionReason(e.target.value)}
+          className="w-full h-8 px-2 text-xs border border-red-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-red-400"
+        >
+          <option value="">Sabab tanlang (ixtiyoriy)</option>
+          {reasons.map((r) => (
+            <option key={r._id} value={r._id}>{r.title}</option>
+          ))}
+        </select>
+        <div className="flex gap-2">
+          <button
+            onClick={confirmReject}
+            className="text-xs px-3 py-1.5 bg-red-600 text-white rounded hover:bg-red-700 font-medium"
+          >
+            Tasdiqlash
+          </button>
+          <button
+            onClick={() => setPendingStatus(null)}
+            className="text-xs px-3 py-1.5 border border-gray-200 text-gray-600 rounded hover:bg-gray-50"
+          >
+            Bekor
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <p className="text-xs font-medium text-gray-500 mb-2">Holat o'zgartirish:</p>
+      <div className="flex flex-wrap gap-2">
+        {changeOptions.map((s) => (
+          <button
+            key={s.value}
+            onClick={() => handleStatusClick(s.value)}
+            className="text-xs px-3 py-1.5 rounded border font-medium bg-white text-gray-700 border-gray-200 hover:border-gray-400 hover:bg-gray-50 transition-colors"
+          >
+            {s.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// ─── Main modal ───────────────────────────────────────────────────────────────
+
+const LeadDetailModal = ({ lead, open, onClose, onSetStatus, onConvert }) => {
+  if (!lead) return null;
+
+  const badge       = STATUS_MAP[lead.status];
+  const isConverted = lead.status === "converted";
+  const isRejected  = lead.status === "rejected";
+  const interest    = lead.courseType?.name ?? lead.interest?.name;
+
+  return (
+    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="w-[90vw] max-w-lg p-0 gap-0 max-h-[90vh] flex flex-col" showClose={false}>
 
         {/* Header */}
-        <DialogHeader className="px-5 pt-4 pb-3.5 border-b border-gray-100">
+        <DialogHeader className="px-5 pt-4 pb-3.5 border-b border-gray-100 shrink-0">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
               <DialogTitle className="text-base font-semibold text-gray-900 truncate">
-                {lead.name}
+                {lead.firstName} {lead.lastName}
               </DialogTitle>
               <div className="mt-1">
                 <span className={`inline-flex items-center px-2 py-0.5 text-xs font-medium rounded ${badge?.badge ?? ""}`}>
@@ -58,44 +299,46 @@ const LeadDetailModal = ({ lead, open, onClose, onEdit, onSetStatus }) => {
                 </span>
               </div>
             </div>
-            <div className="flex items-center gap-1.5 shrink-0">
-              <button
-                onClick={() => { handleClose(); onEdit(lead); }}
-                className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-700 border border-gray-200 rounded px-2 py-1 hover:bg-gray-50 transition-colors"
-              >
-                <Pencil size={11} />
-                Tahrirlash
-              </button>
-              <button
-                onClick={handleClose}
-                aria-label="Yopish"
-                className="flex items-center justify-center w-7 h-7 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded transition-colors"
-              >
-                <X size={15} />
-              </button>
-            </div>
+            <button
+              onClick={onClose}
+              className="flex items-center justify-center w-7 h-7 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded transition-colors shrink-0"
+            >
+              <X size={15} />
+            </button>
           </div>
         </DialogHeader>
 
-        <div className="px-5 py-4 space-y-4">
+        {/* Body — scrollable */}
+        <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
 
-          {/* Info grid */}
+          {/* Basic info */}
           <div className="grid grid-cols-2 gap-3">
-            <InfoRow icon={<Phone size={13} />}    label="Telefon"    value={lead.phone  || "—"} />
-            <InfoRow icon={<BookOpen size={13} />}  label="Kurs"       value={lead.course || "—"} />
-            <InfoRow icon={<Calendar size={13} />}  label="Qo'shilgan" value={lead.createdAt ? formatDateUZ(lead.createdAt) : "—"} />
-            {isStudent && lead.convertedAt && (
-              <InfoRow icon={<GraduationCap size={13} />} label="Studentga o'tgan" value={formatDateUZ(lead.convertedAt)} />
+            <InfoRow
+              icon={<Phone size={13} />}
+              label="Telefon"
+              value={lead.phone ? `+${lead.phone}` : "—"}
+            />
+            <InfoRow
+              icon={<Calendar size={13} />}
+              label="Qo'shilgan"
+              value={lead.createdAt ? formatDateUZ(lead.createdAt) : "—"}
+            />
+            {interest && (
+              <InfoRow
+                icon={<BookOpen size={13} />}
+                label="Qiziqish"
+                value={interest}
+              />
+            )}
+            {lead.source?.name && (
+              <InfoRow
+                icon={<span className="text-xs">📡</span>}
+                label="Manba"
+                value={lead.source.name}
+              />
             )}
           </div>
 
-          {/* Interest bar */}
-          <div className="p-3 bg-gray-50 rounded">
-            <p className="text-xs text-gray-400 mb-2">Qiziqish darajasi</p>
-            <InterestBar value={lead.interestPercent ?? 0} />
-          </div>
-
-          {/* Notes */}
           {lead.notes && (
             <div className="p-3 bg-amber-50 border border-amber-100 rounded">
               <p className="flex items-center gap-1 text-xs text-amber-600 mb-1.5">
@@ -105,84 +348,29 @@ const LeadDetailModal = ({ lead, open, onClose, onEdit, onSetStatus }) => {
             </div>
           )}
 
-          {/* Actions */}
-          {!isStudent && (
-            <div className="pt-1">
-              {!converting ? (
-                <div className="space-y-3">
-                  {/* Convert to student */}
-                  <button
-                    onClick={() => setConverting(true)}
-                    className="w-full flex items-center justify-center gap-2 py-2.5 bg-green-600 text-white text-sm font-semibold rounded hover:bg-green-700 transition-colors"
-                  >
-                    <GraduationCap size={16} />
-                    Studentga aylantirish
-                  </button>
+          {/* Converted → show student detail */}
+          {isConverted && <StudentSection lead={lead} />}
 
-                  {/* Status change */}
-                  <div>
-                    <p className="text-xs font-medium text-gray-500 mb-2">Holat o'zgartirish:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {NON_STUDENT_ACTIONS.filter((a) => a.status !== lead.status).map((a) => (
-                        <button
-                          key={a.status}
-                          onClick={() => onSetStatus(lead.id, a.status)}
-                          className="text-xs px-3 py-1.5 rounded border font-medium bg-white text-gray-700 border-gray-200 hover:border-gray-400 hover:bg-gray-50 transition-colors"
-                        >
-                          {a.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="p-3 bg-green-50 border border-green-200 rounded">
-                  <p className="text-sm font-semibold text-green-800 mb-3">
-                    🎓 {lead.name} ni studentga aylantirmoqchimisiz?
-                  </p>
-                  <p className="text-xs text-green-700 mb-3">
-                    Lead tarixda saqlanib qoladi, faqat statusi "Student" ga o'zgaradi.
-                  </p>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={handleConvert}
-                      className="text-sm px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 font-semibold"
-                    >
-                      Ha, aylantirish
-                    </button>
-                    <button
-                      onClick={() => setConverting(false)}
-                      className="text-sm px-4 py-2 border border-gray-200 text-gray-600 rounded hover:bg-gray-50"
-                    >
-                      Bekor
-                    </button>
-                  </div>
-                </div>
+          {/* Non-converted actions */}
+          {!isConverted && (
+            <div className="space-y-3 pt-1">
+              {!isRejected && (
+                <button
+                  onClick={() => { onClose(); onConvert(lead); }}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 bg-green-600 text-white text-sm font-semibold rounded hover:bg-green-700 transition-colors"
+                >
+                  <GraduationCap size={16} />
+                  O'quvchi sifatida qabul qilish
+                </button>
               )}
-            </div>
-          )}
-
-          {isStudent && (
-            <div className="pt-1">
-              <p className="text-xs font-medium text-gray-500 mb-2">Holat o'zgartirish:</p>
-              <div className="flex flex-wrap gap-2">
-                {NON_STUDENT_ACTIONS.map((a) => (
-                  <button
-                    key={a.status}
-                    onClick={() => onSetStatus(lead.id, a.status)}
-                    className="text-xs px-3 py-1.5 rounded border font-medium bg-white text-gray-700 border-gray-200 hover:border-gray-400 hover:bg-gray-50 transition-colors"
-                  >
-                    {a.label}
-                  </button>
-                ))}
-              </div>
+              <StatusChangeSection lead={lead} onSetStatus={onSetStatus} />
             </div>
           )}
         </div>
 
-        <div className="px-5 py-3.5 border-t border-gray-100 flex justify-end">
+        <div className="px-5 py-3.5 border-t border-gray-100 flex justify-end shrink-0">
           <button
-            onClick={handleClose}
+            onClick={onClose}
             className="text-xs px-4 py-2 bg-gray-900 text-white rounded hover:bg-gray-700 font-medium"
           >
             Yopish
@@ -192,12 +380,5 @@ const LeadDetailModal = ({ lead, open, onClose, onEdit, onSetStatus }) => {
     </Dialog>
   );
 };
-
-const InfoRow = ({ icon, label, value }) => (
-  <div>
-    <p className="flex items-center gap-1 text-xs text-gray-400 mb-0.5">{icon} {label}</p>
-    <p className="text-sm font-medium text-gray-900">{value}</p>
-  </div>
-);
 
 export default LeadDetailModal;

@@ -227,7 +227,7 @@ const LeadsPage = () => {
                               <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-xs font-semibold text-gray-600 shrink-0">
                                 {lead.firstName?.[0]?.toUpperCase()}
                               </div>
-                              <span className="font-medium text-gray-900">{lead.firstName}</span>
+                              <span className="font-medium text-gray-900">{lead.firstName} {lead.lastName}</span>
                             </div>
                           </td>
                           <td className="px-4 py-3 text-gray-500 font-mono text-xs hidden sm:table-cell">
