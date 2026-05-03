@@ -10,4 +10,21 @@ export const salariesAPI = {
   bulkPay:   (data)   => http.post("/salaries/bulk-pay", data),
   calculate: (params) => http.get("/salaries/calculate", { params }),
   generate:  (data)   => http.post("/salaries/generate", data),
+
+  // Deductions
+  deductions: {
+    getAll:   (params) => http.get("/salaries/deductions", { params }),
+    create:   (data)   => http.post("/salaries/deductions", data),
+    confirm:  (id)     => http.put(`/salaries/deductions/${id}/confirm`),
+    delete:   (id)     => http.delete(`/salaries/deductions/${id}`),
+  },
+
+  // Advances
+  advances: {
+    getAll:   (params) => http.get("/salaries/advances", { params }),
+    create:   (data)   => http.post("/salaries/advances", data),
+    request:  (data)   => http.post("/salaries/advances/request", data),
+    confirm:  (id)     => http.put(`/salaries/advances/${id}/confirm`),
+    delete:   (id)     => http.delete(`/salaries/advances/${id}`),
+  },
 };

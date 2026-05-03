@@ -189,6 +189,13 @@ const Content = ({ close, isLoading, setIsLoading, salary }) => {
             red
           />
         )}
+        {salary.advanceDeducted > 0 && (
+          <Row
+            label="Avans (ayirildi)"
+            value={`-${formatMoney(salary.advanceDeducted)}`}
+            red
+          />
+        )}
         <div className="border-t border-gray-200 pt-1.5">
           <Row
             label="Sof to'lov"

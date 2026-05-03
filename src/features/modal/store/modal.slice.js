@@ -99,6 +99,12 @@ const initialState = {
   // Notifications
   sendNotification: initialModalData,
   notificationDetail: initialModalData,
+
+  // Salaries
+  salaryDetail: initialModalData,
+  generateSalaries: initialModalData,
+  salaryDeduction: initialModalData,
+  salaryAdvance: initialModalData,
 };
 
 export const modalSlice = createSlice({
