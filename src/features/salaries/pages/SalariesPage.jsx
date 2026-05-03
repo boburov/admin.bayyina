@@ -43,6 +43,7 @@ import {
   Banknote,
   User,
   X,
+  Undo2,
 } from "lucide-react";
 
 const SalariesPage = () => {
@@ -52,6 +53,7 @@ const SalariesPage = () => {
   const [status, setStatus] = useState("all");
   const [teacher, setTeacher] = useState("all");
   const [page, setPage] = useState(1);
+  const [selectedIds, setSelectedIds] = useState(new Set());
 
   // Teachers list
   const { data: teachersData } = useAppQuery({
@@ -104,6 +106,38 @@ const SalariesPage = () => {
     onError: (err) => toast.error(err.response?.data?.message ?? "Xatolik"),
   });
 
+  const unpayMutation = useAppMutation({
+    mutationFn: (id) => salariesAPI.update(id, { status: "pending", paidAt: null }),
+    invalidateKeys: [salariesKeys.all],
+    onSuccess: () => toast.success("Oylik qaytarildi"),
+    onError: (err) => toast.error(err.response?.data?.message ?? "Xatolik"),
+  });
+
+  const bulkPayMutation = useAppMutation({
+    mutationFn: (ids) => salariesAPI.bulkPay({ ids }),
+    invalidateKeys: [salariesKeys.all],
+    onSuccess: (res) => {
+      toast.success(`${res?.data?.paid ?? 0} ta oylik to'landi`);
+      setSelectedIds(new Set());
+    },
+    onError: (err) => toast.error(err.response?.data?.message ?? "Xatolik"),
+  });
+
+  const toggleSelect = (id) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = (ids) => {
+    setSelectedIds((prev) => {
+      if (ids.every((id) => prev.has(id))) return new Set();
+      return new Set(ids);
+    });
+  };
+
   const paidCount   = salaries.filter((s) => s.status === "paid").length;
   const pendingCount= salaries.filter((s) => s.status === "pending").length;
   const totalNet    = salaries.reduce((sum, s) => sum + (s.netAmount ?? 0), 0);
@@ -111,6 +145,7 @@ const SalariesPage = () => {
   const handleFilterChange = (setter) => (val) => {
     setter(val);
     setPage(1);
+    setSelectedIds(new Set());
   };
 
   const teacherSelected = teacher !== "all";
@@ -120,14 +155,26 @@ const SalariesPage = () => {
       {/* Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="page-title">Oyliklar</h1>
-        <Button
-          variant="outline"
-          className="gap-1.5 text-sm h-9"
-          onClick={() => openModal("generateSalaries")}
-        >
-          <RefreshCw className="size-3.5" strokeWidth={1.5} />
-          Hisoblash
-        </Button>
+        <div className="flex items-center gap-2">
+          {selectedIds.size > 0 && (
+            <Button
+              className="gap-1.5 text-sm h-9"
+              disabled={bulkPayMutation.isPending}
+              onClick={() => bulkPayMutation.mutate([...selectedIds])}
+            >
+              <CheckCircle2 className="size-3.5" strokeWidth={2} />
+              {selectedIds.size} ta to'landi
+            </Button>
+          )}
+          <Button
+            variant="outline"
+            className="gap-1.5 text-sm h-9"
+            onClick={() => openModal("generateSalaries")}
+          >
+            <RefreshCw className="size-3.5" strokeWidth={1.5} />
+            Hisoblash
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -174,10 +221,16 @@ const SalariesPage = () => {
           page={page}
           totalPages={totalPages}
           onPageChange={setPage}
-          onClear={() => { setTeacher("all"); setPage(1); }}
+          onClear={() => { setTeacher("all"); setPage(1); setSelectedIds(new Set()); }}
           onRowClick={(salary) => openModal("salaryDetail", { salary })}
           onPay={(id) => payMutation.mutate(id)}
+          onUnpay={(id) => unpayMutation.mutate(id)}
           isPaying={payMutation.isPending}
+          isUnpaying={unpayMutation.isPending}
+          selectedIds={selectedIds}
+          onToggleSelect={toggleSelect}
+          onBulkPay={() => bulkPayMutation.mutate([...selectedIds])}
+          isBulkPaying={bulkPayMutation.isPending}
         />
       ) : (
         <>
@@ -203,6 +256,14 @@ const SalariesPage = () => {
               <table>
                 <thead>
                   <tr>
+                    <th className="w-8">
+                      <input
+                        type="checkbox"
+                        className="rounded"
+                        checked={salaries.length > 0 && salaries.filter(s => s.status === "pending").every(s => selectedIds.has(s._id))}
+                        onChange={() => toggleSelectAll(salaries.filter(s => s.status === "pending").map(s => s._id))}
+                      />
+                    </th>
                     <th>#</th>
                     <th>O'qituvchi</th>
                     <th>Oy</th>
@@ -228,6 +289,16 @@ const SalariesPage = () => {
                         className="cursor-pointer hover:bg-gray-50 transition-colors"
                         onClick={() => openModal("salaryDetail", { salary })}
                       >
+                        <td className="text-center" onClick={(e) => e.stopPropagation()}>
+                          {!isPaid && (
+                            <input
+                              type="checkbox"
+                              className="rounded"
+                              checked={selectedIds.has(salary._id)}
+                              onChange={() => toggleSelect(salary._id)}
+                            />
+                          )}
+                        </td>
                         <td className="text-center text-sm text-gray-400">{(page - 1) * 20 + idx + 1}</td>
                         <td className="text-sm font-medium text-primary whitespace-nowrap">{teacherName}</td>
                         <td className="text-sm text-gray-600 whitespace-nowrap">{formatMonthLabel(salary.month)}</td>
@@ -242,7 +313,7 @@ const SalariesPage = () => {
                         <td><StatusBadge status={salary.status} /></td>
                         <td className="text-sm text-gray-400 whitespace-nowrap text-center">{salary.paidAt ? formatUzDate(salary.paidAt) : "—"}</td>
                         <td className="text-center" onClick={(e) => e.stopPropagation()}>
-                          {!isPaid && (
+                          {!isPaid ? (
                             <Button
                               size="sm"
                               className="gap-1 px-2.5 text-xs h-7 whitespace-nowrap"
@@ -251,6 +322,17 @@ const SalariesPage = () => {
                             >
                               <CheckCircle2 className="size-3.5" strokeWidth={2} />
                               To'landi
+                            </Button>
+                          ) : (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="gap-1 px-2.5 text-xs h-7 whitespace-nowrap"
+                              disabled={unpayMutation.isPending}
+                              onClick={() => unpayMutation.mutate(salary._id)}
+                            >
+                              <Undo2 className="size-3.5" strokeWidth={2} />
+                              Qaytarish
                             </Button>
                           )}
                         </td>
@@ -290,7 +372,13 @@ const TeacherSalaryPanel = ({
   onClear,
   onRowClick,
   onPay,
+  onUnpay,
   isPaying,
+  isUnpaying,
+  selectedIds,
+  onToggleSelect,
+  onBulkPay,
+  isBulkPaying,
 }) => (
   <div className="space-y-4">
     {/* Teacher header */}
@@ -304,14 +392,27 @@ const TeacherSalaryPanel = ({
           <p className="text-xs text-muted-foreground">Oylik tarixi</p>
         </div>
       </div>
-      <button
-        type="button"
-        onClick={onClear}
-        className="p-1.5 text-muted-foreground hover:text-foreground transition-colors"
-        title="Filtrni tozalash"
-      >
-        <X className="size-4" strokeWidth={1.5} />
-      </button>
+      <div className="flex items-center gap-2">
+        {selectedIds.size > 0 && (
+          <Button
+            size="sm"
+            className="gap-1 px-2.5 text-xs h-7"
+            disabled={isBulkPaying}
+            onClick={onBulkPay}
+          >
+            <CheckCircle2 className="size-3.5" strokeWidth={2} />
+            {selectedIds.size} ta to'landi
+          </Button>
+        )}
+        <button
+          type="button"
+          onClick={onClear}
+          className="p-1.5 text-muted-foreground hover:text-foreground transition-colors"
+          title="Filtrni tozalash"
+        >
+          <X className="size-4" strokeWidth={1.5} />
+        </button>
+      </div>
     </div>
 
     {/* Stats */}
@@ -337,9 +438,23 @@ const TeacherSalaryPanel = ({
           return (
             <div
               key={salary._id}
-              className="flex items-center gap-4 px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors"
+              className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors"
               onClick={() => onRowClick(salary)}
             >
+              {/* Checkbox */}
+              <div className="shrink-0" onClick={(e) => e.stopPropagation()}>
+                {!isPaid ? (
+                  <input
+                    type="checkbox"
+                    className="rounded"
+                    checked={selectedIds.has(salary._id)}
+                    onChange={() => onToggleSelect(salary._id)}
+                  />
+                ) : (
+                  <span className="block w-4" />
+                )}
+              </div>
+
               {/* Index */}
               <span className="text-xs text-muted-foreground w-5 shrink-0 text-center">
                 {(page - 1) * 20 + idx + 1}
@@ -383,7 +498,7 @@ const TeacherSalaryPanel = ({
               {/* Status + action */}
               <div className="shrink-0 flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                 <StatusBadge status={salary.status} />
-                {!isPaid && (
+                {!isPaid ? (
                   <Button
                     size="sm"
                     className="gap-1 px-2.5 text-xs h-7 whitespace-nowrap"
@@ -392,6 +507,17 @@ const TeacherSalaryPanel = ({
                   >
                     <CheckCircle2 className="size-3.5" strokeWidth={2} />
                     To'landi
+                  </Button>
+                ) : (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="gap-1 px-2.5 text-xs h-7 whitespace-nowrap"
+                    disabled={isUnpaying}
+                    onClick={() => onUnpay(salary._id)}
+                  >
+                    <Undo2 className="size-3.5" strokeWidth={2} />
+                    Qaytarish
                   </Button>
                 )}
               </div>

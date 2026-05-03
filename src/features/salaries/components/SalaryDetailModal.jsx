@@ -44,12 +44,14 @@ const Content = ({ close, isLoading, setIsLoading, salary }) => {
   const [bonus, setBonus] = useState(salary?.bonus ?? 0);
   const [deduction, setDeduction] = useState(salary?.deduction ?? 0);
   const [note, setNote] = useState(salary?.note ?? "");
+  const [payAmount, setPayAmount] = useState("");
 
   useEffect(() => {
     if (salary) {
       setBonus(salary.bonus ?? 0);
       setDeduction(salary.deduction ?? 0);
       setNote(salary.note ?? "");
+      setPayAmount("");
     }
   }, [salary?._id]);
 
@@ -87,11 +89,26 @@ const Content = ({ close, isLoading, setIsLoading, salary }) => {
   };
 
   const handlePay = () => {
+    const data = payAmount ? { amount: Number(payAmount) } : undefined;
     setIsLoading(true);
     salariesAPI
-      .pay(salary._id)
+      .pay(salary._id, data)
       .then(() => {
         toast.success("Oylik to'landi");
+        qc.invalidateQueries({ queryKey: salariesKeys.all });
+        close();
+      })
+      .catch((err) => toast.error(err.response?.data?.message ?? "Xatolik"))
+      .finally(() => setIsLoading(false));
+  };
+
+  const handleUnpay = () => {
+    if (!window.confirm("Oylikni 'Kutilmoqda' holatiga qaytarishni tasdiqlaysizmi?")) return;
+    setIsLoading(true);
+    salariesAPI
+      .update(salary._id, { status: "pending", paidAt: null })
+      .then(() => {
+        toast.success("Oylik qaytarildi");
         qc.invalidateQueries({ queryKey: salariesKeys.all });
         close();
       })
@@ -211,6 +228,16 @@ const Content = ({ close, isLoading, setIsLoading, salary }) => {
               placeholder="Ixtiyoriy"
             />
           </div>
+          <div className="col-span-2">
+            <InputField
+              label="To'lov miqdori (ixtiyoriy, bo'sh = hisoblangan miqdor)"
+              type="number"
+              min={0}
+              value={payAmount}
+              onChange={(e) => setPayAmount(e.target.value)}
+              placeholder={String(salary.netAmount ?? 0)}
+            />
+          </div>
         </div>
       )}
       {/* Actions */}
@@ -230,6 +257,16 @@ const Content = ({ close, isLoading, setIsLoading, salary }) => {
             </Button>
           </>
         )}
+        {isPaid && (
+          <Button
+            variant="outline"
+            className="flex-1"
+            onClick={handleUnpay}
+            disabled={isLoading}
+          >
+            Qaytarish
+          </Button>
+        )}
         <Button
           variant="danger"
           className="shrink-0 px-3"
@@ -239,7 +276,6 @@ const Content = ({ close, isLoading, setIsLoading, salary }) => {
           O'chirish
         </Button>
       </div>
-      )
     </div>
   );
 };
