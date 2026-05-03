@@ -63,6 +63,7 @@ const resolveId = (field) => {
 const EditForm = ({ lead, sources, courseTypes, interests, onSave, onCancel, isPending }) => {
   const [form, setForm] = useState({
     firstName:  lead.firstName  ?? "",
+    lastName:   lead.lastName   ?? "",
     phone:      lead.phone      ?? "",
     age:        lead.age        ?? "",
     gender:     lead.gender     ?? "",
@@ -78,6 +79,7 @@ const EditForm = ({ lead, sources, courseTypes, interests, onSave, onCancel, isP
     e.preventDefault();
     const payload = {
       firstName: form.firstName.trim() || undefined,
+      lastName:  form.lastName.trim()  || null,
       phone:     form.phone.trim()     || undefined,
       age:       form.age ? Number(form.age) : null,
       gender:    form.gender || null,
@@ -95,6 +97,10 @@ const EditForm = ({ lead, sources, courseTypes, interests, onSave, onCancel, isP
         <div>
           <label className={labelCls}>Ism</label>
           <input className={inputCls} value={form.firstName} onChange={(e) => set("firstName", e.target.value)} />
+        </div>
+        <div>
+          <label className={labelCls}>Familiya</label>
+          <input className={inputCls} value={form.lastName} onChange={(e) => set("lastName", e.target.value)} />
         </div>
         <div>
           <label className={labelCls}>Telefon</label>
@@ -260,7 +266,7 @@ const LeadDetailModal = ({ lead, open, onClose }) => {
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
               <DialogTitle className="text-base font-semibold text-gray-900 truncate">
-                {lead.firstName}
+                {lead.firstName} {lead.lastName}
               </DialogTitle>
               <div className="flex items-center gap-2 mt-1 flex-wrap">
                 <LeadStatusBadge status={lead.status} />

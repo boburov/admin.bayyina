@@ -33,7 +33,7 @@ const labelCls  = "block text-xs font-medium text-gray-600 mb-1";
 const CreateLeadModal = ({ open, onClose }) => {
   const qc = useQueryClient();
 
-  const empty = { firstName: "", phone: "", gender: "", age: "", source: "", interest: "", courseType: "", level: "", notes: "", status: "new" };
+  const empty = { firstName: "", lastName: "", phone: "", gender: "", age: "", source: "", interest: "", courseType: "", level: "", notes: "", status: "new" };
   const [form, setForm] = useState(empty);
 
   const set = (k, v) => setForm((p) => ({ ...p, [k]: v }));
@@ -59,6 +59,7 @@ const CreateLeadModal = ({ open, onClose }) => {
 
     const payload = {
       firstName: form.firstName.trim(),
+      ...(form.lastName  && { lastName:  form.lastName.trim() }),
       status:    form.status,
       ...(form.phone      && { phone:      form.phone.trim() }),
       ...(form.gender     && { gender:     form.gender }),
@@ -95,16 +96,22 @@ const CreateLeadModal = ({ open, onClose }) => {
         <form onSubmit={handleSubmit}>
           <div className="px-6 py-5 space-y-4 max-h-[65vh] overflow-y-auto">
 
-            {/* Row 1: name + phone */}
+            {/* Row 1: firstName + lastName */}
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className={labelCls}>Ism <span className="text-red-500">*</span></label>
                 <input className={inputCls} placeholder="Ism" value={form.firstName} onChange={(e) => set("firstName", e.target.value)} />
               </div>
               <div>
-                <label className={labelCls}>Telefon</label>
-                <input className={inputCls} placeholder="+998 90 123 45 67" value={form.phone} onChange={(e) => set("phone", e.target.value)} />
+                <label className={labelCls}>Familiya</label>
+                <input className={inputCls} placeholder="Familiya" value={form.lastName} onChange={(e) => set("lastName", e.target.value)} />
               </div>
+            </div>
+
+            {/* Row 1b: phone */}
+            <div>
+              <label className={labelCls}>Telefon</label>
+              <input className={inputCls} placeholder="+998 90 123 45 67" value={form.phone} onChange={(e) => set("phone", e.target.value)} />
             </div>
 
             {/* Row 2: gender + age */}

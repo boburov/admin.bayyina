@@ -30,6 +30,7 @@ import {
 // Hooks
 import { useState } from "react";
 import useAuth from "@/shared/hooks/useAuth";
+import logo from "@/shared/assets/icons/logo.svg"
 
 // Utils
 import { cn } from "@/shared/utils/cn";
@@ -37,7 +38,7 @@ import { cn } from "@/shared/utils/cn";
 const NAV_ITEMS = [
   { title: "Bosh sahifa", url: "/dashboard", icon: Home },
   { title: "Leadlar", url: "/leads", icon: UserPlus },
-  { title: "Leads CRM", url: "/leads-crm", icon: ClipboardList },
+  { title: "Qabullar", url: "/leads-crm", icon: ClipboardList },
   { title: "O'quvchilar", url: "/users", icon: Users },
   { title: "O'qituvchilar", url: "/teachers", icon: GraduationCap },
   { title: "Guruhlar", url: "/classes", icon: School },
@@ -74,9 +75,7 @@ function SidebarContent({ onNavClick }) {
     <aside className="flex flex-col w-56 h-full bg-white border-r border-gray-200 shrink-0">
       {/* Brand */}
       <div className="flex items-center gap-2.5 px-4 py-4 border-b border-gray-200">
-        <div className="flex items-center justify-center w-7 h-7 bg-brown-800 shrink-0">
-          <GraduationCap size={14} className="text-white" strokeWidth={1.5} />
-        </div>
+        <img src={logo} alt="Bayyina logo" className="w-8 h-8 shrink-0 object-contain" />
         <div>
           <p className="text-sm font-semibold text-gray-900 leading-tight">
             Bayyina
@@ -87,7 +86,7 @@ function SidebarContent({ onNavClick }) {
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 overflow-y-auto">
-        
+
         <ul className="flex flex-col gap-0.5">
           {NAV_ITEMS.map((item) => (
             <li key={item.url}>
