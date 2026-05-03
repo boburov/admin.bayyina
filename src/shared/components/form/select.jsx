@@ -86,7 +86,7 @@ const Select = ({
             triggerClassName
           )}
         >
-          <SelectValue placeholder={placeholder} />
+          {value === "" ? "Tanglang" : <SelectValue placeholder={placeholder} />}
         </SelectTrigger>
         <SelectContent>
           {/* Options */}

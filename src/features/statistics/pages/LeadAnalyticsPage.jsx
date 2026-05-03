@@ -312,7 +312,7 @@ const LeadAnalyticsPage = () => {
       </div>
 
       {/* KPI Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard loading={ll} icon={Users}        label="Jami leadlar"   value={totalLeads} accent="bg-gradient-to-r from-indigo-400 to-blue-400" />
         <KpiCard loading={ll} icon={CheckCircle2} label="Qabul qilindi"  value={converted}  sub={`${convRate}% konversiya`} accent="bg-gradient-to-r from-emerald-400 to-teal-400" />
         <KpiCard loading={ll} icon={XCircle}      label="Rad etildi"     value={rejected}   sub={totalLeads > 0 ? `${Math.round(rejected/totalLeads*100)}% yo'qotish` : ""} accent="bg-gradient-to-r from-rose-400 to-red-400" />

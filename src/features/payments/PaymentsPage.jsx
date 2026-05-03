@@ -58,7 +58,7 @@ import {
 // ─── Helper ──────────────────────────────────────────────────────────────────
 const isPaidForMonth = (enrollment, selectedMonth) => {
   if (!enrollment.nextPaymentDate) return false;
-  const sel  = new Date(selectedMonth);
+  const sel = new Date(selectedMonth);
   const next = new Date(enrollment.nextPaymentDate);
   return (
     next.getFullYear() > sel.getFullYear() ||
@@ -85,21 +85,19 @@ const PaymentsPage = () => {
       <div className="flex gap-1 border-b border-border">
         <button
           onClick={() => switchTab("enrollments")}
-          className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px ${
-            activeTab === "enrollments"
-              ? "border-gray-900 text-gray-900"
-              : "border-transparent text-gray-400 hover:text-gray-600"
-          }`}
+          className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px ${activeTab === "enrollments"
+            ? "border-gray-900 text-gray-900"
+            : "border-transparent text-gray-400 hover:text-gray-600"
+            }`}
         >
           Guruh bo'yicha
         </button>
         <button
           onClick={() => switchTab("records")}
-          className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px ${
-            activeTab === "records"
-              ? "border-gray-900 text-gray-900"
-              : "border-transparent text-gray-400 hover:text-gray-600"
-          }`}
+          className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px ${activeTab === "records"
+            ? "border-gray-900 text-gray-900"
+            : "border-transparent text-gray-400 hover:text-gray-600"
+            }`}
         >
           To'lov tarixi
         </button>
@@ -124,59 +122,59 @@ const EnrollmentsTab = () => {
 
   const [selectedGroup, setSelectedGroup] = useState("");
   const [selectedMonth, setSelectedMonth] = useState(monthOptions[0].value);
-  const [search, setSearch]               = useState("");
+  const [search, setSearch] = useState("");
 
   const { data: groupsData, isLoading: groupsLoading } = useAppQuery({
     queryKey: ["admin-groups"],
-    queryFn:  () => classesAPI.getAll({ limit: 200 }),
-    onError:  () => toast.error("Guruhlar yuklanmadi"),
+    queryFn: () => classesAPI.getAll({ limit: 200 }),
+    onError: () => toast.error("Guruhlar yuklanmadi"),
   });
 
   const { data: groupData, isLoading: enrollmentsLoading } = useAppQuery({
     queryKey: ["group-detail", selectedGroup],
-    queryFn:  () => classesAPI.getOne(selectedGroup),
-    enabled:  !!selectedGroup,
-    onError:  () => toast.error("Guruh ma'lumotlari yuklanmadi"),
+    queryFn: () => classesAPI.getOne(selectedGroup),
+    enabled: !!selectedGroup,
+    onError: () => toast.error("Guruh ma'lumotlari yuklanmadi"),
   });
 
-  const groups      = groupsData?.groups     ?? [];
+  const groups = groupsData?.groups ?? [];
   const enrollments = groupData?.enrollments ?? [];
-  const groupInfo   = groupData?.group       ?? null;
-  const isLoading   = enrollmentsLoading && !!selectedGroup;
+  const groupInfo = groupData?.group ?? null;
+  const isLoading = enrollmentsLoading && !!selectedGroup;
 
   const groupOptions = groups.map((g) => ({ value: g._id, label: g.name }));
 
   const stats = useMemo(() => {
-    const active       = enrollments.filter((e) => e.status === "active");
-    const paid         = active.filter((e) =>  isPaidForMonth(e, selectedMonth));
-    const unpaid       = active.filter((e) => !isPaidForMonth(e, selectedMonth));
-    const totalDebt    = active.reduce((s, e) => s + (e.debt    ?? 0), 0);
+    const active = enrollments.filter((e) => e.status === "active");
+    const paid = active.filter((e) => isPaidForMonth(e, selectedMonth));
+    const unpaid = active.filter((e) => !isPaidForMonth(e, selectedMonth));
+    const totalDebt = active.reduce((s, e) => s + (e.debt ?? 0), 0);
     const totalBalance = active.reduce((s, e) => s + (e.balance ?? 0), 0);
     return { total: active.length, paid: paid.length, unpaid: unpaid.length, totalDebt, totalBalance };
   }, [enrollments, selectedMonth]);
 
   const sorted = useMemo(() => {
-    const q    = search.trim().toLowerCase();
+    const q = search.trim().toLowerCase();
     const rows = enrollments.map((e) => ({ enrollment: e, paid: isPaidForMonth(e, selectedMonth) }));
-    const hit  = q
+    const hit = q
       ? rows.filter(({ enrollment: e }) => {
-          const name = `${e.student.firstName} ${e.student.lastName}`.toLowerCase();
-          return name.includes(q) || String(e.student.phone).includes(q);
-        })
+        const name = `${e.student.firstName} ${e.student.lastName}`.toLowerCase();
+        return name.includes(q) || String(e.student.phone).includes(q);
+      })
       : rows;
     return [...hit].sort((a, b) => Number(b.paid) - Number(a.paid));
   }, [enrollments, selectedMonth, search]);
 
   const handleOpenCreate = (enrollment) => {
-    const discount      = enrollment.discount ?? 0;
-    const price         = groupInfo?.price    ?? 0;
+    const discount = enrollment.discount ?? 0;
+    const price = groupInfo?.price ?? 0;
     const defaultAmount = Math.max(0, price - discount);
     openModal("createPayment", {
-      enrollmentId:  enrollment._id,
-      studentId:     enrollment.student._id,
-      studentName:   `${enrollment.student.firstName} ${enrollment.student.lastName}`,
-      studentPhone:  enrollment.student.phone,
-      month:         selectedMonth,
+      enrollmentId: enrollment._id,
+      studentId: enrollment.student._id,
+      studentName: `${enrollment.student.firstName} ${enrollment.student.lastName}`,
+      studentPhone: enrollment.student.phone,
+      month: selectedMonth,
       defaultAmount,
     });
   };
@@ -184,10 +182,10 @@ const EnrollmentsTab = () => {
   const handleOpenDiscount = (enrollment) => {
     const s = enrollment.student;
     openModal("setEnrollmentDiscount", {
-      enrollmentId:          enrollment._id,
-      studentName:           `${s.firstName} ${s.lastName}`,
-      groupName:             groupInfo?.name ?? "",
-      currentDiscount:       enrollment.discount ?? 0,
+      enrollmentId: enrollment._id,
+      studentName: `${s.firstName} ${s.lastName}`,
+      groupName: groupInfo?.name ?? "",
+      currentDiscount: enrollment.discount ?? 0,
       currentDiscountReason: enrollment.discountReason ?? "",
     });
   };
@@ -202,6 +200,7 @@ const EnrollmentsTab = () => {
             value={selectedGroup}
             onChange={(val) => { setSelectedGroup(val); setSearch(""); }}
             options={groupOptions}
+            selectedGroup={"Guruh tanlang"}
             isLoading={groupsLoading}
             placeholder="Guruh tanlang"
           />
@@ -228,7 +227,7 @@ const EnrollmentsTab = () => {
 
       {/* Stats */}
       {selectedGroup && (
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 xl:grid-cols-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:grid-cols-4 xl:grid-cols-5">
           <StatCard label="Jami o'quvchi" value={stats.total}
             icon={<Users className="size-5" strokeWidth={1.5} />} color="blue" />
           <StatCard label="To'lagan" value={stats.paid}
@@ -405,9 +404,9 @@ const RecordsTab = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const currentPage = parseInt(searchParams.get("page") || "1", 10);
-  const qParam      = searchParams.get("q") || "";
+  const qParam = searchParams.get("q") || "";
   const statusParam = searchParams.get("status") || "";
-  const monthParam  = searchParams.get("month") || "";
+  const monthParam = searchParams.get("month") || "";
 
   const [inputQ, setInputQ] = useState(qParam);
 
@@ -470,9 +469,9 @@ const RecordsTab = () => {
   const queryParams = {
     page: currentPage,
     limit: 20,
-    ...(qParam      && { q: qParam }),
+    ...(qParam && { q: qParam }),
     ...(statusParam && { status: statusParam }),
-    ...(monthParam  && { month: monthParam }),
+    ...(monthParam && { month: monthParam }),
   };
 
   const { data, isLoading, isFetching } = useQuery({
@@ -492,8 +491,8 @@ const RecordsTab = () => {
   return (
     <>
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="relative flex-1 min-w-[200px]">
+      <div className="flex flex-col sm:flex-row flex-wrap items-center gap-3">
+        <div className="relative flex-1 w-full min-w-[200px]">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             value={inputQ}
@@ -506,7 +505,7 @@ const RecordsTab = () => {
         <select
           value={statusParam}
           onChange={(e) => setFilter("status", e.target.value)}
-          className="py-2 px-3 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
+          className="py-2 px-3 w-full sm:w-auto text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
         >
           <option value="">Barcha holat</option>
           {PAYMENT_STATUS_OPTIONS.map((o) => (
@@ -517,7 +516,7 @@ const RecordsTab = () => {
         <select
           value={monthParam}
           onChange={(e) => setFilter("month", e.target.value)}
-          className="py-2 px-3 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
+          className="py-2 px-3 w-full sm:w-auto text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
         >
           <option value="">Barcha oy</option>
           {monthFilterOptions.map((o) => (
@@ -634,9 +633,9 @@ const RecordsTab = () => {
 // ─── Payment Status Badge ─────────────────────────────────────────────────────
 
 const statusConfig = {
-  paid:    { label: "To'langan",      className: "bg-green-100 text-green-700"   },
-  pending: { label: "Kutilmoqda",     className: "bg-yellow-100 text-yellow-700" },
-  overdue: { label: "Muddati o'tgan", className: "bg-red-100 text-red-600"       },
+  paid: { label: "To'langan", className: "bg-green-100 text-green-700" },
+  pending: { label: "Kutilmoqda", className: "bg-yellow-100 text-yellow-700" },
+  overdue: { label: "Muddati o'tgan", className: "bg-red-100 text-red-600" },
 };
 
 const PaymentStatusBadge = ({ status }) => {
@@ -651,9 +650,9 @@ const PaymentStatusBadge = ({ status }) => {
 // ─── Stat Card ───────────────────────────────────────────────────────────────
 
 const colorMap = {
-  blue:   { bg: "bg-blue-50",   icon: "text-blue-500",   value: "text-blue-700"   },
-  green:  { bg: "bg-green-50",  icon: "text-green-500",  value: "text-green-700"  },
-  red:    { bg: "bg-red-50",    icon: "text-red-500",    value: "text-red-700"    },
+  blue: { bg: "bg-blue-50", icon: "text-blue-500", value: "text-blue-700" },
+  green: { bg: "bg-green-50", icon: "text-green-500", value: "text-green-700" },
+  red: { bg: "bg-red-50", icon: "text-red-500", value: "text-red-700" },
   orange: { bg: "bg-orange-50", icon: "text-orange-500", value: "text-orange-700" },
   purple: { bg: "bg-purple-50", icon: "text-purple-500", value: "text-purple-700" },
 };

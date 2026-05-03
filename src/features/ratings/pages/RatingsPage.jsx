@@ -105,8 +105,8 @@ const RatingsPage = () => {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-end gap-3 p-4 bg-white border border-gray-200 rounded-lg">
-        <div className="flex flex-col gap-1">
+      <div className="flex flex-col sm:flex-row flex-wrap items-end gap-3 p-4 bg-white border border-gray-200 rounded-lg">
+        <div className="flex flex-col gap-1 w-full sm:w-auto">
           <label className="text-xs font-medium text-gray-500">Dan</label>
           <input
             type="date"
@@ -116,7 +116,7 @@ const RatingsPage = () => {
             className="h-9 px-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brown-800"
           />
         </div>
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 w-full sm:w-auto">
           <label className="text-xs font-medium text-gray-500">Gacha</label>
           <input
             type="date"
@@ -131,12 +131,12 @@ const RatingsPage = () => {
           <button
             key={opt.from}
             onClick={() => { setFrom(daysAgo(opt.from)); setTo(today); }}
-            className="h-9 px-3 text-xs border border-gray-200 rounded-md text-gray-600 hover:bg-gray-50 transition-colors"
+            className="h-9 px-3 w-full sm:w-auto text-xs border border-gray-200 rounded-md text-gray-600 hover:bg-gray-50 transition-colors"
           >
             {opt.label}
           </button>
         ))}
-        <Button size="sm" onClick={() => setApplied({ from, to, group })}>
+        <Button size="sm" onClick={() => setApplied({ from, to, group })} className="w-full sm:w-auto">
           Ko'rish
         </Button>
       </div>

@@ -136,15 +136,15 @@ const Classes = () => {
 
       {/* Actions */}
       <div className="flex items-center gap-3 mb-4">
-        <Button onClick={() => openModal("createClass")} className="px-3.5">
+        <Button onClick={() => openModal("createClass")} className="px-3.5 w-full sm:w-auto">
           <Plus strokeWidth={1.5} />
           Yangi guruh
         </Button>
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-3 mb-5">
-        <div className="relative flex-1 min-w-[200px]">
+      <div className="flex flex-col sm:flex-row flex-wrap items-center gap-3 mb-5">
+        <div className="relative w-full sm:w-auto flex-1 min-w-[200px]">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             value={inputQ}
@@ -157,7 +157,7 @@ const Classes = () => {
         <select
           value={dayParam}
           onChange={(e) => setFilter("day", e.target.value)}
-          className="py-2 px-3 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
+          className="py-2 px-3 w-full sm:w-auto text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
         >
           <option value="">Barcha kunlar</option>
           {daysOptions.map((o) => (

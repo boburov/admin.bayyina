@@ -131,13 +131,13 @@ const LeadsPage = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-end sm:items-center gap-3">
           <button
             onClick={() => setIsCreateOpen(true)}
             className="flex items-center gap-1.5 px-4 py-2 bg-brown-800 text-white text-sm font-semibold rounded-md hover:bg-brown-700 transition-colors"
           >
             <Plus size={16} />
-            <span className="hidden sm:inline">Yangi lead</span>
+            <span className="inline">Yangi lead</span>
           </button>
 
           <div className="flex gap-1 border border-gray-200 rounded-md p-0.5">

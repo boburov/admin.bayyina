@@ -298,7 +298,7 @@ const totalAtt    = (attendance?.overall?.total ?? 0);
       </div>
 
       {/* ── 1. Overview KPIs ───────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard loading={ol} label="Jami leadlar"     value={overview?.totalLeads ?? 0}                              icon={UserPlus}      color="blue"   />
         <KpiCard loading={ol} label="Faol o'quvchilar" value={overview?.totalActiveStudents ?? 0}                    icon={GraduationCap} color="brown"  />
         <KpiCard loading={ol} label="Bu oy daromad"    value={formatMoneyFull(overview?.revenueThisMonth)}            icon={TrendingUp}    color="green"  sub="To'langan to'lovlar" />

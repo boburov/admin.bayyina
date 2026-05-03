@@ -159,7 +159,7 @@ const AttendanceDashboardPage = () => {
         <DateFilter value={dateRange} onChange={setDateRange} />
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard loading={al} label="Jami darslar" value={overall.total} icon={Calendar} color="blue" />
         <KpiCard loading={al} label="Qatnashgan" value={overall.present} icon={CheckCircle2} color="green" />
         <KpiCard loading={al} label="Qatnashmagan" value={overall.absent} icon={XCircle} color="red" />

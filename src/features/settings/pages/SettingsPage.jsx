@@ -8,10 +8,10 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 // API
-import { leadSourcesAPI }     from "../api/leadSources.api";
-import { courseTypesAPI }     from "../api/courseTypes.api";
+import { leadSourcesAPI } from "../api/leadSources.api";
+import { courseTypesAPI } from "../api/courseTypes.api";
 import { rejectionReasonsAPI } from "../api/rejectionReasons.api";
-import { interestsAPI }       from "../api/interests.api";
+import { interestsAPI } from "../api/interests.api";
 
 // Icons
 import {
@@ -24,22 +24,24 @@ import Card from "@/shared/components/ui/Card";
 // ─── Shared CRUD row ──────────────────────────────────────────────────────────
 
 const EditRow = ({ value, onChange, onSave, onCancel, fields }) => (
-  <div className="flex items-center gap-2 flex-wrap py-2">
+  <div className="flex items-center gap-2 flex-col sm:flex-row flex-wrap py-2">
     {fields.map((f) => (
       <input
         key={f.key}
         value={value[f.key] ?? ""}
         onChange={(e) => onChange(f.key, e.target.value)}
         placeholder={f.placeholder}
-        className="flex-1 min-w-[120px] h-8 px-2 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-brown-800"
+        className="flex-1 min-w-[120px] w-full sm:w-auto h-8 px-3 py-2 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-brown-800"
       />
     ))}
-    <button onClick={onSave} className="flex items-center justify-center w-8 h-8 bg-brown-800 text-white rounded hover:bg-brown-700">
-      <Check size={13} />
-    </button>
-    <button onClick={onCancel} className="flex items-center justify-center w-8 h-8 border border-gray-200 text-gray-500 rounded hover:bg-gray-50">
-      <X size={13} />
-    </button>
+    <div className="gap-2 w-full sm:w-auto flex">
+      <button onClick={onSave} className="flex flex-1 items-center justify-center w-8 h-8 bg-brown-800 text-white rounded hover:bg-brown-700">
+        <Check size={13} />
+      </button>
+      <button onClick={onCancel} className="flex flex-1 items-center justify-center w-8 h-8 border border-gray-200 text-gray-500 rounded hover:bg-gray-50">
+        <X size={13} />
+      </button>
+    </div>
   </div>
 );
 
@@ -47,14 +49,14 @@ const EditRow = ({ value, onChange, onSave, onCancel, fields }) => (
 
 const LeadSourcesTab = () => {
   const qc = useQueryClient();
-  const [adding, setAdding]     = useState(false);
-  const [editId, setEditId]     = useState(null);
+  const [adding, setAdding] = useState(false);
+  const [editId, setEditId] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
-  const [form, setForm]         = useState({ name: "", slug: "" });
+  const [form, setForm] = useState({ name: "", slug: "" });
 
   const { data, isLoading } = useQuery({
     queryKey: ["settings", "lead-sources"],
-    queryFn:  () => leadSourcesAPI.getAll({ limit: 100 }).then((r) => r.data),
+    queryFn: () => leadSourcesAPI.getAll({ limit: 100 }).then((r) => r.data),
   });
 
   const invalidate = () => qc.invalidateQueries({ queryKey: ["settings", "lead-sources"] });
@@ -62,19 +64,19 @@ const LeadSourcesTab = () => {
   const createMut = useMutation({
     mutationFn: (d) => leadSourcesAPI.create(d),
     onSuccess: () => { toast.success("Manba qo'shildi"); invalidate(); setAdding(false); setForm({ name: "", slug: "" }); },
-    onError:   (e) => toast.error(e.response?.data?.message || "Xatolik"),
+    onError: (e) => toast.error(e.response?.data?.message || "Xatolik"),
   });
 
   const updateMut = useMutation({
     mutationFn: ({ id, d }) => leadSourcesAPI.update(id, d),
     onSuccess: () => { toast.success("Yangilandi"); invalidate(); setEditId(null); },
-    onError:   (e) => toast.error(e.response?.data?.message || "Xatolik"),
+    onError: (e) => toast.error(e.response?.data?.message || "Xatolik"),
   });
 
   const deleteMut = useMutation({
     mutationFn: (id) => leadSourcesAPI.delete(id),
     onSuccess: () => { toast.success("O'chirildi"); invalidate(); setDeleteId(null); },
-    onError:   (e) => toast.error(e.response?.data?.message || "Xatolik"),
+    onError: (e) => toast.error(e.response?.data?.message || "Xatolik"),
   });
 
   const fields = [
@@ -112,7 +114,7 @@ const LeadSourcesTab = () => {
 
       {isLoading ? (
         <div className="space-y-2">
-          {[1,2,3].map((i) => <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />)}
+          {[1, 2, 3].map((i) => <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />)}
         </div>
       ) : items.length === 0 ? (
         <p className="text-sm text-gray-400 text-center py-8">Manbalar yo'q</p>
@@ -182,14 +184,14 @@ const LeadSourcesTab = () => {
 
 const CourseTypesTab = () => {
   const qc = useQueryClient();
-  const [adding, setAdding]     = useState(false);
-  const [editId, setEditId]     = useState(null);
+  const [adding, setAdding] = useState(false);
+  const [editId, setEditId] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
-  const [form, setForm]         = useState({ name: "", type: "", direction: "" });
+  const [form, setForm] = useState({ name: "", type: "", direction: "" });
 
   const { data, isLoading } = useQuery({
     queryKey: ["settings", "course-types"],
-    queryFn:  () => courseTypesAPI.getAll({ limit: 100 }).then((r) => r.data),
+    queryFn: () => courseTypesAPI.getAll({ limit: 100 }).then((r) => r.data),
   });
 
   const invalidate = () => qc.invalidateQueries({ queryKey: ["settings", "course-types"] });
@@ -197,24 +199,24 @@ const CourseTypesTab = () => {
   const createMut = useMutation({
     mutationFn: (d) => courseTypesAPI.create(d),
     onSuccess: () => { toast.success("Kurs turi qo'shildi"); invalidate(); setAdding(false); setForm({ name: "", type: "", direction: "" }); },
-    onError:   (e) => toast.error(e.response?.data?.message || "Xatolik"),
+    onError: (e) => toast.error(e.response?.data?.message || "Xatolik"),
   });
 
   const updateMut = useMutation({
     mutationFn: ({ id, d }) => courseTypesAPI.update(id, d),
     onSuccess: () => { toast.success("Yangilandi"); invalidate(); setEditId(null); },
-    onError:   (e) => toast.error(e.response?.data?.message || "Xatolik"),
+    onError: (e) => toast.error(e.response?.data?.message || "Xatolik"),
   });
 
   const deleteMut = useMutation({
     mutationFn: (id) => courseTypesAPI.delete(id),
     onSuccess: () => { toast.success("O'chirildi"); invalidate(); setDeleteId(null); },
-    onError:   (e) => toast.error(e.response?.data?.message || "Xatolik"),
+    onError: (e) => toast.error(e.response?.data?.message || "Xatolik"),
   });
 
   const fields = [
-    { key: "name",      placeholder: "Kurs nomi *" },
-    { key: "type",      placeholder: "Turi (masalan: offline)" },
+    { key: "name", placeholder: "Kurs nomi *" },
+    { key: "type", placeholder: "Turi (masalan: offline)" },
     { key: "direction", placeholder: "Yo'nalish (masalan: IT)" },
   ];
 
@@ -248,7 +250,7 @@ const CourseTypesTab = () => {
 
       {isLoading ? (
         <div className="space-y-2">
-          {[1,2,3].map((i) => <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />)}
+          {[1, 2, 3].map((i) => <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />)}
         </div>
       ) : items.length === 0 ? (
         <p className="text-sm text-gray-400 text-center py-8">Kurs turlari yo'q</p>
@@ -325,14 +327,14 @@ const CourseTypesTab = () => {
 
 const RejectionReasonsTab = () => {
   const qc = useQueryClient();
-  const [adding, setAdding]     = useState(false);
-  const [editId, setEditId]     = useState(null);
+  const [adding, setAdding] = useState(false);
+  const [editId, setEditId] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
-  const [form, setForm]         = useState({ title: "", description: "" });
+  const [form, setForm] = useState({ title: "", description: "" });
 
   const { data, isLoading } = useQuery({
     queryKey: ["settings", "rejection-reasons"],
-    queryFn:  () => rejectionReasonsAPI.getAll({ limit: 100 }).then((r) => r.data),
+    queryFn: () => rejectionReasonsAPI.getAll({ limit: 100 }).then((r) => r.data),
   });
 
   const invalidate = () => qc.invalidateQueries({ queryKey: ["settings", "rejection-reasons"] });
@@ -340,23 +342,23 @@ const RejectionReasonsTab = () => {
   const createMut = useMutation({
     mutationFn: (d) => rejectionReasonsAPI.create(d),
     onSuccess: () => { toast.success("Sabab qo'shildi"); invalidate(); setAdding(false); setForm({ title: "", description: "" }); },
-    onError:   (e) => toast.error(e.response?.data?.message || "Xatolik"),
+    onError: (e) => toast.error(e.response?.data?.message || "Xatolik"),
   });
 
   const updateMut = useMutation({
     mutationFn: ({ id, d }) => rejectionReasonsAPI.update(id, d),
     onSuccess: () => { toast.success("Yangilandi"); invalidate(); setEditId(null); },
-    onError:   (e) => toast.error(e.response?.data?.message || "Xatolik"),
+    onError: (e) => toast.error(e.response?.data?.message || "Xatolik"),
   });
 
   const deleteMut = useMutation({
     mutationFn: (id) => rejectionReasonsAPI.delete(id),
     onSuccess: () => { toast.success("O'chirildi"); invalidate(); setDeleteId(null); },
-    onError:   (e) => toast.error(e.response?.data?.message || "Xatolik"),
+    onError: (e) => toast.error(e.response?.data?.message || "Xatolik"),
   });
 
   const fields = [
-    { key: "title",       placeholder: "Sarlavha *" },
+    { key: "title", placeholder: "Sarlavha *" },
     { key: "description", placeholder: "Tavsif (ixtiyoriy)" },
   ];
 
@@ -390,7 +392,7 @@ const RejectionReasonsTab = () => {
 
       {isLoading ? (
         <div className="space-y-2">
-          {[1,2,3].map((i) => <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />)}
+          {[1, 2, 3].map((i) => <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />)}
         </div>
       ) : items.length === 0 ? (
         <p className="text-sm text-gray-400 text-center py-8">Rad etish sabablari yo'q</p>
@@ -462,14 +464,14 @@ const RejectionReasonsTab = () => {
 
 const InterestsTab = () => {
   const qc = useQueryClient();
-  const [adding, setAdding]     = useState(false);
-  const [editId, setEditId]     = useState(null);
+  const [adding, setAdding] = useState(false);
+  const [editId, setEditId] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
-  const [form, setForm]         = useState({ name: "" });
+  const [form, setForm] = useState({ name: "" });
 
   const { data, isLoading } = useQuery({
     queryKey: ["settings", "interests"],
-    queryFn:  () => interestsAPI.getAll({ limit: 100 }).then((r) => r.data),
+    queryFn: () => interestsAPI.getAll({ limit: 100 }).then((r) => r.data),
   });
 
   const invalidate = () => {
@@ -480,19 +482,19 @@ const InterestsTab = () => {
   const createMut = useMutation({
     mutationFn: (d) => interestsAPI.create(d),
     onSuccess: () => { toast.success("Qiziqish qo'shildi"); invalidate(); setAdding(false); setForm({ name: "" }); },
-    onError:   (e) => toast.error(e.response?.data?.message || "Xatolik"),
+    onError: (e) => toast.error(e.response?.data?.message || "Xatolik"),
   });
 
   const updateMut = useMutation({
     mutationFn: ({ id, d }) => interestsAPI.update(id, d),
     onSuccess: () => { toast.success("Yangilandi"); invalidate(); setEditId(null); },
-    onError:   (e) => toast.error(e.response?.data?.message || "Xatolik"),
+    onError: (e) => toast.error(e.response?.data?.message || "Xatolik"),
   });
 
   const deleteMut = useMutation({
     mutationFn: (id) => interestsAPI.delete(id),
     onSuccess: () => { toast.success("O'chirildi"); invalidate(); setDeleteId(null); },
-    onError:   (e) => toast.error(e.response?.data?.message || "Xatolik"),
+    onError: (e) => toast.error(e.response?.data?.message || "Xatolik"),
   });
 
   const fields = [{ key: "name", placeholder: "Qiziqish nomi (masalan: Frontend) *" }];
@@ -526,7 +528,7 @@ const InterestsTab = () => {
 
       {isLoading ? (
         <div className="space-y-2">
-          {[1,2,3].map((i) => <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />)}
+          {[1, 2, 3].map((i) => <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />)}
         </div>
       ) : items.length === 0 ? (
         <p className="text-sm text-gray-400 text-center py-8">Qiziqishlar yo'q</p>
@@ -592,10 +594,10 @@ const InterestsTab = () => {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 const TABS = [
-  { key: "sources",   label: "Lead manbalar",      icon: MapPin,      component: LeadSourcesTab },
-  { key: "interests", label: "Qiziqishlar",         icon: Star,        component: InterestsTab },
-  { key: "types",     label: "Kurs turlari",        icon: BookOpen,    component: CourseTypesTab },
-  { key: "reasons",   label: "Rad etish sabablari", icon: AlertCircle, component: RejectionReasonsTab },
+  { key: "sources", label: "Lead manbalar", icon: MapPin, component: LeadSourcesTab },
+  { key: "interests", label: "Qiziqishlar", icon: Star, component: InterestsTab },
+  { key: "types", label: "Kurs turlari", icon: BookOpen, component: CourseTypesTab },
+  { key: "reasons", label: "Rad etish sabablari", icon: AlertCircle, component: RejectionReasonsTab },
 ];
 
 const SettingsPage = () => {
@@ -617,11 +619,10 @@ const SettingsPage = () => {
               <button
                 key={t.key}
                 onClick={() => setTab(t.key)}
-                className={`flex items-center gap-2.5 px-3 py-2 text-sm font-medium rounded transition-colors w-full text-left ${
-                  tab === t.key
+                className={`flex items-center gap-2.5 px-3 py-2 text-sm font-medium rounded transition-colors w-full text-left ${tab === t.key
                     ? "bg-brown-50 text-brown-800 border-l-2 border-brown-800 pl-[10px]"
                     : "text-gray-600 hover:bg-gray-50 hover:text-gray-900 border-l-2 border-transparent"
-                }`}
+                  }`}
               >
                 <t.icon size={14} strokeWidth={tab === t.key ? 2 : 1.5} />
                 {t.label}
