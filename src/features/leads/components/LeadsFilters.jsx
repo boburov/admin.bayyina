@@ -15,15 +15,15 @@ const LeadsFilters = ({ filters, onChange, onReset }) => {
   const { interests } = useInterests();
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
+    <div className="flex flex-col sm:flex-row flex-wrap items-center gap-3 w-full">
       {/* Search */}
-      <div className="relative flex-1 min-w-[200px]">
+      <div className="relative flex-1 min-w-[200px] w-full">
         <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
         <input
           value={filters.search || ""}
           onChange={(e) => onChange("search", e.target.value)}
           placeholder="Ism yoki telefon qidirish..."
-          className="w-full pl-8 pr-3 py-2 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
+          className="pl-8 w-full pr-3 py-2 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
         />
       </div>
 
@@ -31,7 +31,7 @@ const LeadsFilters = ({ filters, onChange, onReset }) => {
       <select
         value={filters.status || ""}
         onChange={(e) => onChange("status", e.target.value)}
-        className="py-2 px-3 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
+        className="py-2 px-3 w-full sm:w-auto text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
       >
         {STATUS_OPTIONS.map((o) => (
           <option key={o.value} value={o.value}>{o.label}</option>
@@ -42,7 +42,7 @@ const LeadsFilters = ({ filters, onChange, onReset }) => {
       <select
         value={filters.source || ""}
         onChange={(e) => onChange("source", e.target.value)}
-        className="py-2 px-3 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
+        className="py-2 px-3 w-full sm:w-auto text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
       >
         <option value="">Barcha manbalar</option>
         {sources.map((s) => (
@@ -55,7 +55,7 @@ const LeadsFilters = ({ filters, onChange, onReset }) => {
         <select
           value={filters.interest || ""}
           onChange={(e) => onChange("interest", e.target.value)}
-          className="py-2 px-3 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
+          className="py-2 px-3 w-full sm:w-auto text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
         >
           <option value="">Barcha qiziqishlar</option>
           {interests.map((i) => (

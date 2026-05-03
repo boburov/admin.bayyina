@@ -145,24 +145,24 @@ const UsersPage = () => {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-3 mb-5">
-        <div className="relative flex-1 min-w-[200px]">
+      <div className="flex flex-col sm:flex-row flex-wrap items-center gap-3 mb-5">
+        <div className="relative flex-1 w-full min-w-[200px]">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             value={inputQ}
             onChange={(e) => setInputQ(e.target.value)}
             placeholder="Ism, telefon, manba..."
-            className="w-full pl-8 pr-3 py-2 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
+            className="pl-8 pr-3 py-2 w-full text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
           />
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           <input
             type="number"
             value={minAgeParam}
             onChange={(e) => setFilter("minAge", e.target.value)}
             placeholder="Min yosh"
-            className="w-20 py-2 px-3 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
+            className="w-20 py-2 px-3 flex-1 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
           />
           <span className="text-gray-400">-</span>
           <input
@@ -170,14 +170,14 @@ const UsersPage = () => {
             value={maxAgeParam}
             onChange={(e) => setFilter("maxAge", e.target.value)}
             placeholder="Max yosh"
-            className="w-20 py-2 px-3 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
+            className="w-20 py-2 px-3 flex-1 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
           />
         </div>
 
         <select
           value={genderParam}
           onChange={(e) => setFilter("gender", e.target.value)}
-          className="py-2 px-3 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
+          className="py-2 px-3 w-full sm:w-auto text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
         >
           <option value="">Barcha jins</option>
           {genderOptions.map((o) => (
@@ -190,6 +190,7 @@ const UsersPage = () => {
           value={sourceParam}
           onChange={(v) => setFilter("source", v)}
           allLabel="Barcha manba"
+          className="w-full sm:w-auto"
         />
 
         {hasFilters && (
