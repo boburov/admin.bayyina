@@ -322,7 +322,6 @@ const ClassDetailPage = () => {
                           </span>
                         ) : enrollment.status === "dropped" ? (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full bg-red-100 text-red-600">
-                            <LogOut className="size-3" strokeWidth={2} />
                             Tashlab ketdi
                           </span>
                         ) : (

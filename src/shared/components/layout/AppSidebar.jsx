@@ -37,6 +37,7 @@ import { cn } from "@/shared/utils/cn";
 const NAV_ITEMS = [
   { title: "Bosh sahifa", url: "/dashboard", icon: Home },
   { title: "Leadlar", url: "/leads", icon: UserPlus },
+  { title: "Leads CRM", url: "/leads-crm", icon: ClipboardList },
   { title: "O'quvchilar", url: "/users", icon: Users },
   { title: "O'qituvchilar", url: "/teachers", icon: GraduationCap },
   { title: "Guruhlar", url: "/classes", icon: School },
@@ -86,9 +87,7 @@ function SidebarContent({ onNavClick }) {
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 overflow-y-auto">
-        <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 px-2 mb-2">
-          Menyu
-        </p>
+        
         <ul className="flex flex-col gap-0.5">
           {NAV_ITEMS.map((item) => (
             <li key={item.url}>

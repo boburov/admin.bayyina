@@ -25,7 +25,8 @@ import LeadAnalyticsPage from "@/features/statistics/pages/LeadAnalyticsPage";
 import MonthlyIncomePage from "@/features/statistics/pages/MonthlyIncomePage";
 
 // Pages — Leads
-import LeadsPage from "@/features/leads/pages/LeadsPage";
+import LeadsPage    from "@/features/leads/pages/LeadsPage";
+import LeadsCrmPage from "@/features/leads-crm/pages/LeadsCrmPage";
 
 // Router
 import { Routes as RoutesWrapper, Route, Navigate } from "react-router-dom";
@@ -76,6 +77,9 @@ const Routes = () => {
 
           {/* Leads */}
           <Route path="/leads" element={<LeadsPage />} />
+
+          {/* Leads CRM (LocalStorage) */}
+          <Route path="/leads-crm" element={<LeadsCrmPage />} />
 
           {/* Notifications */}
           <Route path="/notifications" element={<NotificationsPage />} />
