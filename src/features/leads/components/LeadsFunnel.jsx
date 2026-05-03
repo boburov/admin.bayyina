@@ -123,7 +123,7 @@ const LeadsFunnel = ({ leads = [] }) => {
   return (
     <div className="space-y-4 mb-6">
       {/* KPI row */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <KpiCard icon={Users}        label="Jami leadlar"   value={serverTotal}           color="blue"   />
         <KpiCard icon={CheckCircle2} label="Qabul qilindi"  value={serverConverted}        color="green"  />
         <KpiCard icon={XCircle}      label="Bekor qilindi"  value={serverCancelled}        color="red"    />
