@@ -183,7 +183,7 @@ const SalariesPage = () => {
         <>
           {/* Stats */}
           {salaries.length > 0 && (
-            <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:grid-cols-4">
               <StatCard label="Jami"        value={total}                             icon={<Wallet      className="size-5" strokeWidth={1.5} />} color="blue"   />
               <StatCard label="To'langan"   value={paidCount}                         icon={<CheckCircle2 className="size-5" strokeWidth={1.5} />} color="green"  />
               <StatCard label="Kutilmoqda"  value={pendingCount}                      icon={<Clock       className="size-5" strokeWidth={1.5} />} color="orange" />
