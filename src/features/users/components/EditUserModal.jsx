@@ -2,8 +2,9 @@
 import { toast } from "sonner";
 
 // API
-import { usersAPI } from "@/features/users/api/users.api";
-import { classesAPI } from "@/features/classes/api/classes.api";
+import { usersAPI }       from "@/features/users/api/users.api";
+import { classesAPI }     from "@/features/classes/api/classes.api";
+import { enrollmentsAPI } from "@/features/enrollments/api/enrollments.api";
 
 // TanStack Query
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -44,6 +45,18 @@ const Content = ({ close, isLoading, setIsLoading, ...user }) => {
   const queryClient = useQueryClient();
 
   const isTeacher = user.role === "teacher";
+  const isStudent = user.role === "student";
+
+  // For students: derive current groups from active enrollments
+  const activeEnrollments = isStudent
+    ? (user.enrollments ?? []).filter((e) => e.status === "active")
+    : [];
+  const enrollmentByGroupId = Object.fromEntries(
+    activeEnrollments.map((e) => [String(e.group?._id ?? e.group), String(e._id)])
+  );
+  const initialGroupIds = isStudent
+    ? activeEnrollments.map((e) => String(e.group?._id ?? e.group))
+    : user.groupIds ?? user.groups?.map((g) => g._id) ?? [];
 
   const { firstName, lastName, gender, age, source, telegramId, salaryType, salaryValue, minSalary, setField } =
     useObjectState({
@@ -58,8 +71,6 @@ const Content = ({ close, isLoading, setIsLoading, ...user }) => {
       minSalary:   user.minSalary   ?? "",
     });
 
-  // Pre-populate groups from user data
-  const initialGroupIds = user.groupIds ?? user.groups?.map((g) => g._id) ?? [];
   const [selectedGroupIds, setSelectedGroupIds] = useState(initialGroupIds);
   const [groupSearch, setGroupSearch] = useState("");
 
@@ -80,42 +91,56 @@ const Content = ({ close, isLoading, setIsLoading, ...user }) => {
       prev.includes(id) ? prev.filter((g) => g !== id) : [...prev, id],
     );
 
-  const handleEdit = (e) => {
+  const handleEdit = async (e) => {
     e.preventDefault();
 
-    if (selectedGroupIds.length === 0) {
+    if (isStudent && selectedGroupIds.length === 0) {
       toast.warning("Kamida bitta guruh tanlanishi kerak");
       return;
     }
 
     setIsLoading(true);
 
-    const payload = {
-      firstName:  firstName.trim(),
-      lastName:   lastName.trim(),
-      gender:     gender || null,
-      age:        age ? Number(age) : null,
-      source:     source || null,
-      telegramId: telegramId.trim() || null,
-      groupIds:   selectedGroupIds,
-      ...(isTeacher && {
-        salaryType,
-        salaryValue: salaryValue !== "" ? Number(salaryValue) : null,
-        minSalary:   minSalary   !== "" ? Number(minSalary)   : 0,
-      }),
-    };
+    try {
+      const payload = {
+        firstName:  firstName.trim(),
+        lastName:   lastName.trim(),
+        gender:     gender || null,
+        age:        age ? Number(age) : null,
+        source:     source || null,
+        telegramId: telegramId.trim() || null,
+        ...(isTeacher && {
+          salaryType,
+          salaryValue: salaryValue !== "" ? Number(salaryValue) : null,
+          minSalary:   minSalary   !== "" ? Number(minSalary)   : 0,
+        }),
+      };
 
-    usersAPI
-      .update(user._id, payload)
-      .then(() => {
-        close();
-        queryClient.invalidateQueries({ queryKey: ["users"] });
-        toast.success("Foydalanuvchi tahrirlandi");
-      })
-      .catch((err) => {
-        toast.error(err.response?.data?.message || "Xatolik yuz berdi");
-      })
-      .finally(() => setIsLoading(false));
+      await usersAPI.update(user._id, payload);
+
+      if (isStudent) {
+        const added   = selectedGroupIds.filter((id) => !initialGroupIds.includes(id));
+        const removed = initialGroupIds.filter((id) => !selectedGroupIds.includes(id));
+
+        for (const groupId of removed) {
+          const enrollmentId = enrollmentByGroupId[groupId];
+          if (enrollmentId) await enrollmentsAPI.delete(enrollmentId);
+        }
+
+        for (const groupId of added) {
+          await enrollmentsAPI.create({ student: user._id, group: groupId });
+        }
+      }
+
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({ queryKey: ["group-detail"] });
+      toast.success("Foydalanuvchi tahrirlandi");
+      close();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Xatolik yuz berdi");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
