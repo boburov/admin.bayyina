@@ -501,8 +501,8 @@ const RecordsTab = () => {
   return (
     <>
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="relative flex-1 min-w-[200px]">
+      <div className="flex flex-col sm:flex-row flex-wrap items-center gap-3">
+        <div className="relative flex-1 w-full min-w-[200px]">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             value={inputQ}
@@ -515,7 +515,7 @@ const RecordsTab = () => {
         <select
           value={statusParam}
           onChange={(e) => setFilter("status", e.target.value)}
-          className="py-2 px-3 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
+          className="py-2 px-3 w-full sm:w-auto text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
         >
           <option value="">Barcha holat</option>
           {PAYMENT_STATUS_OPTIONS.map((o) => (
@@ -526,7 +526,7 @@ const RecordsTab = () => {
         <select
           value={monthParam}
           onChange={(e) => setFilter("month", e.target.value)}
-          className="py-2 px-3 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
+          className="py-2 px-3 w-full sm:w-auto text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
         >
           <option value="">Barcha oy</option>
           {monthFilterOptions.map((o) => (

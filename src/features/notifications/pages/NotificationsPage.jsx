@@ -101,23 +101,25 @@ const NotificationsPage = () => {
 
       {/* Actions bar */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-5">
-        <Button onClick={() => openModal("sendNotification")} className="px-3.5">
+        <Button onClick={() => openModal("sendNotification")} className="px-3.5 w-full sm:w-auto">
           <Plus size={14} strokeWidth={1.5} />
           Yangi xabarnoma
         </Button>
 
-        <div className="flex items-center gap-2 ml-auto">
+        <div className="flex flex-col sm:flex-row items-center gap-2 ml-auto w-full sm:w-auto">
           <Select
             value={typeFilter || "all"}
             options={typeFilterOptions}
             onChange={(v) => setParam("type", v)}
             placeholder="Turi"
+            triggerClassName="w-full sm:w-auto"
           />
           <Select
             value={statusFilter || "all"}
             options={statusFilterOptions}
             onChange={(v) => setParam("status", v)}
             placeholder="Status"
+            triggerClassName="w-full sm:w-auto"
           />
         </div>
       </div>

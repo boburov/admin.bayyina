@@ -185,9 +185,9 @@ const RecordsPage = () => {
       )}
 
       {/* Filter bar — 2 filters only */}
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-col sm:flex-row flex-wrap items-center gap-2">
         {/* Search */}
-        <div className="relative flex-1 min-w-[200px]">
+        <div className="relative flex-1 w-full min-w-[200px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-gray-400 pointer-events-none" strokeWidth={1.5} />
           <input
             type="text"
@@ -204,7 +204,7 @@ const RecordsPage = () => {
           value={entityTypeF}
           onChange={(v) => setParam("entityType", v)}
           allLabel="Barcha bo'limlar"
-          className="min-w-[160px]"
+          className="min-w-[160px] w-full sm:w-auto"
         />
 
         {hasFilters && (
