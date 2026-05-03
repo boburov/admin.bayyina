@@ -13,10 +13,10 @@ import SetDiscountModal from "@/features/payments/components/SetDiscountModal";
 
 // TanStack Query
 import { useAppQuery } from "@/shared/lib/query/query-hooks";
-import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 // Router
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 
 // Hooks
 import useModal from "@/shared/hooks/useModal";
@@ -52,7 +52,7 @@ import {
   X,
   Receipt,
   Tag,
-  BadgeCheck,
+  ExternalLink,
 } from "lucide-react";
 
 // ─── Helper ──────────────────────────────────────────────────────────────────
@@ -401,17 +401,8 @@ const EnrollmentsTab = () => {
 // ─── Records Tab ─────────────────────────────────────────────────────────────
 
 const RecordsTab = () => {
-  const qc = useQueryClient();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-
-  const markPaidMutation = useMutation({
-    mutationFn: (id) => paymentsAPI.update(id, { status: "paid" }),
-    onSuccess: () => {
-      toast.success("To'lov holati yangilandi");
-      qc.invalidateQueries({ queryKey: ["payments"] });
-    },
-    onError: () => toast.error("Xatolik yuz berdi"),
-  });
 
   const currentPage = parseInt(searchParams.get("page") || "1", 10);
   const qParam      = searchParams.get("q") || "";
@@ -558,19 +549,18 @@ const RecordsTab = () => {
               <th>Oy</th>
               <th>Sana</th>
               <th>Izoh</th>
-              <th></th>
             </tr>
           </thead>
           <tbody>
             {isLoading ? (
               <tr>
-                <td colSpan={9} className="py-12 text-center text-sm text-gray-400">
+                <td colSpan={8} className="py-12 text-center text-sm text-gray-400">
                   Yuklanmoqda...
                 </td>
               </tr>
             ) : payments.length === 0 ? (
               <tr>
-                <td colSpan={9} className="py-16 text-center">
+                <td colSpan={8} className="py-16 text-center">
                   <div className="flex flex-col items-center gap-2 text-gray-400">
                     <Receipt className="size-10 opacity-30" strokeWidth={1.5} />
                     <p className="text-sm">To'lovlar topilmadi</p>
@@ -580,14 +570,22 @@ const RecordsTab = () => {
             ) : (
               payments.map((payment, idx) => {
                 const s = payment.student;
-                const canMarkPaid = payment.status !== "paid";
                 return (
                   <tr key={payment._id}>
                     <td className="text-center text-sm text-gray-400">
                       {(currentPage - 1) * 20 + idx + 1}
                     </td>
-                    <td className="text-sm font-medium text-primary whitespace-nowrap">
-                      {s ? `${s.firstName} ${s.lastName}` : "—"}
+                    <td className="whitespace-nowrap">
+                      {s ? (
+                        <button
+                          type="button"
+                          onClick={() => navigate(`/payments/user/${s._id}`)}
+                          className="flex items-center gap-1 text-sm font-medium text-primary hover:text-blue-600 hover:underline underline-offset-2 transition-colors"
+                        >
+                          {s.firstName} {s.lastName}
+                          <ExternalLink className="size-3 opacity-50 shrink-0" strokeWidth={1.5} />
+                        </button>
+                      ) : "—"}
                     </td>
                     <td className="text-center text-sm text-gray-500 whitespace-nowrap">
                       {s?.phone ? formatPhone(String(s.phone)) : "—"}
@@ -606,20 +604,6 @@ const RecordsTab = () => {
                     </td>
                     <td className="text-sm text-gray-400 max-w-[160px] truncate">
                       {payment.note ?? "—"}
-                    </td>
-                    <td className="text-center">
-                      {canMarkPaid && (
-                        <button
-                          type="button"
-                          title="To'landi deb belgilash"
-                          disabled={markPaidMutation.isLoading}
-                          onClick={() => markPaidMutation.mutate(payment._id)}
-                          className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded text-green-700 bg-green-50 hover:bg-green-100 transition-colors disabled:opacity-50"
-                        >
-                          <BadgeCheck className="size-3.5" strokeWidth={2} />
-                          To'landi
-                        </button>
-                      )}
                     </td>
                   </tr>
                 );

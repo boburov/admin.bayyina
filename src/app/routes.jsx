@@ -32,7 +32,8 @@ import LeadsCrmPage from "@/features/leads-crm/pages/LeadsCrmPage";
 import { Routes as RoutesWrapper, Route, Navigate } from "react-router-dom";
 import Teachers from "@/features/teachers/pages/TeacherPage";
 import TeacherSalaryPage from "@/features/teachers/pages/TeacherSalaryPage";
-import PaymentsPage from "@/features/payments/PaymentsPage";
+import PaymentsPage      from "@/features/payments/PaymentsPage";
+import UserPaymentsPage  from "@/features/payments/pages/UserPaymentsPage";
 import NotificationsPage from "@/features/notifications/pages/NotificationsPage";
 import RecordsPage    from "@/features/records/pages/RecordsPage";
 import SalariesPage   from "@/features/salaries/pages/SalariesPage";
@@ -73,7 +74,8 @@ const Routes = () => {
           <Route path="/dashboard" element={<DashboardPage />} />
 
           {/* Payments */}
-          <Route path="/payments" element={<PaymentsPage />} />
+          <Route path="/payments"             element={<PaymentsPage />} />
+          <Route path="/payments/user/:userId" element={<UserPaymentsPage />} />
 
           {/* Leads */}
           <Route path="/leads" element={<LeadsPage />} />
