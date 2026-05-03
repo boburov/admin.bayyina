@@ -37,6 +37,7 @@ const Content = ({ close, isLoading, setIsLoading }) => {
   const [selectedTeacher, setSelectedTeacher] = useState(null);
   const [selectedDays, setSelectedDays] = useState([]);
   const [time, setTime] = useState("");
+  const [endTime, setEndTime] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -89,7 +90,7 @@ const Content = ({ close, isLoading, setIsLoading }) => {
         name,
         price: Number(price),
         teacher: selectedTeacher._id,
-        schedule: { days: selectedDays, time },
+        schedule: { days: selectedDays, time, ...(endTime && { endTime }) },
       })
       .then(() => {
         close();
@@ -149,17 +150,28 @@ const Content = ({ close, isLoading, setIsLoading }) => {
         </div>
       </div>
 
-      {/* Start time */}
-      <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-medium">
-          Boshlanish vaqti <span className="text-danger">*</span>
-        </label>
-        <input
-          type="time"
-          value={time}
-          onChange={(e) => setTime(e.target.value)}
-          className="w-full px-3 py-2 text-sm border border-border-secondary rounded-lg bg-background-secondary outline-none focus:border-border-primary transition-colors text-primary"
-        />
+      {/* Start / End time */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="flex flex-col gap-1.5">
+          <label className="text-sm font-medium">
+            Boshlanish <span className="text-danger">*</span>
+          </label>
+          <input
+            type="time"
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
+            className="w-full px-3 py-2 text-sm border border-border-secondary rounded-lg bg-background-secondary outline-none focus:border-border-primary transition-colors text-primary"
+          />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-sm font-medium">Tugash vaqti</label>
+          <input
+            type="time"
+            value={endTime}
+            onChange={(e) => setEndTime(e.target.value)}
+            className="w-full px-3 py-2 text-sm border border-border-secondary rounded-lg bg-background-secondary outline-none focus:border-border-primary transition-colors text-primary"
+          />
+        </div>
       </div>
 
       {/* Teacher selector */}

@@ -241,7 +241,9 @@ const Classes = () => {
                         </span>
                       ))}
                     </div>
-                    <span className="text-xs text-gray-500">{group.schedule.time}</span>
+                    <span className="text-xs text-gray-500">
+                      {group.schedule.time}{group.schedule.endTime ? ` – ${group.schedule.endTime}` : ""}
+                    </span>
                   </div>
                 </div>
               )}
