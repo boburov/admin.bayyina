@@ -597,7 +597,7 @@ const RecordsTab = () => {
                       <PaymentStatusBadge status={payment.status} />
                     </td>
                     <td className="text-center text-sm text-gray-500 whitespace-nowrap">
-                      {payment.month ?? "—"}
+                      {payment.month ? formatMonthLabel(payment.month) : "—"}
                     </td>
                     <td className="text-center text-sm text-gray-500 whitespace-nowrap">
                       {payment.paidAt ? formatUzDate(payment.paidAt) : "—"}

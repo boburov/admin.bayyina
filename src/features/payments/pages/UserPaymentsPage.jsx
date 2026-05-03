@@ -17,6 +17,7 @@ import { enrollmentsAPI } from "@/features/enrollments/api/enrollments.api";
 
 // Utils
 import { formatUzDate }   from "@/shared/utils/formatDate";
+import { formatMonthLabel } from "@/features/payments/data/payments.data";
 import { formatPhone }    from "@/shared/utils/formatPhone";
 import { formatMoney }    from "@/shared/utils/formatNumber";
 
@@ -252,7 +253,7 @@ const UserPaymentsPage = () => {
                       <PaymentStatusBadge status={p.status} />
                     </td>
                     <td className="text-center text-sm text-gray-500 whitespace-nowrap">
-                      {p.month ?? "—"}
+                      {p.month ? formatMonthLabel(p.month) : "—"}
                     </td>
                     <td className="text-center text-sm text-gray-500 whitespace-nowrap">
                       {p.paidAt ? formatUzDate(p.paidAt) : "—"}
