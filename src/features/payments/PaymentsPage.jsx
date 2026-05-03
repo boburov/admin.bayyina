@@ -227,7 +227,7 @@ const EnrollmentsTab = () => {
 
       {/* Stats */}
       {selectedGroup && (
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 xl:grid-cols-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:grid-cols-4 xl:grid-cols-5">
           <StatCard label="Jami o'quvchi" value={stats.total}
             icon={<Users className="size-5" strokeWidth={1.5} />} color="blue" />
           <StatCard label="To'lagan" value={stats.paid}
