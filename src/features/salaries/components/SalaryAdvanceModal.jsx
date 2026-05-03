@@ -55,7 +55,7 @@ const Content = ({ close, isLoading, setIsLoading }) => {
   const teachers = teachersData?.users ?? teachersData?.data ?? [];
   const teacherOptions = teachers.map((t) => ({
     value: t._id,
-    label: `${t.firstName} ${t.lastName}`,
+    label: [t.firstName, t.lastName].filter(Boolean).join(" "),
   }));
 
   // Auto-fill amount hint from last salary
@@ -320,8 +320,8 @@ const Content = ({ close, isLoading, setIsLoading }) => {
                 <tbody>
                   {advances.map((a) => {
                     const teacherName =
-                      typeof a.teacher === "object"
-                        ? `${a.teacher.firstName} ${a.teacher.lastName}`
+                      a.teacher && typeof a.teacher === "object"
+                        ? [a.teacher.firstName, a.teacher.lastName].filter(Boolean).join(" ") || "—"
                         : "—";
                     const coveredLabel =
                       a.type === "advance" && a.coveredMonths?.length

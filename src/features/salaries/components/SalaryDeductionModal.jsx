@@ -42,7 +42,7 @@ const Content = ({ close, isLoading, setIsLoading }) => {
   const teachers = teachersData?.users ?? teachersData?.data ?? [];
   const teacherOptions = teachers.map((t) => ({
     value: t._id,
-    label: `${t.firstName} ${t.lastName}`,
+    label: [t.firstName, t.lastName].filter(Boolean).join(" "),
   }));
 
   const histParams = { ...(histTeacher && { teacher: histTeacher }), limit: 50 };
@@ -120,7 +120,7 @@ const Content = ({ close, isLoading, setIsLoading }) => {
         <div className="space-y-3">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="sm:col-span-2">
-              <label className="field-label mb-1 block text-xs font-medium text-gray-600">O'qituvchi</label>
+              <label className="field-label block text-xs font-medium text-gray-600">O'qituvchi</label>
               <Select
                 size="md"
                 value={teacher}
@@ -130,7 +130,7 @@ const Content = ({ close, isLoading, setIsLoading }) => {
               />
             </div>
             <div>
-              <label className="field-label mb-1 block text-xs font-medium text-gray-600">Oy</label>
+              <label className="field-label block text-xs font-medium text-gray-600">Oy</label>
               <Select
                 size="md"
                 value={month}
@@ -210,8 +210,8 @@ const Content = ({ close, isLoading, setIsLoading }) => {
                 <tbody>
                   {deductions.map((d) => {
                     const teacherName =
-                      typeof d.teacher === "object"
-                        ? `${d.teacher.firstName} ${d.teacher.lastName}`
+                      d.teacher && typeof d.teacher === "object"
+                        ? [d.teacher.firstName, d.teacher.lastName].filter(Boolean).join(" ") || "—"
                         : "—";
                     return (
                       <tr key={d._id} className="hover:bg-gray-50">

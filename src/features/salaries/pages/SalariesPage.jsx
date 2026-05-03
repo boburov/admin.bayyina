@@ -35,7 +35,10 @@ function useTeacherOptions() {
     staleTime: 5 * 60 * 1000,
   });
   const list = data?.users ?? data?.data ?? [];
-  return list.map((t) => ({ value: t._id, label: `${t.firstName} ${t.lastName}` }));
+  return list.map((t) => ({
+    value: t._id,
+    label: [t.firstName, t.lastName].filter(Boolean).join(" "),
+  }));
 }
 
 // ─── Tab bar (matches PaymentsPage style) ─────────────────────────────────────
@@ -225,8 +228,9 @@ const SalariesTab = () => {
             <tbody>
               {salaries.map((s, idx) => {
                 const isPaid = s.status === "paid";
-                const name = typeof s.teacher === "object"
-                  ? `${s.teacher.firstName} ${s.teacher.lastName}` : "—";
+                const name = s.teacher && typeof s.teacher === "object"
+                  ? [s.teacher.firstName, s.teacher.lastName].filter(Boolean).join(" ") || s.teacherName || "—"
+                  : s.teacherName || "—";
                 return (
                   <tr key={s._id} className="cursor-pointer"
                     onClick={() => openModal("salaryDetail", { salary: s })}>
@@ -411,7 +415,8 @@ const DeductionsTab = () => {
             <tbody>
               {deductions.map((d) => {
                 const name = d.teacher && typeof d.teacher === "object"
-                  ? `${d.teacher.firstName} ${d.teacher.lastName}` : "—";
+                  ? [d.teacher.firstName, d.teacher.lastName].filter(Boolean).join(" ") || d.teacherName || "—"
+                  : d.teacherName || "—";
                 return (
                   <tr key={d._id}>
                     <td className="font-medium text-primary whitespace-nowrap">{name}</td>
@@ -630,7 +635,8 @@ const AdvancesTab = () => {
             <tbody>
               {advances.map((a) => {
                 const name = a.teacher && typeof a.teacher === "object"
-                  ? `${a.teacher.firstName} ${a.teacher.lastName}` : "—";
+                  ? [a.teacher.firstName, a.teacher.lastName].filter(Boolean).join(" ") || a.teacherName || "—"
+                  : a.teacherName || "—";
                 const coveredLabel = a.type === "advance" && a.coveredMonths?.length
                   ? a.coveredMonths.map(formatMonthLabel).join(", ")
                   : a.salaryMonth ? formatMonthLabel(a.salaryMonth) : "—";
