@@ -34,11 +34,11 @@ const EditRow = ({ value, onChange, onSave, onCancel, fields }) => (
         className="flex-1 min-w-[120px] w-full sm:w-auto h-8 px-3 py-2 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-brown-800"
       />
     ))}
-    <div className="gap-2 w-full ">
-      <button onClick={onSave} className="flex items-center justify-center w-8 h-8 bg-brown-800 text-white rounded hover:bg-brown-700">
+    <div className="gap-2 w-full sm:w-auto flex">
+      <button onClick={onSave} className="flex flex-1 items-center justify-center w-8 h-8 bg-brown-800 text-white rounded hover:bg-brown-700">
         <Check size={13} />
       </button>
-      <button onClick={onCancel} className="flex items-center justify-center w-8 h-8 border border-gray-200 text-gray-500 rounded hover:bg-gray-50">
+      <button onClick={onCancel} className="flex flex-1 items-center justify-center w-8 h-8 border border-gray-200 text-gray-500 rounded hover:bg-gray-50">
         <X size={13} />
       </button>
     </div>
