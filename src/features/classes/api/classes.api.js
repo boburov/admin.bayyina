@@ -10,4 +10,5 @@ export const classesAPI = {
   exportStudents: (id) =>
     http.get(`/groups/${id}/export`, { responseType: "blob" }),
   exportAll: () => http.get("/groups/export", { responseType: "blob" }),
+  sendMessage: (id, data) => http.post(`/groups/${id}/send-message`, data),
 };

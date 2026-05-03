@@ -49,7 +49,7 @@ const NAV_ITEMS = [
   { title: "Oylik daromad", url: "/monthly-income", icon: TrendingUp },
   { title: "To'lovlar", url: "/payments", icon: Wallet },
   { title: "Oyliklar", url: "/salaries", icon: Banknote },
-  { title: "Xabarnomalar", url: "/notifications", icon: Bell },
+  { title: "Murojatlar", url: "/notifications", icon: Bell },
   { title: "Tarix", url: "/records", icon: HistoryIcon },
   { title: "Telegram xabar", url: "/telegram", icon: Send },
   { title: "Sozlamalar", url: "/settings", icon: Settings },
