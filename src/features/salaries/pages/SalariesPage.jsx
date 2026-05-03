@@ -150,16 +150,16 @@ const SalariesTab = () => {
     <div className="space-y-4">
 
       {/* Filters row */}
-      <div className="flex flex-wrap items-end gap-2">
-        <div className="w-44">
+      <div className="flex flex-col sm:flex-row flex-wrap items-end gap-2">
+        <div className="w-full sm:w-fit">
           <Select size="md" value={month} onChange={setFilter(setMonth)}
             options={allMonthOpts} placeholder="Oy" />
         </div>
-        <div className="w-52">
+        <div className="w-full sm:w-fit">
           <Select size="md" value={teacher} onChange={setFilter(setTeacher)}
             options={allTeacherOpts} placeholder="O'qituvchi" />
         </div>
-        <div className="w-40">
+        <div className="w-full sm:w-fit">
           <Select size="md" value={status} onChange={setFilter(setStatus)}
             options={statusOptions} placeholder="Holat" />
         </div>
@@ -188,7 +188,7 @@ const SalariesTab = () => {
 
       {/* Stats */}
       {salaries.length > 0 && (
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:grid-cols-4">
           <StatCard label="Jami"        value={total}                 icon={<Wallet       className="size-5" strokeWidth={1.5} />} color="blue"   />
           <StatCard label="To'langan"   value={paidCount}             icon={<CheckCircle2 className="size-5" strokeWidth={1.5} />} color="green"  />
           <StatCard label="Kutilmoqda"  value={pendingCount}          icon={<Clock        className="size-5" strokeWidth={1.5} />} color="orange" />
@@ -385,12 +385,12 @@ const DeductionsTab = () => {
 
       {/* Filters */}
       <div className="flex flex-wrap gap-2">
-        <div className="w-52">
-          <Select size="md" value={fTeacher} onChange={setFTeacher}
+        <div className="w-full sm:w-fit">
+          <Select size="md" label="O'qituvchi *" value={fTeacher} onChange={setFTeacher}
             options={allTeacherOpts} placeholder="O'qituvchi" />
         </div>
-        <div className="w-40">
-          <Select size="md" value={fStatus} onChange={setFStatus}
+        <div className="w-full sm:w-fit">
+          <Select size="md" label="Holat *" value={fStatus} onChange={setFStatus}
             options={statusOpts} placeholder="Holat" />
         </div>
       </div>
@@ -600,16 +600,16 @@ const AdvancesTab = () => {
 
       {/* Filters */}
       <div className="flex flex-wrap gap-2">
-        <div className="w-52">
-          <Select size="md" value={fTeacher} onChange={setFTeacher}
+        <div className="w-full sm:w-fit">
+          <Select size="md" label="O'qituvchi" value={fTeacher} onChange={setFTeacher}
             options={allTeacherOpts} placeholder="O'qituvchi" />
         </div>
-        <div className="w-40">
-          <Select size="md" value={fType} onChange={setFType}
+        <div className="w-full sm:w-fit">
+          <Select size="md" label="Tur" value={fType} onChange={setFType}
             options={typeFilterOpts} placeholder="Tur" />
         </div>
-        <div className="w-40">
-          <Select size="md" value={fStatus} onChange={setFStatus}
+        <div className="w-full sm:w-fit">
+          <Select size="md" label="Holat" value={fStatus} onChange={setFStatus}
             options={statusFilterOpts} placeholder="Holat" />
         </div>
       </div>
