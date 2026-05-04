@@ -22,6 +22,7 @@ import useObjectState from "@/shared/hooks/useObjectState";
 // Shared UI components
 import InputTel from "@/shared/components/ui/input/InputTel";
 import InputPwd from "@/shared/components/ui/input/InputPwd";
+import { logoIcon } from "@/shared/assets/icons";
 
 const LoginPage = () => {
   const { setField, showLoginForm, currentPlatform } = useObjectState({
@@ -34,7 +35,11 @@ const LoginPage = () => {
       <div className="w-full max-w-sm">
         {/* Brand */}
         <div className="flex flex-col items-center gap-3 mb-8">
-          <img src="/favicon.png" alt="Bayyina" className="w-12 h-12 object-contain" />
+          <img
+            src={logoIcon}
+            alt="Bayyina logo svg"
+            className="w-12 h-12 object-contain"
+          />
           <div className="text-center">
             <h1 className="text-lg font-semibold text-gray-900">Bayyina</h1>
             <p className="text-sm text-gray-400 mt-0.5">Boshqaruv paneli</p>
@@ -44,7 +49,9 @@ const LoginPage = () => {
         {/* Form area */}
         <div className="border border-gray-200 bg-white px-6 py-7">
           {showLoginForm ? (
-            <LoginForm onShowLoginForm={() => setField("showLoginForm", false)} />
+            <LoginForm
+              onShowLoginForm={() => setField("showLoginForm", false)}
+            />
           ) : (
             <PlatformSelectForm
               currentPlatform={currentPlatform}
@@ -177,7 +184,10 @@ const LoginForm = ({ onShowLoginForm }) => {
 
         {/* Password */}
         <div className="space-y-1.5">
-          <label htmlFor="login-password" className="text-sm font-medium text-gray-700">
+          <label
+            htmlFor="login-password"
+            className="text-sm font-medium text-gray-700"
+          >
             Parol
           </label>
           <InputPwd
