@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { GraduationCap, Search, School } from "lucide-react";
+import { GraduationCap, School } from "lucide-react";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/shared/components/shadcn/dialog";
 import { leadsAPI }   from "@/features/leads/api/leads.api";
 import { usersAPI }   from "@/features/users/api/users.api";
 import { classesAPI } from "@/features/classes/api/classes.api";
+import Button from "@/shared/components/ui/button/Button";
+import InputField from "@/shared/components/ui/input/InputField";
 
 
 const ConvertLeadModal = ({ open, lead, onClose, onSuccess }) => {
@@ -115,13 +117,12 @@ const ConvertLeadModal = ({ open, lead, onClose, onSuccess }) => {
             </div>
 
             <div className="border border-gray-200 rounded overflow-hidden">
-              <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-100">
-                <Search className="size-4 text-gray-400 shrink-0" strokeWidth={1.5} />
-                <input
+              <div className="px-3 py-2 border-b border-gray-100">
+                <InputField
+                  name="groupSearch"
+                  placeholder="Guruh qidirish..."
                   value={groupSearch}
                   onChange={(e) => setGroupSearch(e.target.value)}
-                  placeholder="Guruh qidirish..."
-                  className="flex-1 text-sm bg-transparent outline-none text-gray-800 placeholder:text-gray-400"
                 />
               </div>
 
@@ -139,12 +140,13 @@ const ConvertLeadModal = ({ open, lead, onClose, onSuccess }) => {
                   filteredGroups.map((group) => {
                     const isSelected = selectedGroups.some((g) => g._id === group._id);
                     return (
-                      <button
+                      <Button
                         key={group._id}
                         type="button"
+                        variant="ghost"
                         onClick={() => toggleGroup(group)}
-                        className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors ${
-                          isSelected ? "bg-green-50" : "hover:bg-gray-50"
+                        className={`w-full justify-start gap-3 px-3 py-2.5 rounded-none ${
+                          isSelected ? "bg-green-50 hover:bg-green-50" : ""
                         }`}
                       >
                         <div
@@ -166,7 +168,7 @@ const ConvertLeadModal = ({ open, lead, onClose, onSuccess }) => {
                             </p>
                           )}
                         </div>
-                      </button>
+                      </Button>
                     );
                   })
                 )}
@@ -176,23 +178,24 @@ const ConvertLeadModal = ({ open, lead, onClose, onSuccess }) => {
         </div>
 
         <div className="px-6 py-4 border-t border-gray-100 flex justify-end gap-2">
-          <button
+          <Button
             type="button"
+            variant="outline"
             onClick={handleClose}
             disabled={convertMut.isPending}
-            className="text-sm px-4 py-2 border border-gray-200 text-gray-600 rounded hover:bg-gray-50 disabled:opacity-50"
           >
             Bekor qilish
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="default"
+            className="bg-green-600 hover:bg-green-700"
             disabled={convertMut.isPending}
             onClick={() => convertMut.mutate()}
-            className="text-sm px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
           >
             <GraduationCap size={14} />
             {convertMut.isPending ? "Amalga oshirilmoqda..." : "Qabul qilish"}
-          </button>
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

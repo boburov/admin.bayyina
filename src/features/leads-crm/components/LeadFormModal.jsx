@@ -9,11 +9,9 @@ import { leadsAPI } from "@/features/leads/api/leads.api";
 import { FORM_STATUS_OPTIONS } from "../data/leads-crm.data";
 
 import SourceSelect from "@/shared/components/form/SourceSelect";
-
-const inp = "w-full h-9 px-3 text-sm border border-gray-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-brown-800 placeholder:text-gray-400";
-const sel = "w-full h-9 px-2 text-sm border border-gray-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-brown-800 text-gray-700";
-const lbl = "block text-xs font-medium text-gray-600 mb-1";
-const errCls = "border-red-400 focus:ring-red-400";
+import Button from "@/shared/components/ui/button/Button";
+import InputField from "@/shared/components/ui/input/InputField";
+import SelectField from "@/shared/components/ui/select/SelectField";
 
 const EMPTY = { firstName: "", phone: "", source: "", status: "new", notes: "" };
 
@@ -106,36 +104,26 @@ const LeadFormModal = ({ open, lead, onClose, onSuccess }) => {
           <div className="px-6 py-5 space-y-4">
 
             {/* Ism */}
-            <div>
-              <label className={lbl}>
-                Ism <span className="text-red-500">*</span>
-              </label>
-              <input
-                className={`${inp} ${errors.firstName ? errCls : ""}`}
-                placeholder="To'liq ism"
-                value={form.firstName}
-                onChange={(e) => set("firstName", e.target.value)}
-              />
-              {errors.firstName && (
-                <p className="mt-1 text-xs text-red-500">{errors.firstName}</p>
-              )}
-            </div>
+            <InputField
+              name="firstName"
+              label="Ism"
+              placeholder="To'liq ism"
+              value={form.firstName}
+              onChange={(e) => set("firstName", e.target.value)}
+              required
+              description={errors.firstName}
+            />
 
             {/* Telefon */}
-            <div>
-              <label className={lbl}>
-                Telefon <span className="text-red-500">*</span>
-              </label>
-              <input
-                className={`${inp} ${errors.phone ? errCls : ""}`}
-                placeholder="+998 90 123 45 67"
-                value={form.phone}
-                onChange={(e) => set("phone", e.target.value)}
-              />
-              {errors.phone && (
-                <p className="mt-1 text-xs text-red-500">{errors.phone}</p>
-              )}
-            </div>
+            <InputField
+              name="phone"
+              label="Telefon"
+              type="tel"
+              value={form.phone}
+              onChange={(e) => set("phone", e.target.value)}
+              required
+              description={errors.phone}
+            />
 
             {/* Manba */}
             <SourceSelect
@@ -146,22 +134,17 @@ const LeadFormModal = ({ open, lead, onClose, onSuccess }) => {
             />
 
             {/* Holat */}
-            <div>
-              <label className={lbl}>Holat</label>
-              <select
-                className={sel}
-                value={form.status}
-                onChange={(e) => set("status", e.target.value)}
-              >
-                {FORM_STATUS_OPTIONS.map((s) => (
-                  <option key={s.value} value={s.value}>{s.label}</option>
-                ))}
-              </select>
-            </div>
+            <SelectField
+              name="status"
+              label="Holat"
+              options={FORM_STATUS_OPTIONS.map((s) => ({ value: s.value, label: s.label }))}
+              value={form.status}
+              onChange={(val) => set("status", val)}
+            />
 
             {/* Komment */}
             <div>
-              <label className={lbl}>
+              <label className="block text-xs font-medium text-gray-600 mb-1">
                 Komment{" "}
                 <span className="text-[10px] font-normal text-gray-400">(ixtiyoriy)</span>
               </label>
@@ -176,21 +159,12 @@ const LeadFormModal = ({ open, lead, onClose, onSuccess }) => {
           </div>
 
           <div className="px-6 py-4 border-t border-gray-100 flex justify-end gap-2">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={isPending}
-              className="text-sm px-4 py-2 border border-gray-200 text-gray-600 rounded hover:bg-gray-50 disabled:opacity-50"
-            >
+            <Button type="button" variant="outline" onClick={onClose} disabled={isPending}>
               Bekor qilish
-            </button>
-            <button
-              type="submit"
-              disabled={isPending}
-              className="text-sm px-4 py-2 bg-brown-800 text-white rounded hover:bg-brown-700 font-medium disabled:opacity-60"
-            >
+            </Button>
+            <Button type="submit" disabled={isPending}>
               {isPending ? "Saqlanmoqda..." : isEdit ? "Yangilash" : "Yaratish"}
-            </button>
+            </Button>
           </div>
         </form>
       </DialogContent>

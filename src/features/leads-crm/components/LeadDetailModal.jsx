@@ -8,6 +8,8 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/shared/components/shadcn/dialog";
 import { STATUS_MAP, FORM_STATUS_OPTIONS } from "../data/leads-crm.data";
+import Button from "@/shared/components/ui/button/Button";
+import SelectField from "@/shared/components/ui/select/SelectField";
 import { formatDateUZ }    from "@/shared/utils/date.utils";
 import { usersAPI }        from "@/features/users/api/users.api";
 import { enrollmentsAPI }  from "@/features/enrollments/api/enrollments.api";
@@ -226,29 +228,20 @@ const StatusChangeSection = ({ lead, onSetStatus }) => {
     return (
       <div className="p-3 bg-red-50 border border-red-200 rounded space-y-2">
         <p className="text-xs font-medium text-red-700">Bekor qilish sababi:</p>
-        <select
+        <SelectField
+          name="rejectionReason"
+          options={reasons.map((r) => ({ value: r._id, label: r.title }))}
           value={rejectionReason}
-          onChange={(e) => setRejectionReason(e.target.value)}
-          className="w-full h-8 px-2 text-xs border border-red-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-red-400"
-        >
-          <option value="">Sabab tanlang (ixtiyoriy)</option>
-          {reasons.map((r) => (
-            <option key={r._id} value={r._id}>{r.title}</option>
-          ))}
-        </select>
+          onChange={(val) => setRejectionReason(val)}
+          placeholder="Sabab tanlang (ixtiyoriy)"
+        />
         <div className="flex gap-2">
-          <button
-            onClick={confirmReject}
-            className="text-xs px-3 py-1.5 bg-red-600 text-white rounded hover:bg-red-700 font-medium"
-          >
+          <Button type="button" variant="danger" size="sm" onClick={confirmReject}>
             Tasdiqlash
-          </button>
-          <button
-            onClick={() => setPendingStatus(null)}
-            className="text-xs px-3 py-1.5 border border-gray-200 text-gray-600 rounded hover:bg-gray-50"
-          >
+          </Button>
+          <Button type="button" variant="outline" size="sm" onClick={() => setPendingStatus(null)}>
             Bekor
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -259,13 +252,15 @@ const StatusChangeSection = ({ lead, onSetStatus }) => {
       <p className="text-xs font-medium text-gray-500 mb-2">Holat o'zgartirish:</p>
       <div className="flex flex-wrap gap-2">
         {changeOptions.map((s) => (
-          <button
+          <Button
             key={s.value}
+            type="button"
+            variant="outline"
+            size="sm"
             onClick={() => handleStatusClick(s.value)}
-            className="text-xs px-3 py-1.5 rounded border font-medium bg-white text-gray-700 border-gray-200 hover:border-gray-400 hover:bg-gray-50 transition-colors"
           >
             {s.label}
-          </button>
+          </Button>
         ))}
       </div>
     </div>
@@ -299,12 +294,15 @@ const LeadDetailModal = ({ lead, open, onClose, onSetStatus, onConvert }) => {
                 </span>
               </div>
             </div>
-            <button
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
               onClick={onClose}
-              className="flex items-center justify-center w-7 h-7 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded transition-colors shrink-0"
+              className="shrink-0"
             >
               <X size={15} />
-            </button>
+            </Button>
           </div>
         </DialogHeader>
 
@@ -355,13 +353,15 @@ const LeadDetailModal = ({ lead, open, onClose, onSetStatus, onConvert }) => {
           {!isConverted && (
             <div className="space-y-3 pt-1">
               {!isRejected && (
-                <button
+                <Button
+                  type="button"
+                  variant="default"
+                  className="w-full bg-green-600 hover:bg-green-700"
                   onClick={() => { onClose(); onConvert(lead); }}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 bg-green-600 text-white text-sm font-semibold rounded hover:bg-green-700 transition-colors"
                 >
                   <GraduationCap size={16} />
                   O'quvchi sifatida qabul qilish
-                </button>
+                </Button>
               )}
               <StatusChangeSection lead={lead} onSetStatus={onSetStatus} />
             </div>
@@ -369,12 +369,9 @@ const LeadDetailModal = ({ lead, open, onClose, onSetStatus, onConvert }) => {
         </div>
 
         <div className="px-5 py-3.5 border-t border-gray-100 flex justify-end shrink-0">
-          <button
-            onClick={onClose}
-            className="text-xs px-4 py-2 bg-gray-900 text-white rounded hover:bg-gray-700 font-medium"
-          >
+          <Button type="button" variant="secondary" size="sm" onClick={onClose}>
             Yopish
-          </button>
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
