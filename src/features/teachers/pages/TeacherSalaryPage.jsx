@@ -15,9 +15,10 @@ import { formatUzDate } from "@/shared/utils/formatDate";
 import { formatMoney } from "@/shared/utils/formatNumber";
 import { formatPhone } from "@/shared/utils/formatPhone";
 
-import Card       from "@/shared/components/ui/Card";
-import Button     from "@/shared/components/ui/button/Button";
-import Pagination from "@/shared/components/ui/Pagination";
+import Card        from "@/shared/components/ui/Card";
+import Button       from "@/shared/components/ui/button/Button";
+import Pagination   from "@/shared/components/ui/Pagination";
+import SelectField  from "@/shared/components/ui/select/SelectField";
 import SalaryDetailModal from "@/features/salaries/components/SalaryDetailModal";
 
 import {
@@ -89,12 +90,14 @@ const TeacherSalaryPage = () => {
 
       {/* Header */}
       <div className="flex items-center gap-3 pb-4 border-b border-border">
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={() => navigate("/teachers")}
-          className="text-gray-400 hover:text-gray-700 transition-colors"
+          className="text-gray-400 hover:text-gray-700"
         >
           <ArrowLeft size={18} strokeWidth={1.5} />
-        </button>
+        </Button>
         <div>
           <h1 className="page-title">Oylik tarixi</h1>
           {!teacherLoading && teacher && (
@@ -154,15 +157,12 @@ const TeacherSalaryPage = () => {
 
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3">
-        <select
+        <SelectField
+          name="month"
+          options={monthOptions}
           value={month}
-          onChange={(e) => { setMonth(e.target.value); setPage(1); }}
-          className="py-2 px-3 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
-        >
-          {monthOptions.map((o) => (
-            <option key={o.value} value={o.value}>{o.label}</option>
-          ))}
-        </select>
+          onChange={(val) => { setMonth(val); setPage(1); }}
+        />
       </div>
 
       {/* Table */}
@@ -225,13 +225,15 @@ const TeacherSalaryPage = () => {
                     <StatusBadge status={sal.status} />
                   </td>
                   <td>
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       onClick={() => openModal("salaryDetail", sal)}
-                      className="text-gray-400 hover:text-gray-700 transition-colors"
+                      className="text-gray-400 hover:text-gray-700"
                       title="Batafsil / tahrirlash"
                     >
                       <ChevronRight size={16} strokeWidth={1.5} />
-                    </button>
+                    </Button>
                   </td>
                 </tr>
               ))
