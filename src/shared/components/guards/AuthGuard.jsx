@@ -9,6 +9,7 @@ import { Navigate, Outlet, useNavigate } from "react-router-dom";
 
 // API
 import { authAPI } from "@/features/auth/api/auth.api";
+import { logoIcon, whiteLogoIcon } from "@/shared/assets/icons";
 
 const AuthGuard = () => {
   const token = localStorage.getItem("token");
@@ -38,7 +39,11 @@ const AuthGuard = () => {
     return (
       <div className="flex items-center justify-center fixed inset-0 z-50 bg-white">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-7 h-7 bg-brown-800 animate-pulse" />
+          <img
+            src={logoIcon}
+            alt="Bayyina logo svg"
+            className="animate-pulse size-8 xs:size-12"
+          />
         </div>
       </div>
     );

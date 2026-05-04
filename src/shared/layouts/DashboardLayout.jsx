@@ -5,7 +5,6 @@ import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 
 // API
-import { usersAPI } from "@/features/users/api/users.api";
 import { classesAPI } from "@/features/classes/api/classes.api";
 
 // Hooks
