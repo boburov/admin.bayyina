@@ -11,14 +11,16 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { leadsAPI } from "../api/leads.api";
 
 // Components
-import LeadStatusBadge  from "../components/LeadStatusBadge";
-import LeadsFilters     from "../components/LeadsFilters";
-import LeadDetailModal  from "../components/LeadDetailModal";
-import CreateLeadModal  from "../components/CreateLeadModal";
-import CancelLeadModal  from "../components/CancelLeadModal";
-import LeadsFunnel      from "../components/LeadsFunnel";
-import Card             from "@/shared/components/ui/Card";
-import Pagination       from "@/shared/components/ui/Pagination";
+import LeadStatusBadge from "../components/LeadStatusBadge";
+import LeadsFilters from "../components/LeadsFilters";
+import LeadDetailModal from "../components/LeadDetailModal";
+import CreateLeadModal from "../components/CreateLeadModal";
+import CancelLeadModal from "../components/CancelLeadModal";
+import LeadsFunnel from "../components/LeadsFunnel";
+import Card from "@/shared/components/ui/Card";
+import Pagination from "@/shared/components/ui/Pagination";
+import Button from "@/shared/components/ui/button/Button";
+import SelectField from "@/shared/components/ui/select/SelectField";
 
 // Utils
 import { formatDateUZ } from "@/shared/utils/date.utils";
@@ -37,16 +39,20 @@ const PAGE_SIZE = 15;
 const LeadsPage = () => {
   const queryClient = useQueryClient();
 
-  const [page, setPage]               = useState(1);
+  const [page, setPage] = useState(1);
   const [selectedLead, setSelectedLead] = useState(null);
-  const [cancelLead, setCancelLead]   = useState(null);
+  const [cancelLead, setCancelLead] = useState(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [view, setView]               = useState("table");
-  const [updatingId, setUpdatingId]   = useState(null);
+  const [view, setView] = useState("table");
+  const [updatingId, setUpdatingId] = useState(null);
 
-  const { status, source, interest, search, setField, resetState } = useObjectState({
-    status: "", source: "", interest: "", search: "",
-  });
+  const { status, source, interest, search, setField, resetState } =
+    useObjectState({
+      status: "",
+      source: "",
+      interest: "",
+      search: "",
+    });
 
   const [debouncedSearch, setDebouncedSearch] = useState(search);
   const debounceRef = useRef(null);
@@ -63,39 +69,39 @@ const LeadsPage = () => {
   const params = {
     page,
     limit: PAGE_SIZE,
-    ...(status          && { status }),
-    ...(source          && { source }),
-    ...(interest        && { interest }),
+    ...(status && { status }),
+    ...(source && { source }),
+    ...(interest && { interest }),
     ...(debouncedSearch && { search: debouncedSearch }),
   };
 
   const { data, isLoading } = useQuery({
     queryKey: ["leads", params],
-    queryFn:  () => leadsAPI.getAll(params).then((r) => r.data),
+    queryFn: () => leadsAPI.getAll(params).then((r) => r.data),
     staleTime: 30_000,
   });
 
   const { data: allData } = useQuery({
     queryKey: ["leads", "all"],
-    queryFn:  () => leadsAPI.getAll({ limit: 1000 }).then((r) => r.data),
-    enabled:  view === "funnel",
+    queryFn: () => leadsAPI.getAll({ limit: 1000 }).then((r) => r.data),
+    enabled: view === "funnel",
     staleTime: 60_000,
   });
 
-  const leads      = data?.leads || [];
-  const total      = data?.total || 0;
+  const leads = data?.leads || [];
+  const total = data?.total || 0;
   const totalPages = data?.pages || 1;
 
   const statusMut = useMutation({
     mutationFn: ({ id, status }) => leadsAPI.update(id, { status }),
-    onMutate:   ({ id }) => setUpdatingId(id),
-    onSuccess:  () => {
+    onMutate: ({ id }) => setUpdatingId(id),
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["leads"] });
       queryClient.invalidateQueries({ queryKey: ["statistics", "leads"] });
       toast.success("Holat yangilandi");
     },
-    onError:    (e) => toast.error(e.response?.data?.message || "Xatolik"),
-    onSettled:  () => setUpdatingId(null),
+    onError: (e) => toast.error(e.response?.data?.message || "Xatolik"),
+    onSettled: () => setUpdatingId(null),
   });
 
   const handleFilterChange = (key, value) => {
@@ -108,9 +114,7 @@ const LeadsPage = () => {
     setPage(1);
   };
 
-  const handleStatusChange = (e, lead) => {
-    e.stopPropagation();
-    const newStatus = e.target.value;
+  const handleStatusChange = (newStatus, lead) => {
     if (!newStatus || newStatus === lead.status) return;
     statusMut.mutate({ id: lead._id, status: newStatus });
   };
@@ -132,39 +136,32 @@ const LeadsPage = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row items-end sm:items-center gap-3">
-          <button
-            onClick={() => setIsCreateOpen(true)}
-            className="flex items-center gap-1.5 px-4 py-2 bg-brown-800 text-white text-sm font-semibold rounded-md hover:bg-brown-700 transition-colors"
-          >
+          <Button onClick={() => setIsCreateOpen(true)}>
             <Plus size={16} />
             <span className="inline">Yangi lead</span>
-          </button>
+          </Button>
 
           <div className="flex gap-1 border border-gray-200 rounded-md p-0.5">
             {[
-              { key: "table",  icon: <List      size={14} />, label: "Jadval"  },
-              { key: "funnel", icon: <BarChart2  size={14} />, label: "Tahlil" },
+              { key: "table", icon: <List size={14} />, label: "Jadval" },
+              { key: "funnel", icon: <BarChart2 size={14} />, label: "Tahlil" },
             ].map((v) => (
-              <button
+              <Button
                 key={v.key}
+                type="button"
+                variant={view === v.key ? "secondary" : "ghost"}
+                size="sm"
                 onClick={() => setView(v.key)}
-                className={`flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded transition-colors ${
-                  view === v.key
-                    ? "bg-gray-900 text-white"
-                    : "text-gray-500 hover:text-gray-800"
-                }`}
               >
                 {v.icon} {v.label}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
       </div>
 
       {/* Analytics view */}
-      {view === "funnel" && (
-        <LeadsFunnel leads={allData?.leads || []} />
-      )}
+      {view === "funnel" && <LeadsFunnel leads={allData?.leads || []} />}
 
       {/* Table view */}
       {view === "table" && (
@@ -182,14 +179,30 @@ const LeadsPage = () => {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-gray-100 bg-gray-50">
-                    <th className="text-left text-xs font-medium text-gray-500 px-4 py-3">#</th>
-                    <th className="text-left text-xs font-medium text-gray-500 px-4 py-3">Ism</th>
-                    <th className="text-left text-xs font-medium text-gray-500 px-4 py-3 hidden sm:table-cell">Telefon</th>
-                    <th className="text-left text-xs font-medium text-gray-500 px-4 py-3 hidden md:table-cell">Qiziqish</th>
-                    <th className="text-left text-xs font-medium text-gray-500 px-4 py-3 hidden md:table-cell">Manba</th>
-                    <th className="text-left text-xs font-medium text-gray-500 px-4 py-3">Holat</th>
-                    <th className="text-left text-xs font-medium text-gray-500 px-4 py-3 hidden lg:table-cell">Sana</th>
-                    <th className="text-right text-xs font-medium text-gray-500 px-4 py-3">Amallar</th>
+                    <th className="text-left text-xs font-medium text-gray-500 px-4 py-3">
+                      #
+                    </th>
+                    <th className="text-left text-xs font-medium text-gray-500 px-4 py-3">
+                      Ism
+                    </th>
+                    <th className="text-left text-xs font-medium text-gray-500 px-4 py-3 hidden sm:table-cell">
+                      Telefon
+                    </th>
+                    <th className="text-left text-xs font-medium text-gray-500 px-4 py-3 hidden md:table-cell">
+                      Qiziqish
+                    </th>
+                    <th className="text-left text-xs font-medium text-gray-500 px-4 py-3 hidden md:table-cell">
+                      Manba
+                    </th>
+                    <th className="text-left text-xs font-medium text-gray-500 px-4 py-3">
+                      Holat
+                    </th>
+                    <th className="text-left text-xs font-medium text-gray-500 px-4 py-3 hidden lg:table-cell">
+                      Sana
+                    </th>
+                    <th className="text-right text-xs font-medium text-gray-500 px-4 py-3">
+                      Amallar
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -205,7 +218,10 @@ const LeadsPage = () => {
                     ))
                   ) : leads.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="text-center py-16 text-gray-400 text-sm">
+                      <td
+                        colSpan={8}
+                        className="text-center py-16 text-gray-400 text-sm"
+                      >
                         Leadlar topilmadi
                       </td>
                     </tr>
@@ -227,7 +243,9 @@ const LeadsPage = () => {
                               <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-xs font-semibold text-gray-600 shrink-0">
                                 {lead.firstName?.[0]?.toUpperCase()}
                               </div>
-                              <span className="font-medium text-gray-900">{lead.firstName} {lead.lastName}</span>
+                              <span className="font-medium text-gray-900">
+                                {lead.firstName} {lead.lastName}
+                              </span>
                             </div>
                           </td>
                           <td className="px-4 py-3 text-gray-500 font-mono text-xs hidden sm:table-cell">
@@ -243,7 +261,9 @@ const LeadsPage = () => {
                             <LeadStatusBadge status={lead.status} />
                           </td>
                           <td className="px-4 py-3 text-gray-400 text-xs hidden lg:table-cell">
-                            {lead.createdAt ? formatDateUZ(lead.createdAt) : "—"}
+                            {lead.createdAt
+                              ? formatDateUZ(lead.createdAt)
+                              : "—"}
                           </td>
                           <td className="px-4 py-3">
                             <div
@@ -252,45 +272,52 @@ const LeadsPage = () => {
                             >
                               {/* Status dropdown */}
                               {!isCancelled && (
-                                <select
-                                  value={lead.status}
-                                  onChange={(e) => handleStatusChange(e, lead)}
-                                  disabled={isUpdating}
-                                  title="Holat o'zgartirish"
-                                  className="h-7 px-1.5 text-xs border border-gray-200 rounded bg-white text-gray-600 focus:outline-none focus:ring-1 focus:ring-gray-300 disabled:opacity-50 cursor-pointer hover:border-gray-300 transition-colors"
-                                >
-                                  {QUICK_STATUS_OPTIONS.map((o) => (
-                                    <option key={o.value} value={o.value}>
-                                      {o.label}
-                                    </option>
-                                  ))}
-                                </select>
+                                <div onClick={(e) => e.stopPropagation()}>
+                                  <SelectField
+                                    name={`status-${lead._id}`}
+                                    options={QUICK_STATUS_OPTIONS}
+                                    value={lead.status}
+                                    onChange={(val) =>
+                                      handleStatusChange(val, lead)
+                                    }
+                                    disabled={isUpdating}
+                                  />
+                                </div>
                               )}
 
                               {/* Cancel button */}
                               {!isCancelled && (
-                                <button
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
                                   onClick={(e) => handleCancelClick(e, lead)}
                                   disabled={isUpdating}
                                   title="Bekor qilish"
-                                  className="h-7 w-7 flex items-center justify-center border border-gray-200 rounded text-gray-400 hover:border-red-300 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
+                                  className="h-7 w-7 text-gray-400 hover:border-red-300 hover:text-red-500 hover:bg-red-50"
                                 >
                                   {isUpdating ? (
                                     <div className="w-3 h-3 border border-gray-400 border-t-transparent rounded-full animate-spin" />
                                   ) : (
                                     <Ban size={12} />
                                   )}
-                                </button>
+                                </Button>
                               )}
 
                               {/* View detail */}
-                              <button
-                                onClick={(e) => { e.stopPropagation(); setSelectedLead(lead); }}
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedLead(lead);
+                                }}
                                 title="Ko'rish"
-                                className="h-7 w-7 flex items-center justify-center text-gray-300 hover:text-gray-600 transition-colors"
+                                className="h-7 w-7 text-gray-300 hover:text-gray-600"
                               >
                                 <ExternalLink size={13} />
-                              </button>
+                              </Button>
                             </div>
                           </td>
                         </tr>
