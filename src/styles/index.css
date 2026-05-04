@@ -119,7 +119,7 @@
   }
 
   table thead {
-    @apply bg-brown-800 border-b-2 border-brown-900;
+    @apply bg-brown-800;
   }
 
   table thead th {
