@@ -7,7 +7,7 @@ const UZ_MONTHS = [
   "Iyul", "Avgust", "Sentyabr", "Oktyabr", "Noyabr", "Dekabr",
 ];
 
-function buildMonthOptions(count = 12) {
+function buildMonthOptions(count = 18) {
   const options = [];
   const now = new Date();
   for (let i = 0; i < count; i++) {
@@ -20,7 +20,30 @@ function buildMonthOptions(count = 12) {
 
 export const monthOptions = [
   { value: "all", label: "Barcha oylar" },
-  ...buildMonthOptions(18),
+  ...buildMonthOptions(),
+];
+
+function buildYearOptions(count = 4) {
+  const options = [];
+  const now = new Date().getFullYear();
+  for (let i = 0; i < count; i++) {
+    const y = now - i;
+    options.push({ value: String(y), label: String(y) });
+  }
+  return options;
+}
+
+export const yearOptions = [
+  { value: "all", label: "Barcha yillar" },
+  ...buildYearOptions(4),
+];
+
+export const monthOnlyOptions = [
+  { value: "all", label: "Barcha oylar" },
+  ...UZ_MONTHS.map((name, i) => ({
+    value: String(i + 1).padStart(2, "0"),
+    label: name,
+  })),
 ];
 
 /** "2026-04-01T…" or "2026-04-01" → "Aprel 2026" */

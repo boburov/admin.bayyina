@@ -6,7 +6,9 @@ import { usersAPI }    from "@/features/users/api/users.api";
 import { salariesAPI } from "@/features/salaries/api/salaries.api";
 import {
   salariesKeys,
-  monthOptions,
+  yearOptions,
+  monthOnlyOptions,
+  statusOptions,
   formatMonthLabel,
 } from "@/features/salaries/data/salaries.data";
 import { useAppQuery } from "@/shared/lib/query/query-hooks";
@@ -23,7 +25,7 @@ import SalaryDetailModal from "@/features/salaries/components/SalaryDetailModal"
 
 import {
   ArrowLeft, User, Phone, Wallet,
-  CheckCircle2, Clock, ChevronRight,
+  CheckCircle2, Clock, ChevronRight, X,
 } from "lucide-react";
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
@@ -47,8 +49,19 @@ const TeacherSalaryPage = () => {
   const navigate = useNavigate();
   const { openModal } = useModal();
 
-  const [month, setMonth] = useState("all");
-  const [page, setPage]   = useState(1);
+  const [year, setYear]         = useState("all");
+  const [monthNum, setMonthNum] = useState("all");
+  const [status, setStatus]     = useState("all");
+  const [page, setPage]         = useState(1);
+
+  const hasFilter = year !== "all" || monthNum !== "all" || status !== "all";
+
+  const clearFilters = () => {
+    setYear("all");
+    setMonthNum("all");
+    setStatus("all");
+    setPage(1);
+  };
 
   // Teacher info
   const { data: teacherData, isLoading: teacherLoading } = useAppQuery({
@@ -61,11 +74,21 @@ const TeacherSalaryPage = () => {
   const teacher = teacherData?.user ?? teacherData;
 
   // Salaries filtered by teacher
+  const monthParam =
+    year !== "all" && monthNum !== "all"
+      ? `${year}-${monthNum}-01`
+      : undefined;
+
   const params = {
     teacher: id,
     page,
     limit: 15,
-    ...(month !== "all" && { month }),
+    ...(status !== "all" && { status }),
+    ...(monthParam
+      ? { month: monthParam }
+      : year !== "all"
+      ? { from: `${year}-01-01`, to: `${year}-12-31` }
+      : {}),
   };
 
   const { data, isLoading: salariesLoading } = useAppQuery({
@@ -156,13 +179,39 @@ const TeacherSalaryPage = () => {
       )}
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-row flex-wrap items-end gap-2">
         <SelectField
-          name="month"
-          options={monthOptions}
-          value={month}
-          onChange={(val) => { setMonth(val); setPage(1); }}
+          name="year"
+          options={yearOptions}
+          value={year}
+          onChange={(val) => { setYear(val); setPage(1); }}
+          selectClassName="min-w-[120px]"
         />
+        <SelectField
+          name="monthNum"
+          options={monthOnlyOptions}
+          value={monthNum}
+          onChange={(val) => { setMonthNum(val); setPage(1); }}
+          selectClassName="min-w-[130px]"
+        />
+        <SelectField
+          name="status"
+          options={statusOptions}
+          value={status}
+          onChange={(val) => { setStatus(val); setPage(1); }}
+          selectClassName="min-w-[140px]"
+        />
+        {hasFilter && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={clearFilters}
+            className="flex items-center gap-1.5 text-gray-500 shrink-0"
+          >
+            <X size={14} strokeWidth={1.5} />
+            Tozalash
+          </Button>
+        )}
       </div>
 
       {/* Table */}
@@ -228,7 +277,7 @@ const TeacherSalaryPage = () => {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => openModal("salaryDetail", sal)}
+                      onClick={() => openModal("salaryDetail", { salary: sal })}
                       className="text-gray-400 hover:text-gray-700"
                       title="Batafsil / tahrirlash"
                     >

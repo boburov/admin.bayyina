@@ -25,6 +25,7 @@ import { genderOptions } from "../../users/data/users.data";
 
 // Hooks
 import useModal from "@/shared/hooks/useModal";
+import { useSelectOptions } from "@/shared/hooks/useSelectOptions";
 
 // Components
 import Button from "@/shared/components/ui/button/Button";
@@ -146,6 +147,10 @@ const Teachers = () => {
   });
 
   const users = data?.users ?? [];
+
+  const { options: sourceOptions } = useSelectOptions("lead_source");
+  const getSourceLabel = (id) =>
+    sourceOptions.find((o) => o.value === id || String(o._id) === id)?.label ?? id ?? "-";
 
   const getGenderLabel = (gender) =>
     genderOptions.find((g) => g.value === gender)?.label ?? "-";
@@ -277,7 +282,7 @@ const Teachers = () => {
                     {user.age ?? "-"}
                   </td>
                   <td className="text-center text-sm text-gray-500">
-                    {user.source ?? "-"}
+                    {user.source ? getSourceLabel(user.source) : "-"}
                   </td>
                   <td className="text-center text-sm text-gray-500">
                     {formatUzDate(user.createdAt)}

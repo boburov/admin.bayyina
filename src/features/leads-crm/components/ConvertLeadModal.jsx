@@ -16,6 +16,8 @@ const ConvertLeadModal = ({ open, lead, onClose, onSuccess }) => {
   const qc = useQueryClient();
   const [groupSearch,    setGroupSearch]     = useState("");
   const [selectedGroups, setSelectedGroups]  = useState([]);
+  const [phoneInput,     setPhoneInput]      = useState("");
+  const [passwordInput,  setPasswordInput]   = useState("");
 
   const { data: groupsData, isLoading: groupsLoading } = useQuery({
     queryKey: ["classes"],
@@ -41,15 +43,18 @@ const ConvertLeadModal = ({ open, lead, onClose, onSuccess }) => {
       // 1. Mark lead converted
       await leadsAPI.update(lead._id, { status: "converted" });
 
-      // 2. Create student
-      const phone    = String(lead.phone ?? "").replace(/\D/g, "");
+      // 2. Create student — prefer manual phoneInput, fallback to lead.phone
+      const rawPhone = phoneInput.trim() || String(lead.phone ?? "");
+      const phone    = rawPhone.replace(/\D/g, "");
       const phoneNum = phone ? Number(phone) : undefined;
+
+      const password = passwordInput.trim() || (phone.length >= 6 ? phone : "12345678");
 
       await usersAPI.create({
         firstName: lead.firstName ?? "",
-        lastName:  lead.lastName  ?? "",
+        ...(lead.lastName && { lastName: lead.lastName }),
         phone:     phoneNum,
-        password:  phone.length >= 6 ? phone : "12345678",
+        password,
         role:      "student",
         groupIds:  selectedGroups.map((g) => g._id),
       });
@@ -65,6 +70,8 @@ const ConvertLeadModal = ({ open, lead, onClose, onSuccess }) => {
   const reset = () => {
     setGroupSearch("");
     setSelectedGroups([]);
+    setPhoneInput("");
+    setPasswordInput("");
   };
 
   const handleClose = () => {
@@ -100,6 +107,41 @@ const ConvertLeadModal = ({ open, lead, onClose, onSuccess }) => {
               <p className="text-sm font-semibold text-gray-900">{lead.firstName} {lead.lastName}</p>
               <p className="text-xs text-gray-400 font-mono">{lead.phone ? `+${lead.phone}` : "—"}</p>
             </div>
+          </div>
+
+          {/* Phone — shown only when lead has no phone */}
+          {!lead.phone && (
+            <div>
+              <label className="text-xs font-medium text-gray-600 block mb-1.5">
+                Telefon raqam <span className="text-red-500">*</span>
+              </label>
+              <InputField
+                name="phone"
+                placeholder="998901234567"
+                value={phoneInput}
+                onChange={(e) => setPhoneInput(e.target.value)}
+              />
+              <p className="text-xs text-gray-400 mt-1">
+                Lead telefonsiz saqlangan — kiriting yoki bo'sh qoldiring (parol: 12345678)
+              </p>
+            </div>
+          )}
+
+          {/* Password */}
+          <div>
+            <label className="text-xs font-medium text-gray-600 block mb-1.5">
+              Parol
+            </label>
+            <InputField
+              name="password"
+              type="password"
+              placeholder={lead.phone ? "Telefon raqam ishlatiladi" : "12345678 ishlatiladi"}
+              value={passwordInput}
+              onChange={(e) => setPasswordInput(e.target.value)}
+            />
+            <p className="text-xs text-gray-400 mt-1">
+              Bo'sh qoldirsangiz, telefon raqam parol bo'ladi
+            </p>
           </div>
 
           {/* Multi-group picker */}

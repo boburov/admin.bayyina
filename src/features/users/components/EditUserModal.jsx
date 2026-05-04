@@ -192,7 +192,7 @@ const Content = ({ close, isLoading, setIsLoading, ...user }) => {
           value={source}
           placeholder="Tanlang"
           onChange={(v) => setField("source", v || null)}
-          options={sources.map((s) => ({ value: s.name, label: s.name }))}
+          options={sources.map((s) => ({ value: s.value, label: s.label }))}
         />
         <Input
           label="Telegram ID"
