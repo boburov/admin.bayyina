@@ -27,9 +27,12 @@ import { genderOptions } from "../data/users.data";
 import useModal from "@/shared/hooks/useModal";
 
 // Components
-import Button          from "@/shared/components/ui/button/Button";
-import Pagination      from "@/shared/components/ui/Pagination";
-import DynamicSelect   from "@/shared/components/ui/DynamicSelect";
+import Button from "@/shared/components/ui/button/Button";
+import Pagination from "@/shared/components/ui/Pagination";
+import DynamicSelect from "@/shared/components/ui/DynamicSelect";
+import InputField from "@/shared/components/ui/input/InputField";
+import InputGroup from "@/shared/components/ui/input/InputGroup";
+import SelectField from "@/shared/components/ui/select/SelectField";
 
 // Icons
 import { Plus, Edit, Trash2, Key, Eye, Users, Search, X } from "lucide-react";
@@ -40,7 +43,7 @@ const UsersPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const currentPage = parseInt(searchParams.get("page") || "1", 10);
-  const qParam      = searchParams.get("q") || "";
+  const qParam = searchParams.get("q") || "";
   const genderParam = searchParams.get("gender") || "";
   const sourceParam = searchParams.get("source") || "";
   const minAgeParam = searchParams.get("minAge") || "";
@@ -49,7 +52,9 @@ const UsersPage = () => {
   const [inputQ, setInputQ] = useState(qParam);
 
   const searchParamsRef = useRef(searchParams);
-  useEffect(() => { searchParamsRef.current = searchParams; }, [searchParams]);
+  useEffect(() => {
+    searchParamsRef.current = searchParams;
+  }, [searchParams]);
 
   const isFirstRender = useRef(true);
 
@@ -71,7 +76,8 @@ const UsersPage = () => {
     return () => clearTimeout(id);
   }, [inputQ, setSearchParams]);
 
-  const hasFilters = qParam || genderParam || sourceParam || minAgeParam || maxAgeParam;
+  const hasFilters =
+    qParam || genderParam || sourceParam || minAgeParam || maxAgeParam;
 
   const setFilter = useCallback(
     (key, value) => {
@@ -105,7 +111,7 @@ const UsersPage = () => {
   const queryParams = {
     page: currentPage,
     limit: 20,
-    ...(qParam      && { q: qParam }),
+    ...(qParam && { q: qParam }),
     ...(genderParam && { gender: genderParam }),
     ...(sourceParam && { source: sourceParam }),
     ...(minAgeParam && { minAge: minAgeParam }),
@@ -119,7 +125,9 @@ const UsersPage = () => {
     queryFn: () =>
       hasFilters
         ? usersAPI.searchStudents(queryParams).then((res) => res.data)
-        : usersAPI.getStudents({ page: currentPage, limit: 20 }).then((res) => res.data),
+        : usersAPI
+            .getStudents({ page: currentPage, limit: 20 })
+            .then((res) => res.data),
     keepPreviousData: true,
     onError: ({ message }) => toast.error(message || "Nimadir xato ketdi"),
   });
@@ -138,52 +146,52 @@ const UsersPage = () => {
 
       {/* Actions */}
       <div className="flex flex-col sm:flex-row gap-3 mb-5">
-        <Button onClick={() => openModal("createUser", { defaultRole: "student" })} className="px-3.5">
-          <Plus size={14} strokeWidth={1.5} />
+        <Button
+          onClick={() => openModal("createUser", { defaultRole: "student" })}
+          className="px-3.5"
+        >
+          <Plus />
           Yangi o'quvchi
         </Button>
       </div>
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row flex-wrap items-center gap-3 mb-5">
-        <div className="relative flex-1 w-full min-w-[200px]">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input
-            value={inputQ}
-            onChange={(e) => setInputQ(e.target.value)}
-            placeholder="Ism, telefon, manba..."
-            className="pl-8 pr-3 py-2 w-full text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
-          />
-        </div>
+        <InputField
+          name="search"
+          value={inputQ}
+          className="flex-1"
+          placeholder="Qidirish..."
+          onChange={(e) => setInputQ(e.target.value)}
+        />
 
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          <input
+        <InputGroup className="grid-cols-2 w-full sm:w-auto">
+          <InputField
+            name="minAge"
             type="number"
             value={minAgeParam}
             onChange={(e) => setFilter("minAge", e.target.value)}
             placeholder="Min yosh"
-            className="w-20 py-2 px-3 flex-1 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
+            className="w-full sm:w-28"
           />
-          <span className="text-gray-400">-</span>
-          <input
+          <InputField
+            name="maxAge"
             type="number"
             value={maxAgeParam}
             onChange={(e) => setFilter("maxAge", e.target.value)}
             placeholder="Max yosh"
-            className="w-20 py-2 px-3 flex-1 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
+            className="w-full sm:w-28"
           />
-        </div>
+        </InputGroup>
 
-        <select
+        <SelectField
+          name="gender"
+          options={genderOptions}
           value={genderParam}
-          onChange={(e) => setFilter("gender", e.target.value)}
-          className="py-2 px-3 w-full sm:w-auto text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
-        >
-          <option value="">Barcha jins</option>
-          {genderOptions.map((o) => (
-            <option key={o.value} value={o.value}>{o.label}</option>
-          ))}
-        </select>
+          onChange={(val) => setFilter("gender", val)}
+          placeholder="Barcha jins"
+          className="w-full sm:w-auto"
+        />
 
         <DynamicSelect
           type="lead_source"
@@ -194,18 +202,21 @@ const UsersPage = () => {
         />
 
         {hasFilters && (
-          <button
+          <Button
+            variant="outline"
             onClick={resetFilters}
-            className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-800 border border-gray-200 rounded-md px-2 py-2"
+            className="w-full sm:w-auto"
           >
-            <X size={12} />
+            <X />
             Tozalash
-          </button>
+          </Button>
         )}
       </div>
 
       {/* Table */}
-      <div className={`table-wrapper transition-opacity duration-200 ${isFetching ? "opacity-60 pointer-events-none" : "opacity-100"}`}>
+      <div
+        className={`table-wrapper transition-opacity duration-200 ${isFetching ? "opacity-60 pointer-events-none" : "opacity-100"}`}
+      >
         <table>
           <thead>
             <tr>
@@ -221,7 +232,10 @@ const UsersPage = () => {
           <tbody>
             {isLoading ? (
               <tr>
-                <td colSpan={7} className="py-12 text-center text-sm text-gray-400">
+                <td
+                  colSpan={7}
+                  className="py-12 text-center text-sm text-gray-400"
+                >
                   Yuklanmoqda...
                 </td>
               </tr>
@@ -240,43 +254,61 @@ const UsersPage = () => {
                   <td className="text-center text-sm font-medium text-gray-900">
                     {user.firstName} {user.lastName}
                   </td>
-                  <td className="text-center text-sm text-gray-500">{formatPhone(String(user.phone))}</td>
-                  <td className="text-center text-sm text-gray-500">{getGenderLabel(user.gender)}</td>
-                  <td className="text-center text-sm text-gray-500">{user.age ?? "-"}</td>
-                  <td className="text-center text-sm text-gray-500">{user.source ?? "-"}</td>
-                  <td className="text-center text-sm text-gray-500">{formatUzDate(user.createdAt)}</td>
+                  <td className="text-center text-sm text-gray-500">
+                    {formatPhone(String(user.phone))}
+                  </td>
+                  <td className="text-center text-sm text-gray-500">
+                    {getGenderLabel(user.gender)}
+                  </td>
+                  <td className="text-center text-sm text-gray-500">
+                    {user.age ?? "-"}
+                  </td>
+                  <td className="text-center text-sm text-gray-500">
+                    {user.source ?? "-"}
+                  </td>
+                  <td className="text-center text-sm text-gray-500">
+                    {formatUzDate(user.createdAt)}
+                  </td>
                   <td className="text-center">
                     <div className="flex justify-center gap-2">
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => openModal("editUser", user)}
-                        className="text-gray-500 hover:text-blue-600 transition-colors"
+                        className="text-gray-500 hover:text-blue-600"
                         title="Tahrirlash"
                       >
                         <Edit className="size-4" strokeWidth={1.5} />
-                      </button>
+                      </Button>
                       {currentUser?.role === "owner" && (
-                        <button
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() => openModal("viewUserPassword", user)}
-                          className="text-gray-500 hover:text-purple-600 transition-colors"
+                          className="text-gray-500 hover:text-purple-600"
                           title="Parolni ko'rish"
                         >
                           <Eye className="size-4" strokeWidth={1.5} />
-                        </button>
+                        </Button>
                       )}
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => openModal("resetUserPassword", user)}
-                        className="text-gray-500 hover:text-orange-600 transition-colors"
+                        className="text-gray-500 hover:text-orange-600"
                         title="Parolni yangilash"
                       >
                         <Key className="size-4" strokeWidth={1.5} />
-                      </button>
-                      <button
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => openModal("deleteUser", user)}
-                        className="text-gray-500 hover:text-red-600 transition-colors"
+                        className="text-gray-500 hover:text-red-600"
                         title="O'chirish"
                       >
                         <Trash2 className="size-4" strokeWidth={1.5} />
-                      </button>
+                      </Button>
                     </div>
                   </td>
                 </tr>
