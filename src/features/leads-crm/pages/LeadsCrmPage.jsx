@@ -203,7 +203,7 @@ const LeadsCrmPage = () => {
       <div className="mb-5 pb-4 border-b border-gray-200">
         <h1 className="text-xl font-bold text-gray-900">Qabullar</h1>
         <p className="text-sm text-gray-400 mt-0.5">
-          Leadlar va qabul qilingan o'quvchilar
+          Sotuvlar va qabul qilingan o'quvchilar
         </p>
       </div>
 
@@ -216,7 +216,7 @@ const LeadsCrmPage = () => {
             setFilterStatus("");
           }}
           icon={<Users size={14} />}
-          label="Leadlar"
+          label="Sotuvlar"
           count={leadsTotal}
         />
         <TabBtn
@@ -310,7 +310,7 @@ const LeadsCrmPage = () => {
                     >
                       {tab === "students"
                         ? "Hali qabul qilingan o'quvchi yo'q"
-                        : "Leadlar topilmadi"}
+                        : "Sotuvlar topilmadi"}
                     </td>
                   </tr>
                 ) : (

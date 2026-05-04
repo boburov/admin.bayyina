@@ -37,7 +37,7 @@ import { cn } from "@/shared/utils/cn";
 
 const NAV_ITEMS = [
   { title: "Bosh sahifa", url: "/dashboard", icon: Home },
-  { title: "Leadlar", url: "/leads", icon: UserPlus },
+  { title: "Sotuvlar", url: "/leads", icon: UserPlus },
   { title: "Qabullar", url: "/leads-crm", icon: ClipboardList },
   { title: "O'quvchilar", url: "/users", icon: Users },
   { title: "O'qituvchilar", url: "/teachers", icon: GraduationCap },

@@ -300,7 +300,7 @@ const LeadAnalyticsPage = () => {
             <TrendingUp size={14} strokeWidth={2.5} />
             <span className="text-[10px] font-black uppercase tracking-[0.2em]">Lead tahlili</span>
           </div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Nima uchun leadlar talabaga aylanmayapti?</h1>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Nima uchun sotuvlar talabaga aylanmayapti?</h1>
           <p className="text-sm text-slate-400 mt-1">Konversiya voronkasi, rad etish sabablari va menejer samaradorligi</p>
         </div>
         <DatePresetBar
@@ -313,7 +313,7 @@ const LeadAnalyticsPage = () => {
 
       {/* KPI Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <KpiCard loading={ll} icon={Users}        label="Jami leadlar"   value={totalLeads} accent="bg-gradient-to-r from-indigo-400 to-blue-400" />
+        <KpiCard loading={ll} icon={Users}        label="Jami sotuvlar"   value={totalLeads} accent="bg-gradient-to-r from-indigo-400 to-blue-400" />
         <KpiCard loading={ll} icon={CheckCircle2} label="Qabul qilindi"  value={converted}  sub={`${convRate}% konversiya`} accent="bg-gradient-to-r from-emerald-400 to-teal-400" />
         <KpiCard loading={ll} icon={XCircle}      label="Rad etildi"     value={rejected}   sub={totalLeads > 0 ? `${Math.round(rejected/totalLeads*100)}% yo'qotish` : ""} accent="bg-gradient-to-r from-rose-400 to-red-400" />
         <KpiCard loading={ll} icon={UserCheck}    label="Jarayonda"      value={active}     sub="Hali qaror qilinmagan" accent="bg-gradient-to-r from-amber-400 to-orange-400" />
@@ -356,10 +356,10 @@ const LeadAnalyticsPage = () => {
 
       {/* Monthly Trend */}
       <GlassCard accent="bg-gradient-to-r from-blue-400 to-cyan-500">
-        <CardTitle icon={Calendar} iconBg="bg-blue-50 text-blue-600" title="Oylik konversiya trendi" sub="Jami va qabul qilingan leadlar dinamikasi" />
+        <CardTitle icon={Calendar} iconBg="bg-blue-50 text-blue-600" title="Oylik konversiya trendi" sub="Jami va qabul qilingan sotuvlar dinamikasi" />
         <div className="flex items-center gap-5 mb-4">
           {[
-            { color: "#3b82f6", label: "Jami leadlar" },
+            { color: "#3b82f6", label: "Jami sotuvlar" },
             { color: "#10b981", label: "Qabul qilindi" },
             { color: "#f43f5e", label: "Yo'qotildi" },
           ].map((l) => (
@@ -406,7 +406,7 @@ const LeadAnalyticsPage = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
         <GlassCard accent="bg-gradient-to-r from-violet-400 to-purple-500">
-          <CardTitle icon={BarChart2} iconBg="bg-violet-50 text-violet-600" title="Manbalar bo'yicha" sub="Qayerdan kelgan leadlar ko'proq konversiya beradi?" />
+          <CardTitle icon={BarChart2} iconBg="bg-violet-50 text-violet-600" title="Manbalar bo'yicha" sub="Qayerdan kelgan sotuvlar ko'proq konversiya beradi?" />
           {ll ? <Loader h={200} /> : !sourceData.length ? <Empty h={200} /> : (
             <div className="space-y-3">
               {sourceData.map((item) => {
@@ -429,7 +429,7 @@ const LeadAnalyticsPage = () => {
         </GlassCard>
 
         <GlassCard accent="bg-gradient-to-r from-slate-400 to-slate-500">
-          <CardTitle icon={Users} iconBg="bg-slate-50 text-slate-600" title="Holat taqsimoti" sub="Leadlar hozir qaysi bosqichda?" />
+          <CardTitle icon={Users} iconBg="bg-slate-50 text-slate-600" title="Holat taqsimoti" sub="Sotuvlar hozir qaysi bosqichda?" />
           {ll ? <Loader h={200} /> : !statusOther.length ? <Empty h={200} /> : (
             <div className="grid grid-cols-2 gap-3">
               <div className="flex items-center justify-center">

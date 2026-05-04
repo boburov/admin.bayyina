@@ -124,7 +124,7 @@ const LeadsFunnel = ({ leads = [] }) => {
     <div className="space-y-4 mb-6">
       {/* KPI row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        <KpiCard icon={Users}        label="Jami leadlar"   value={serverTotal}           color="blue"   />
+        <KpiCard icon={Users}        label="Jami sotuvlar"   value={serverTotal}           color="blue"   />
         <KpiCard icon={CheckCircle2} label="Qabul qilindi"  value={serverConverted}        color="green"  />
         <KpiCard icon={XCircle}      label="Bekor qilindi"  value={serverCancelled}        color="red"    />
         <KpiCard
@@ -139,7 +139,7 @@ const LeadsFunnel = ({ leads = [] }) => {
       {/* Line chart + Donut */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Leads over time — line chart */}
-        <Card title="Leadlar dinamikasi (6 oy)" className="lg:col-span-2 h-72">
+        <Card title="Sotuvlar dinamikasi (6 oy)" className="lg:col-span-2 h-72">
           {statsLoading ? <Loader /> : !trendData.length ? (
             <Empty text="Oylik ma'lumot yo'q" />
           ) : (
@@ -175,7 +175,7 @@ const LeadsFunnel = ({ leads = [] }) => {
                     labelStyle={TOOLTIP_STYLE.labelStyle}
                     cursor={{ stroke: "#E5E7EB", strokeWidth: 1 }}
                     formatter={(val, name) => {
-                      if (name === "total")     return [val, "Jami leadlar"];
+                      if (name === "total")     return [val, "Jami sotuvlar"];
                       if (name === "converted") return [val, "Qabul qilindi"];
                       return [val, name];
                     }}

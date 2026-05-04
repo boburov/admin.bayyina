@@ -90,7 +90,7 @@ const CreateLeadModal = ({ open, onClose }) => {
               <UserPlus size={14} className="text-brown-800" strokeWidth={1.5} />
             </div>
             <DialogTitle className="text-base font-semibold text-gray-900">
-              Yangi lead qo'shish
+              Yangi sotuv qo'shish
             </DialogTitle>
           </div>
         </DialogHeader>

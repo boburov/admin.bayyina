@@ -129,7 +129,7 @@ const LeadsPage = () => {
       {/* Page header */}
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">Leadlar</h1>
+          <h1 className="text-xl font-bold text-gray-900">Sotuvlar</h1>
           <p className="text-sm text-gray-400 mt-0.5">
             {total > 0 ? `${total} ta murojaat` : "Murojaatlar yo'q"}
           </p>
@@ -138,7 +138,7 @@ const LeadsPage = () => {
         <div className="flex flex-col sm:flex-row items-end sm:items-center gap-3">
           <Button onClick={() => setIsCreateOpen(true)}>
             <Plus size={16} />
-            <span className="inline">Yangi lead</span>
+            <span className="inline">Yangi sotuv</span>
           </Button>
 
           <div className="flex gap-1 border border-gray-200 rounded-md p-0.5">
@@ -222,7 +222,7 @@ const LeadsPage = () => {
                         colSpan={8}
                         className="text-center py-16 text-gray-400 text-sm"
                       >
-                        Leadlar topilmadi
+                        Sotuvlar topilmadi
                       </td>
                     </tr>
                   ) : (

@@ -299,7 +299,7 @@ const totalAtt    = (attendance?.overall?.total ?? 0);
 
       {/* ── 1. Overview KPIs ───────────────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <KpiCard loading={ol} label="Jami leadlar"     value={overview?.totalLeads ?? 0}                              icon={UserPlus}      color="blue"   />
+        <KpiCard loading={ol} label="Jami sotuvlar"     value={overview?.totalLeads ?? 0}                              icon={UserPlus}      color="blue"   />
         <KpiCard loading={ol} label="Faol o'quvchilar" value={overview?.totalActiveStudents ?? 0}                    icon={GraduationCap} color="brown"  />
         <KpiCard loading={ol} label="Bu oy daromad"    value={formatMoneyFull(overview?.revenueThisMonth)}            icon={TrendingUp}    color="green"  sub="To'langan to'lovlar" />
         <KpiCard loading={ol} label="Bu oy davomat"    value={`${overview?.attendanceRateThisMonth ?? 0}%`}           icon={Activity}      color="purple" sub="Joriy oy ko'rsatkichi" />
@@ -321,13 +321,13 @@ const totalAtt    = (attendance?.overall?.total ?? 0);
 
       {/* ── 3. Leads ──────────────────────────────────────────────────── */}
       <div>
-        <SecHeader icon={UserPlus} title="Leadlar tahlili" sub="Murojaatlar dinamikasi va holat taqsimoti" />
+        <SecHeader icon={UserPlus} title="Sotuvlar tahlili" sub="Murojaatlar dinamikasi va holat taqsimoti" />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
 
           {/* Leads KPIs */}
           <div className="lg:col-span-3 grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <KpiCard loading={ll} label="Jami leadlar"   value={leads?.totalLeads ?? 0}         icon={Users}        color="blue"   />
+            <KpiCard loading={ll} label="Jami sotuvlar"   value={leads?.totalLeads ?? 0}         icon={Users}        color="blue"   />
             <KpiCard loading={ll} label="Qabul qilindi"  value={leads?.byStatus?.find(s=>s.status==="converted")?.count ?? 0}  icon={CheckCircle2} color="green"  />
             <KpiCard loading={ll} label="Bekor qilindi"  value={leads?.byStatus?.find(s=>s.status==="rejected")?.count ?? 0}   icon={XCircle}      color="red"    />
             <KpiCard loading={ll} label="Konversiya"     value={`${leads?.conversionRate ?? 0}%`}                              icon={ArrowUpRight}  color="purple" />
@@ -337,7 +337,7 @@ const totalAtt    = (attendance?.overall?.total ?? 0);
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
           {/* Line chart — monthly trend */}
-          <Card title="Leadlar dinamikasi (6 oy)" className="lg:col-span-2 h-72">
+          <Card title="Sotuvlar dinamikasi (6 oy)" className="lg:col-span-2 h-72">
             {ll ? <CardLoader h={220} /> : !leadTrend.length ? <Empty /> : (
               <>
                 <div className="flex items-center gap-4 mb-3">
