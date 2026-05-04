@@ -22,6 +22,12 @@ import LeadStatusBadge from "./LeadStatusBadge";
 // Data
 import { GENDER_OPTIONS } from "../data/leads.data";
 
+// Shared components
+import Button from "@/shared/components/ui/button/Button";
+import InputField from "@/shared/components/ui/input/InputField";
+import InputGroup from "@/shared/components/ui/input/InputGroup";
+import SelectField from "@/shared/components/ui/select/SelectField";
+
 // Utils
 import { formatDateUZ } from "@/shared/utils/date.utils";
 
@@ -36,9 +42,6 @@ import {
   Dialog, DialogTitle, DialogHeader, DialogContent,
 } from "@/shared/components/shadcn/dialog";
 
-const inputCls  = "w-full h-8 px-2.5 text-xs border border-gray-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-brown-800 placeholder:text-gray-400";
-const selectCls = "w-full h-8 px-2 text-xs border border-gray-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-brown-800 text-gray-700";
-const labelCls  = "block text-[10px] font-medium text-gray-500 mb-0.5";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -93,64 +96,77 @@ const EditForm = ({ lead, sources, courseTypes, interests, onSave, onCancel, isP
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
-      <div className="grid grid-cols-2 gap-2">
-        <div>
-          <label className={labelCls}>Ism</label>
-          <input className={inputCls} value={form.firstName} onChange={(e) => set("firstName", e.target.value)} />
-        </div>
-        <div>
-          <label className={labelCls}>Familiya</label>
-          <input className={inputCls} value={form.lastName} onChange={(e) => set("lastName", e.target.value)} />
-        </div>
-        <div>
-          <label className={labelCls}>Telefon</label>
-          <input className={inputCls} value={form.phone} onChange={(e) => set("phone", e.target.value)} />
-        </div>
-        <div>
-          <label className={labelCls}>Yosh</label>
-          <input className={inputCls} type="number" min={1} max={120} value={form.age} onChange={(e) => set("age", e.target.value)} />
-        </div>
-        <div>
-          <label className={labelCls}>Jins</label>
-          <select className={selectCls} value={form.gender} onChange={(e) => set("gender", e.target.value)}>
-            <option value="">Tanlang</option>
-            {GENDER_OPTIONS.filter((o) => o.value).map((o) => (
-              <option key={o.value} value={o.value}>{o.label}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className={labelCls}>Manba</label>
-          <select className={selectCls} value={form.source} onChange={(e) => set("source", e.target.value)}>
-            <option value="">Tanlang</option>
-            {sources.map((s) => (
-              <option key={s._id} value={s._id}>{s.label}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className={labelCls}>Kurs turi</label>
-          <select className={selectCls} value={form.courseType} onChange={(e) => set("courseType", e.target.value)}>
-            <option value="">Tanlang</option>
-            {courseTypes.map((c) => (
-              <option key={c._id} value={c._id}>{c.label}</option>
-            ))}
-          </select>
-        </div>
-      </div>
+      <InputGroup>
+        <InputField
+          name="firstName"
+          label="Ism"
+          value={form.firstName}
+          onChange={(e) => set("firstName", e.target.value)}
+        />
+        <InputField
+          name="lastName"
+          label="Familiya"
+          value={form.lastName}
+          onChange={(e) => set("lastName", e.target.value)}
+        />
+      </InputGroup>
+
+      <InputGroup>
+        <InputField
+          name="phone"
+          label="Telefon"
+          type="tel"
+          value={form.phone}
+          onChange={(e) => set("phone", e.target.value)}
+        />
+        <InputField
+          name="age"
+          label="Yosh"
+          type="number"
+          value={form.age}
+          onChange={(e) => set("age", e.target.value)}
+        />
+      </InputGroup>
+
+      <InputGroup>
+        <SelectField
+          name="gender"
+          label="Jins"
+          options={GENDER_OPTIONS.filter((o) => o.value).map((o) => ({ value: o.value, label: o.label }))}
+          value={form.gender}
+          onChange={(val) => set("gender", val)}
+          placeholder="Tanlang"
+        />
+        <SelectField
+          name="source"
+          label="Manba"
+          options={sources.map((s) => ({ value: s._id, label: s.label }))}
+          value={form.source}
+          onChange={(val) => set("source", val)}
+          placeholder="Tanlang"
+        />
+      </InputGroup>
+
+      <SelectField
+        name="courseType"
+        label="Kurs turi"
+        options={courseTypes.map((c) => ({ value: c._id, label: c.label }))}
+        value={form.courseType}
+        onChange={(val) => set("courseType", val)}
+        placeholder="Tanlang"
+      />
+
+      <SelectField
+        name="interest"
+        label="Qiziqish"
+        options={interests.map((i) => ({ value: i._id, label: i.label }))}
+        value={form.interest}
+        onChange={(val) => set("interest", val)}
+        placeholder="Tanlang"
+      />
 
       <div>
-        <label className={labelCls}>Qiziqish</label>
-        <select className={selectCls} value={form.interest} onChange={(e) => set("interest", e.target.value)}>
-          <option value="">Tanlang</option>
-          {interests.map((i) => (
-            <option key={i._id} value={i._id}>{i.label}</option>
-          ))}
-        </select>
-      </div>
-
-      <div>
-        <label className={labelCls}>Izoh</label>
+        <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Izoh</label>
         <textarea
           className="w-full px-2.5 py-2 text-xs border border-gray-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-brown-800 placeholder:text-gray-400 resize-none"
           rows={2}
@@ -161,21 +177,12 @@ const EditForm = ({ lead, sources, courseTypes, interests, onSave, onCancel, isP
       </div>
 
       <div className="flex justify-end gap-2 pt-1">
-        <button
-          type="button"
-          onClick={onCancel}
-          disabled={isPending}
-          className="text-xs px-3 py-1.5 border border-gray-200 text-gray-600 rounded hover:bg-gray-50 disabled:opacity-60"
-        >
+        <Button type="button" variant="outline" size="sm" onClick={onCancel} disabled={isPending}>
           Bekor
-        </button>
-        <button
-          type="submit"
-          disabled={isPending}
-          className="text-xs px-3 py-1.5 bg-brown-800 text-white rounded hover:bg-brown-700 disabled:opacity-60"
-        >
+        </Button>
+        <Button type="submit" size="sm" disabled={isPending}>
           {isPending ? "Saqlanmoqda..." : "Saqlash"}
-        </button>
+        </Button>
       </div>
     </form>
   );
@@ -277,28 +284,34 @@ const LeadDetailModal = ({ lead, open, onClose }) => {
             </div>
             <div className="flex items-center gap-1.5 shrink-0">
               {isEditing ? (
-                <button
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
                   onClick={() => setIsEditing(false)}
-                  className="text-xs text-gray-500 hover:text-gray-800 border border-gray-200 rounded px-2 py-1 hover:bg-gray-50 transition-colors"
                 >
                   Bekor
-                </button>
+                </Button>
               ) : (
-                <button
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
                   onClick={() => { setIsRejecting(false); setIsEditing(true); }}
-                  className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-700 border border-gray-200 rounded px-2 py-1 hover:bg-gray-50 transition-colors"
                 >
                   <Pencil size={11} />
                   Tahrirlash
-                </button>
+                </Button>
               )}
-              <button
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
                 onClick={handleClose}
                 aria-label="Yopish"
-                className="flex items-center justify-center w-7 h-7 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded transition-colors"
               >
                 <X size={15} />
-              </button>
+              </Button>
             </div>
           </div>
         </DialogHeader>
@@ -377,12 +390,15 @@ const LeadDetailModal = ({ lead, open, onClose }) => {
                   <div className="bg-gray-50 p-3 rounded-lg border border-gray-100 animate-in fade-in slide-in-from-top-2">
                     <div className="flex items-center justify-between mb-3">
                       <p className="text-xs font-bold text-gray-700 uppercase tracking-wider">Sabab tanlang:</p>
-                      <button
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
                         onClick={() => setIsRejecting(false)}
-                        className="text-[10px] text-gray-400 hover:text-gray-600 underline"
+                        className="text-[10px] underline"
                       >
                         Bekor qilish
-                      </button>
+                      </Button>
                     </div>
                     <div className="grid grid-cols-1 gap-1.5">
                       {reasons.length === 0 ? (
@@ -414,34 +430,44 @@ const LeadDetailModal = ({ lead, open, onClose }) => {
               {isConfirmingDelete ? (
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-xs text-gray-600">Rostdan o'chirasizmi?</span>
-                  <button
+                  <Button
+                    type="button"
+                    variant="danger"
+                    size="sm"
                     onClick={() => deleteMutation.mutate(lead._id)}
                     disabled={deleteMutation.isPending}
-                    className="text-xs px-2.5 py-1 bg-red-600 text-white rounded hover:bg-red-700 font-medium disabled:opacity-60"
                   >
                     {deleteMutation.isPending ? "..." : "Ha, o'chirish"}
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
                     onClick={() => setIsConfirmingDelete(false)}
-                    className="text-xs px-2.5 py-1 border border-gray-200 text-gray-600 rounded hover:bg-gray-50"
                   >
                     Bekor
-                  </button>
+                  </Button>
                 </div>
               ) : (
-                <button
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
                   onClick={() => setIsConfirmingDelete(true)}
-                  className="text-xs text-red-500 hover:text-red-700 font-medium"
+                  className="text-red-500 hover:text-red-700"
                 >
                   O'chirish
-                </button>
+                </Button>
               )}
-              <button
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
                 onClick={handleClose}
-                className="text-xs px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-700 font-medium ml-auto"
+                className="ml-auto"
               >
                 Yopish
-              </button>
+              </Button>
             </>
           ) : (
             <p className="text-xs text-gray-400 italic">

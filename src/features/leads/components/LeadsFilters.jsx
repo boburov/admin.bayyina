@@ -6,7 +6,12 @@ import { useInterests }   from "@/features/settings/hooks/useInterests";
 import { STATUS_OPTIONS } from "../data/leads.data";
 
 // Icons
-import { Search, X } from "lucide-react";
+import { X } from "lucide-react";
+
+// Shared components
+import Button from "@/shared/components/ui/button/Button";
+import InputField from "@/shared/components/ui/input/InputField";
+import SelectField from "@/shared/components/ui/select/SelectField";
 
 const LeadsFilters = ({ filters, onChange, onReset }) => {
   const hasFilters = filters.status || filters.source || filters.interest || filters.search;
@@ -17,62 +22,58 @@ const LeadsFilters = ({ filters, onChange, onReset }) => {
   return (
     <div className="flex flex-col sm:flex-row flex-wrap items-center gap-3 w-full">
       {/* Search */}
-      <div className="relative flex-1 min-w-[200px] w-full">
-        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-        <input
+      <div className="flex-1 min-w-[200px] w-full">
+        <InputField
+          name="search"
+          placeholder="Ism yoki telefon qidirish..."
           value={filters.search || ""}
           onChange={(e) => onChange("search", e.target.value)}
-          placeholder="Ism yoki telefon qidirish..."
-          className="pl-8 w-full pr-3 py-2 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
         />
       </div>
 
       {/* Status filter */}
-      <select
+      <SelectField
+        name="status"
+        options={STATUS_OPTIONS}
         value={filters.status || ""}
-        onChange={(e) => onChange("status", e.target.value)}
-        className="py-2 px-3 w-full sm:w-auto text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
-      >
-        {STATUS_OPTIONS.map((o) => (
-          <option key={o.value} value={o.value}>{o.label}</option>
-        ))}
-      </select>
+        onChange={(val) => onChange("status", val)}
+        placeholder="Status"
+        className="w-full sm:w-auto"
+      />
 
       {/* Source filter */}
-      <select
+      <SelectField
+        name="source"
+        options={sources.map((s) => ({ value: s._id, label: s.label }))}
         value={filters.source || ""}
-        onChange={(e) => onChange("source", e.target.value)}
-        className="py-2 px-3 w-full sm:w-auto text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
-      >
-        <option value="">Barcha manbalar</option>
-        {sources.map((s) => (
-          <option key={s._id} value={s._id}>{s.label}</option>
-        ))}
-      </select>
+        onChange={(val) => onChange("source", val)}
+        placeholder="Barcha manbalar"
+        className="w-full sm:w-auto"
+      />
 
       {/* Interest filter */}
       {interests.length > 0 && (
-        <select
+        <SelectField
+          name="interest"
+          options={interests.map((i) => ({ value: i._id, label: i.label }))}
           value={filters.interest || ""}
-          onChange={(e) => onChange("interest", e.target.value)}
-          className="py-2 px-3 w-full sm:w-auto text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
-        >
-          <option value="">Barcha qiziqishlar</option>
-          {interests.map((i) => (
-            <option key={i._id} value={i._id}>{i.label}</option>
-          ))}
-        </select>
+          onChange={(val) => onChange("interest", val)}
+          placeholder="Barcha qiziqishlar"
+          className="w-full sm:w-auto"
+        />
       )}
 
       {/* Reset */}
       {hasFilters && (
-        <button
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
           onClick={onReset}
-          className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-800 border border-gray-200 rounded-md px-2 py-2"
         >
           <X size={12} />
           Tozalash
-        </button>
+        </Button>
       )}
     </div>
   );

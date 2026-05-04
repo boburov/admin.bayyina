@@ -26,9 +26,11 @@ import { UserPlus } from "lucide-react";
 // Data
 import { GENDER_OPTIONS, CREATE_STATUS_OPTIONS } from "../data/leads.data";
 
-const inputCls = "w-full h-9 px-3 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-brown-800 placeholder:text-gray-400";
-const selectCls = "w-full h-9 px-2 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-brown-800 text-gray-700";
-const labelCls  = "block text-xs font-medium text-gray-600 mb-1";
+// Shared components
+import Button from "@/shared/components/ui/button/Button";
+import InputField from "@/shared/components/ui/input/InputField";
+import InputGroup from "@/shared/components/ui/input/InputGroup";
+import SelectField from "@/shared/components/ui/select/SelectField";
 
 const CreateLeadModal = ({ open, onClose }) => {
   const qc = useQueryClient();
@@ -97,94 +99,114 @@ const CreateLeadModal = ({ open, onClose }) => {
           <div className="px-6 py-5 space-y-4 max-h-[65vh] overflow-y-auto">
 
             {/* Row 1: firstName + lastName */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className={labelCls}>Ism <span className="text-red-500">*</span></label>
-                <input className={inputCls} placeholder="Ism" value={form.firstName} onChange={(e) => set("firstName", e.target.value)} />
-              </div>
-              <div>
-                <label className={labelCls}>Familiya</label>
-                <input className={inputCls} placeholder="Familiya" value={form.lastName} onChange={(e) => set("lastName", e.target.value)} />
-              </div>
-            </div>
+            <InputGroup>
+              <InputField
+                name="firstName"
+                label="Ism"
+                placeholder="Ism"
+                value={form.firstName}
+                onChange={(e) => set("firstName", e.target.value)}
+                required
+              />
+              <InputField
+                name="lastName"
+                label="Familiya"
+                placeholder="Familiya"
+                value={form.lastName}
+                onChange={(e) => set("lastName", e.target.value)}
+              />
+            </InputGroup>
 
             {/* Row 1b: phone */}
-            <div>
-              <label className={labelCls}>Telefon</label>
-              <input className={inputCls} placeholder="+998 90 123 45 67" value={form.phone} onChange={(e) => set("phone", e.target.value)} />
-            </div>
+            <InputField
+              name="phone"
+              label="Telefon"
+              type="tel"
+              value={form.phone}
+              onChange={(e) => set("phone", e.target.value)}
+            />
 
             {/* Row 2: gender + age */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className={labelCls}>Jins</label>
-                <select className={selectCls} value={form.gender} onChange={(e) => set("gender", e.target.value)}>
-                  {GENDER_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className={labelCls}>Yosh</label>
-                <input className={inputCls} type="number" min={1} max={120} placeholder="25" value={form.age} onChange={(e) => set("age", e.target.value)} />
-              </div>
-            </div>
+            <InputGroup>
+              <SelectField
+                name="gender"
+                label="Jins"
+                options={GENDER_OPTIONS.filter((o) => o.value).map((o) => ({ value: o.value, label: o.label }))}
+                value={form.gender}
+                onChange={(val) => set("gender", val)}
+                placeholder="Jins (ixtiyoriy)"
+              />
+              <InputField
+                name="age"
+                label="Yosh"
+                type="number"
+                placeholder="25"
+                value={form.age}
+                onChange={(e) => set("age", e.target.value)}
+              />
+            </InputGroup>
 
             {/* Row 3: source + courseType */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className={labelCls}>Manba</label>
-                <select className={selectCls} value={form.source} onChange={(e) => set("source", e.target.value)}>
-                  <option value="">Manba tanlang</option>
-                  {sources.map((s) => <option key={s._id} value={s._id}>{s.label}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className={labelCls}>Kurs turi</label>
-                <select className={selectCls} value={form.courseType} onChange={(e) => set("courseType", e.target.value)}>
-                  <option value="">Kurs turi</option>
-                  {courseTypes.map((c) => <option key={c._id} value={c._id}>{c.label}</option>)}
-                </select>
-              </div>
-            </div>
+            <InputGroup>
+              <SelectField
+                name="source"
+                label="Manba"
+                options={sources.map((s) => ({ value: s._id, label: s.label }))}
+                value={form.source}
+                onChange={(val) => set("source", val)}
+                placeholder="Manba tanlang"
+              />
+              <SelectField
+                name="courseType"
+                label="Kurs turi"
+                options={courseTypes.map((c) => ({ value: c._id, label: c.label }))}
+                value={form.courseType}
+                onChange={(val) => set("courseType", val)}
+                placeholder="Kurs turi"
+              />
+            </InputGroup>
 
             {/* Row 4: interest + level */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className={labelCls}>Qiziqishi</label>
-                <select className={selectCls} value={form.interest} onChange={(e) => set("interest", e.target.value)}>
-                  <option value="">Qiziqish tanlang</option>
-                  {interests.map((i) => <option key={i._id} value={i._id}>{i.label}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className={labelCls}>Daraja</label>
-                <input className={inputCls} placeholder="Boshlang'ich, o'rta..." value={form.level} onChange={(e) => set("level", e.target.value)} />
-              </div>
-            </div>
+            <InputGroup>
+              <SelectField
+                name="interest"
+                label="Qiziqishi"
+                options={interests.map((i) => ({ value: i._id, label: i.label }))}
+                value={form.interest}
+                onChange={(val) => set("interest", val)}
+                placeholder="Qiziqish tanlang"
+              />
+              <InputField
+                name="level"
+                label="Daraja"
+                placeholder="Boshlang'ich, o'rta..."
+                value={form.level}
+                onChange={(e) => set("level", e.target.value)}
+              />
+            </InputGroup>
 
             {/* Status */}
             <div>
-              <label className={labelCls}>Holat</label>
+              <p className="block text-xs font-medium text-gray-600 mb-1">Holat</p>
               <div className="flex flex-wrap gap-2">
                 {CREATE_STATUS_OPTIONS.map((o) => (
-                  <button
+                  <Button
                     key={o.value}
                     type="button"
+                    variant={form.status === o.value ? "default" : "outline"}
+                    size="sm"
                     onClick={() => set("status", o.value)}
-                    className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${
-                      form.status === o.value
-                        ? "bg-brown-800 text-white border-brown-800"
-                        : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
-                    }`}
+                    className="rounded-full text-xs"
                   >
                     {o.label}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
 
             {/* Notes */}
             <div>
-              <label className={labelCls}>Izoh</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Izoh</label>
               <textarea
                 className="w-full px-3 py-2 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-brown-800 placeholder:text-gray-400 resize-none"
                 placeholder="Qo'shimcha izoh..."
@@ -197,20 +219,12 @@ const CreateLeadModal = ({ open, onClose }) => {
 
           {/* Footer */}
           <div className="px-6 py-4 border-t border-gray-100 flex justify-end gap-2">
-            <button
-              type="button"
-              onClick={handleClose}
-              className="text-sm px-4 py-2 border border-gray-200 text-gray-600 rounded-md hover:bg-gray-50"
-            >
+            <Button type="button" variant="outline" onClick={handleClose}>
               Bekor qilish
-            </button>
-            <button
-              type="submit"
-              disabled={createMut.isPending}
-              className="text-sm px-4 py-2 bg-brown-800 text-white rounded-md hover:bg-brown-700 disabled:opacity-60"
-            >
+            </Button>
+            <Button type="submit" disabled={createMut.isPending}>
               {createMut.isPending ? "Saqlanmoqda..." : "Saqlash"}
-            </button>
+            </Button>
           </div>
         </form>
       </DialogContent>

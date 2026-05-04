@@ -11,6 +11,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shared/components/shadcn/dialog";
+import Button from "@/shared/components/ui/button/Button";
+import SelectField from "@/shared/components/ui/select/SelectField";
 
 const CancelLeadModal = ({ lead, open, onClose }) => {
   const qc = useQueryClient();
@@ -72,43 +74,35 @@ const CancelLeadModal = ({ lead, open, onClose }) => {
           </p>
 
           {reasons.length > 0 && (
-            <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1.5">
-                Sabab <span className="text-gray-400 font-normal">(ixtiyoriy)</span>
-              </label>
-              <select
-                value={reasonId}
-                onChange={(e) => setReasonId(e.target.value)}
-                className="w-full h-9 px-3 text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-red-300 text-gray-700"
-              >
-                <option value="">Sabab tanlang...</option>
-                {reasons.map((r) => (
-                  <option key={r._id} value={r._id}>
-                    {r.title}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <SelectField
+              name="rejectionReason"
+              label="Sabab"
+              description="(ixtiyoriy)"
+              options={reasons.map((r) => ({ value: r._id, label: r.title }))}
+              value={reasonId}
+              onChange={(val) => setReasonId(val)}
+              placeholder="Sabab tanlang..."
+            />
           )}
         </div>
 
         <div className="px-6 py-4 border-t border-gray-100 flex justify-end gap-2">
-          <button
+          <Button
             type="button"
+            variant="outline"
             onClick={handleClose}
             disabled={cancelMut.isPending}
-            className="text-sm px-4 py-2 border border-gray-200 text-gray-600 rounded-md hover:bg-gray-50 disabled:opacity-60 transition-colors"
           >
             Orqaga
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="danger"
             onClick={() => cancelMut.mutate()}
             disabled={cancelMut.isPending}
-            className="text-sm px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-60 transition-colors font-medium"
           >
             {cancelMut.isPending ? "Saqlanmoqda..." : "Bekor qilish"}
-          </button>
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
