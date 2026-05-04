@@ -3,39 +3,40 @@
 @tailwind utilities;
 
 @layer base {
+
   :root {
     /* ── Core ──────────────────────────────────── */
-    --background:          0 0% 100%;          /* white */
-    --foreground:          20 6% 10%;          /* near-black warm */
+    --background: 0 0% 100%; /* white */
+    --foreground: 20 6% 10%; /* near-black warm */
 
-    --card:                0 0% 100%;
-    --card-foreground:     20 6% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 20 6% 10%;
 
-    --popover:             0 0% 100%;
-    --popover-foreground:  20 6% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 6% 10%;
 
-    /* ── Brand: brown-800 as primary ──────────── */
-    --primary:             12 26% 32%;         /* brown-800 #65443c */
-    --primary-foreground:  0 0% 100%;
+    /* ── Brand: brown-800  as primary ──────────── */
+    --primary: 33 33% 35%; /* #755b3b */
+    --primary-foreground: 0 0% 100%;
 
     /* ── Surfaces ─────────────────────────────── */
-    --secondary:           18 63% 98%;         /* brown-50 #fdf8f6 */
-    --secondary-text:      20 6% 10%;
+    --secondary: 18 63% 98%; /* brown-50 #fdf8f6 */
+    --secondary-text: 20 6% 10%;
     --secondary-foreground: 20 6% 10%;
 
-    --muted:               18 63% 98%;
-    --muted-foreground:    20 8% 46%;
+    --muted: 18 63% 98%;
+    --muted-foreground: 20 8% 46%;
 
-    --accent:              18 63% 98%;
-    --accent-foreground:   20 6% 10%;
+    --accent: 18 63% 98%;
+    --accent-foreground: 20 6% 10%;
 
     /* ── Semantic ─────────────────────────────── */
-    --destructive:         0 72% 42%;
+    --destructive: 0 72% 42%;
     --destructive-foreground: 0 0% 98%;
 
-    --border:              220 13% 91%;        /* #E5E7EB */
-    --input:               220 13% 91%;
-    --ring:                17 18% 50%;         /* brown-700 */
+    --border: 220 13% 91%; /* #E5E7EB */
+    --input: 220 13% 91%;
+    --ring: 17 18% 50%; /* brown-700 */
 
     --radius: 0px;
 
@@ -44,22 +45,22 @@
     --chart-2: 17 18% 50%;
     --chart-3: 18 20% 54%;
     --chart-4: 19 31% 88%;
-    --chart-5: 7  28% 12%;
+    --chart-5: 7 28% 12%;
 
     /* ── Semantic colors ──────────────────────── */
-    --success:             160 84% 39%;        /* #10B981 green-500 */
-    --warning:              38 92% 50%;        /* #F59E0B amber-500 */
-    --danger:                0 84% 60%;        /* #EF4444 red-500   */
+    --success: 160 84% 39%; /* #10B981 green-500 */
+    --warning: 38 92% 50%; /* #F59E0B amber-500 */
+    --danger: 0 84% 60%; /* #EF4444 red-500   */
 
     /* ── Sidebar: brown-900 luxury dark ───────── */
-    --sidebar-background:          7 28% 12%;  /* brown-900 #271816 */
-    --sidebar-foreground:          20 20% 88%;
-    --sidebar-primary:             20 20% 88%;
-    --sidebar-primary-foreground:  7 28% 12%;
-    --sidebar-accent:              12 26% 19%;
-    --sidebar-accent-foreground:   20 20% 88%;
-    --sidebar-border:              12 22% 16%;
-    --sidebar-ring:                17 18% 50%;
+    --sidebar-background: 7 28% 12%; /* brown-900 #271816 */
+    --sidebar-foreground: 20 20% 88%;
+    --sidebar-primary: 20 20% 88%;
+    --sidebar-primary-foreground: 7 28% 12%;
+    --sidebar-accent: 12 26% 19%;
+    --sidebar-accent-foreground: 20 20% 88%;
+    --sidebar-border: 12 22% 16%;
+    --sidebar-ring: 17 18% 50%;
   }
 
   .dark {
