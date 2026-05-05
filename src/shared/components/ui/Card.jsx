@@ -9,6 +9,7 @@ const Card = ({
   children,
   title = "",
   icon = null,
+  headerRight = null,
   className = "",
   responsive = false,
 }) => {
@@ -22,10 +23,13 @@ const Card = ({
         className,
       )}
     >
-      {title && (
-        <div className="flex items-center gap-2 xs:gap-3 mb-3">
-          {icon && icon}
-          <h2 className="text-sm font-semibold text-gray-900">{title}</h2>
+      {(title || headerRight) && (
+        <div className="flex items-center justify-between gap-2 xs:gap-3 mb-3">
+          <div className="flex items-center gap-2">
+            {icon && icon}
+            {title && <h2 className="text-sm font-semibold text-gray-900">{title}</h2>}
+          </div>
+          {headerRight && <div className="shrink-0">{headerRight}</div>}
         </div>
       )}
       {children}

@@ -67,7 +67,7 @@ const EditForm = ({ lead, sources, courseTypes, interests, onSave, onCancel, isP
   const [form, setForm] = useState({
     firstName:  lead.firstName  ?? "",
     lastName:   lead.lastName   ?? "",
-    phone:      lead.phone      ?? "",
+    phone:      lead.phone != null ? String(lead.phone) : "",
     age:        lead.age        ?? "",
     gender:     lead.gender     ?? "",
     source:     resolveId(lead.source),

@@ -2,9 +2,10 @@ import { useState } from "react";
 
 import {
   AreaChart, Area,
+  BarChart, Bar,
   LineChart, Line,
   PieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   ResponsiveContainer,
 } from "recharts";
 
@@ -30,7 +31,7 @@ import {
   GraduationCap, TrendingUp, Activity, Wallet,
   Users, UserPlus, CreditCard, CheckCircle2,
   XCircle, BarChart2, AlertCircle, Calendar,
-  ArrowUpRight,
+  ArrowUpRight, BookOpen, LogOut, Banknote,
 } from "lucide-react";
 
 // ─── constants ────────────────────────────────────────────────────────────────
@@ -38,6 +39,16 @@ import {
 const GRID  = { stroke: "#F3F4F6", strokeDasharray: "3 3" };
 const TICK  = { fontSize: 11, fill: "#9CA3AF" };
 const TT    = TOOLTIP_STYLE;
+
+const AGE_BUCKET_COLORS = ["#3b82f6", "#22c55e", "#f59e0b", "#f97316", "#8b5cf6"];
+const UZ_MONTHS = ["Yan","Fev","Mar","Apr","May","Iyn","Iyl","Avg","Sen","Okt","Noy","Dek"];
+
+const DROPOUT_PERIOD_OPTIONS = [
+  { value: "1m", label: "1 oy" },
+  { value: "3m", label: "3 oy" },
+  { value: "6m", label: "6 oy" },
+  { value: "1y", label: "1 yil" },
+];
 
 const PRESETS = [
   { label: "Bu oy",    getDates: () => { const n = new Date(); return { startDate: `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-01`, endDate: "" }; } },
@@ -191,6 +202,8 @@ const DateFilter = ({ value, onChange }) => {
 
 const StatisticsPage = () => {
   const [dateRange, setDateRange] = useState({ startDate: "", endDate: "" });
+  const [dropoutPeriod, setDropoutPeriod] = useState("1y");
+  const financeYear = new Date().getFullYear();
 
   const params = {
     ...(dateRange.startDate && { startDate: dateRange.startDate }),
@@ -228,6 +241,27 @@ const StatisticsPage = () => {
   const { data: attendance, isLoading: al } = useAppQuery({
     queryKey: ["statistics", "attendance", params],
     queryFn:  () => statisticsAPI.getAttendance(params),
+    select:   (r) => r.data,
+    staleTime: 60_000,
+  });
+
+  const { data: courseAge, isLoading: cal } = useAppQuery({
+    queryKey: ["statistics", "courseAge", params],
+    queryFn:  () => statisticsAPI.getCourseAge(params),
+    select:   (r) => r.data,
+    staleTime: 60_000,
+  });
+
+  const { data: dropout, isLoading: dol } = useAppQuery({
+    queryKey: ["statistics", "dropout", dropoutPeriod],
+    queryFn:  () => statisticsAPI.getDropoutReasons({ period: dropoutPeriod }),
+    select:   (r) => r.data,
+    staleTime: 60_000,
+  });
+
+  const { data: finance, isLoading: fl } = useAppQuery({
+    queryKey: ["statistics", "finance", financeYear],
+    queryFn:  () => statisticsAPI.getFinance({ year: financeYear }),
     select:   (r) => r.data,
     staleTime: 60_000,
   });
@@ -434,6 +468,46 @@ const totalAtt    = (attendance?.overall?.total ?? 0);
         </div>
       </div>
 
+      {/* ── 5a. Finance overview ───────────────────────────────────────── */}
+      <div>
+        <SecHeader icon={Banknote} title="Moliyaviy xarajatlar" sub={`${financeYear} yil — maosh, avans, ushlab qolishlar`} />
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+          <KpiCard loading={fl} label="Jami maosh to'landi"   value={formatMoneyFull(finance?.totals?.salaryPaid)}  icon={Banknote}    color="green" />
+          <KpiCard loading={fl} label="Jami avanslar"         value={formatMoneyFull(finance?.totals?.advances)}    icon={Wallet}      color="amber" />
+          <KpiCard loading={fl} label="Jami ushlab qolishlar" value={formatMoneyFull(finance?.totals?.deductions)}  icon={AlertCircle} color="red"   />
+        </div>
+
+        <Card title={`Oylik moliyaviy xarajatlar (${financeYear})`} className="h-72">
+          {fl ? <CardLoader h={220} /> : !(finance?.months?.some(m => m.salaryPaid > 0 || m.advances > 0)) ? <Empty /> : (
+            <>
+              <div className="flex items-center gap-4 mb-3">
+                <Legend_ color={CHART_COLORS.green}  label="Maosh" />
+                <Legend_ color={CHART_COLORS.amber}  label="Avans" />
+                <Legend_ color={CHART_COLORS.red}    label="Ushlab qolish" />
+              </div>
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={finance.months.map(m => ({ ...m, label: UZ_MONTHS[m.month - 1] }))}
+                  margin={{ top: 4, right: 16, left: -8, bottom: 8 }}>
+                  <CartesianGrid vertical={false} {...GRID} />
+                  <XAxis dataKey="label" axisLine={false} tickLine={false} dy={10} tick={TICK} />
+                  <YAxis axisLine={false} tickLine={false} tick={TICK} tickFormatter={(v) => v >= 1_000_000 ? `${(v/1_000_000).toFixed(1)}M` : v >= 1000 ? `${(v/1000).toFixed(0)}K` : v} />
+                  <Tooltip contentStyle={TT.contentStyle} labelStyle={TT.labelStyle}
+                    formatter={(v, n) => [
+                      `${Number(v).toLocaleString("uz-UZ")} so'm`,
+                      n === "salaryPaid" ? "Maosh" : n === "advances" ? "Avans" : "Ushlab qolish",
+                    ]}
+                  />
+                  <Bar dataKey="salaryPaid"  fill={CHART_COLORS.green} radius={[3,3,0,0]} />
+                  <Bar dataKey="advances"    fill={CHART_COLORS.amber} radius={[3,3,0,0]} />
+                  <Bar dataKey="deductions"  fill={CHART_COLORS.red}   radius={[3,3,0,0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </>
+          )}
+        </Card>
+      </div>
+
       {/* ── 5. Attendance ──────────────────────────────────────────────── */}
       <div>
         <SecHeader icon={Activity} title="Davomat tahlili" sub="Qatnashish tendensiyasi va guruh bo'yicha ko'rsatkichlar" />
@@ -520,6 +594,75 @@ const totalAtt    = (attendance?.overall?.total ?? 0);
             </Card>
           </div>
         </div>
+      </div>
+
+      {/* ── 6. Course demand by age ────────────────────────────────────── */}
+      <div>
+        <SecHeader icon={BookOpen} title="Kurs turlari bo'yicha yosh talabi" sub="Qaysi kursga necha yoshdan ko'proq murojaat" />
+
+        <Card title="Kurs turiga qarab yosh taqsimoti" className="h-80">
+          {cal ? <CardLoader h={260} /> : !(courseAge?.byCourseType?.length) ? <Empty /> : (
+            <ResponsiveContainer width="100%" height={260}>
+              <BarChart data={courseAge.byCourseType} margin={{ top: 4, right: 16, left: -8, bottom: 8 }}>
+                <CartesianGrid vertical={false} {...GRID} />
+                <XAxis dataKey="courseType" axisLine={false} tickLine={false} dy={10} tick={TICK} />
+                <YAxis axisLine={false} tickLine={false} tick={TICK} allowDecimals={false} />
+                <Tooltip contentStyle={TT.contentStyle} labelStyle={TT.labelStyle} />
+                <Legend wrapperStyle={{ fontSize: 11, color: "#9CA3AF", paddingTop: 8 }} />
+                {(courseAge.ageBuckets ?? []).map((bucket, i) => (
+                  <Bar key={bucket} dataKey={bucket} fill={AGE_BUCKET_COLORS[i % AGE_BUCKET_COLORS.length]}
+                    radius={[3,3,0,0]} maxBarSize={24} />
+                ))}
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+        </Card>
+      </div>
+
+      {/* ── 7. Dropout reasons ─────────────────────────────────────────── */}
+      <div>
+        <SecHeader icon={LogOut} title="Guruhdan chiqib ketish sabablari"
+          sub="Qaysi sabablar bilan o'quvchilar kursni tark etmoqda" />
+
+        <Card
+          title="Tashlab ketish sabablari"
+          headerRight={
+            <div className="flex gap-1 border border-gray-200 rounded-md p-0.5">
+              {DROPOUT_PERIOD_OPTIONS.map((opt) => (
+                <button key={opt.value} onClick={() => setDropoutPeriod(opt.value)}
+                  className={`px-2.5 py-1 text-xs font-medium rounded transition-colors ${
+                    dropoutPeriod === opt.value ? "bg-gray-900 text-white" : "text-gray-500 hover:text-gray-800"
+                  }`}>
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          }
+          className="h-80"
+        >
+          {dol ? <CardLoader h={240} /> : !(dropout?.byReason?.length) ? (
+            <Empty text="Bu davr uchun ma'lumot yo'q" />
+          ) : (
+            <>
+              <p className="text-xs text-gray-400 mb-3">
+                Jami {dropout.total} ta tashlab ketish, shu jumladan sababli: {dropout.byReason.reduce((s,r)=>s+r.count,0)} ta
+              </p>
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={dropout.byReason} layout="vertical"
+                  margin={{ top: 4, right: 40, left: 0, bottom: 4 }}>
+                  <CartesianGrid horizontal={false} {...GRID} />
+                  <XAxis type="number" axisLine={false} tickLine={false} tick={TICK} allowDecimals={false} />
+                  <YAxis type="category" dataKey="reason" axisLine={false} tickLine={false}
+                    tick={{ fontSize: 11, fill: "#6B7280" }} width={140} />
+                  <Tooltip contentStyle={TT.contentStyle} labelStyle={TT.labelStyle}
+                    formatter={(v) => [v, "Soni"]} />
+                  <Bar dataKey="count" fill={CHART_COLORS.red} radius={[0,3,3,0]} maxBarSize={20}
+                    label={{ position: "right", fontSize: 11, fill: "#6B7280" }} />
+                </BarChart>
+              </ResponsiveContainer>
+            </>
+          )}
+        </Card>
       </div>
 
     </div>

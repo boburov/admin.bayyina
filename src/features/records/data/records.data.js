@@ -29,6 +29,8 @@ export const eventTypeLabel = {
   SALARY_UPDATED:          "Maosh yangilandi",
   SALARY_PAID:             "Maosh to'landi",
   SALARY_DELETED:          "Maosh o'chirildi",
+  DEDUCTION_CONFIRMED:     "Ushlab qolish tasdiqlandi",
+  ADVANCE_CONFIRMED:       "Avans tasdiqlandi",
 };
 
 export const entityTypeLabel = {
@@ -38,8 +40,10 @@ export const entityTypeLabel = {
   Group:      "Guruh",
   Payment:    "To'lov",
   Attendance: "Davomat",
-  Salary:     "Maosh",
-  System:     "Tizim",
+  Salary:          "Maosh",
+  SalaryDeduction: "Ushlab qolish",
+  SalaryAdvance:   "Avans",
+  System:          "Tizim",
 };
 
 export const actorRoleLabel = {
@@ -82,6 +86,8 @@ export const eventTypeConfig = {
   SALARY_UPDATED:          { color: "amber", icon: "Edit"          },
   SALARY_PAID:             { color: "green", icon: "BadgeCheck"    },
   SALARY_DELETED:          { color: "red",   icon: "Trash2"        },
+  DEDUCTION_CONFIRMED:     { color: "red",   icon: "Banknote"      },
+  ADVANCE_CONFIRMED:       { color: "green", icon: "Banknote"      },
 };
 
 export const colorStyles = {
@@ -135,6 +141,8 @@ export const eventTypeFilterOptions = [
   { value: "SALARY_PAID",          label: "Maosh to'landi"            },
   { value: "SALARY_UPDATED",       label: "Maosh yangilandi"          },
   { value: "SALARY_DELETED",       label: "Maosh o'chirildi"          },
+  { value: "DEDUCTION_CONFIRMED",  label: "Ushlab qolish tasdiqlandi" },
+  { value: "ADVANCE_CONFIRMED",    label: "Avans tasdiqlandi"         },
   { value: "ATTENDANCE_MARKED",    label: "Davomat belgilandi"        },
   { value: "ATTENDANCE_UPDATED",   label: "Davomat yangilandi"        },
   { value: "ATTENDANCE_DELETED",   label: "Davomat o'chirildi"        },
@@ -145,11 +153,13 @@ export const entityTypeFilterOptions = [
   { value: "Payment",    label: "To'lov"                },
   { value: "User",       label: "O'quvchi / O'qituvchi" },
   { value: "Group",      label: "Guruh"                 },
-  { value: "Salary",     label: "Maosh"                 },
-  { value: "Lead",       label: "Murojaat"              },
-  { value: "Enrollment", label: "Ro'yxatga olish"       },
-  { value: "Attendance", label: "Davomat"               },
-  { value: "System",     label: "Tizim"                 },
+  { value: "Salary",          label: "Maosh"             },
+  { value: "SalaryDeduction", label: "Ushlab qolish"     },
+  { value: "SalaryAdvance",   label: "Avans"             },
+  { value: "Lead",            label: "Murojaat"          },
+  { value: "Enrollment",      label: "Ro'yxatga olish"   },
+  { value: "Attendance",      label: "Davomat"           },
+  { value: "System",          label: "Tizim"             },
 ];
 
 const today     = () => { const d = new Date(); d.setHours(0,0,0,0); return d; };

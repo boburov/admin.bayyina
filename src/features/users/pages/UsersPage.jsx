@@ -36,7 +36,11 @@ import InputGroup from "@/shared/components/ui/input/InputGroup";
 import SelectField from "@/shared/components/ui/select/SelectField";
 
 // Icons
-import { Plus, Edit, Trash2, Key, Eye, Users, Search, X } from "lucide-react";
+import { Plus, Edit, Trash2, Key, Eye, Users, Search, X, History } from "lucide-react";
+
+// Modals
+import StudentHistoryModal from "@/features/users/components/StudentHistoryModal";
+import RecordDetailModal   from "@/features/records/components/RecordDetailModal";
 
 const UsersPage = () => {
   const { user: currentUser } = useAuth();
@@ -144,6 +148,9 @@ const UsersPage = () => {
 
   return (
     <div>
+      <StudentHistoryModal />
+      <RecordDetailModal />
+
       {/* Page header */}
       <div className="mb-5 pb-4 border-b border-border">
         <h1 className="page-title">O'quvchilar</h1>
@@ -276,6 +283,15 @@ const UsersPage = () => {
                   </td>
                   <td className="text-center">
                     <div className="flex justify-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => openModal("studentHistory", user)}
+                        className="text-gray-500 hover:text-indigo-600"
+                        title="Tarix"
+                      >
+                        <History className="size-4" strokeWidth={1.5} />
+                      </Button>
                       <Button
                         variant="ghost"
                         size="icon"
