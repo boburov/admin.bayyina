@@ -182,6 +182,7 @@ const Content = ({
         );
       }
       qc.invalidateQueries({ queryKey: ["group-detail"] });
+      qc.invalidateQueries({ queryKey: ["users"] });
       close();
     } catch (err) {
       toast.error(err.response?.data?.message || "Xatolik yuz berdi");

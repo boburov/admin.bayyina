@@ -87,6 +87,7 @@ const initialState = {
   // Records
   recordDetail: initialModalData,
   studentHistory: initialModalData,
+  studentDetail: initialModalData,
 
   // Enrollments
   setEnrollmentDiscount: initialModalData,
@@ -96,6 +97,7 @@ const initialState = {
 
   // Payments
   createPayment: initialModalData,
+  markPaymentPaid: initialModalData,
 
   // Notifications
   sendNotification: initialModalData,

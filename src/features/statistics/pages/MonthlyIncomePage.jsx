@@ -14,7 +14,7 @@ import Card from "@/shared/components/ui/Card";
 import { Skeleton } from "@/shared/components/shadcn/skeleton";
 import {
   TrendingUp, Wallet, CalendarDays, CreditCard,
-  ChevronLeft, ChevronRight, BarChart2,
+  ChevronLeft, ChevronRight, BarChart2, Users, TrendingDown,
 } from "lucide-react";
 
 const UZ_MONTHS = [
@@ -43,28 +43,28 @@ const EmptyState = () => (
 
 const KPICard = ({ label, value, sub, icon: Icon, color, loading }) => {
   const cfg = {
-    green:  { bg: "bg-green-50",  text: "text-green-700",  icon: "text-green-500",  border: "border-green-100" },
-    blue:   { bg: "bg-blue-50",   text: "text-blue-700",   icon: "text-blue-500",   border: "border-blue-100" },
-    amber:  { bg: "bg-amber-50",  text: "text-amber-700",  icon: "text-amber-500",  border: "border-amber-100" },
-    purple: { bg: "bg-purple-50", text: "text-purple-700", icon: "text-purple-500", border: "border-purple-100" },
-  }[color] ?? {};
+    green:  { accent: "bg-green-500",  text: "text-green-700",  soft: "bg-green-50",  border: "border-green-100" },
+    blue:   { accent: "bg-blue-500",   text: "text-blue-700",   soft: "bg-blue-50",   border: "border-blue-100"  },
+    amber:  { accent: "bg-amber-500",  text: "text-amber-700",  soft: "bg-amber-50",  border: "border-amber-100" },
+    purple: { accent: "bg-purple-500", text: "text-purple-700", soft: "bg-purple-50", border: "border-purple-100"},
+  }[color] ?? { accent: "bg-gray-400", text: "text-gray-700", soft: "bg-gray-50", border: "border-gray-100" };
 
   return (
-    <div className={`relative overflow-hidden bg-white border ${cfg.border} rounded-2xl p-5 shadow-sm hover:shadow-md transition-all`}>
-      <div className="flex justify-between items-start">
-        <div className="space-y-3">
-          <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">{label}</p>
-          {loading ? (
-            <Skeleton className="h-8 w-28 rounded-lg" />
-          ) : (
-            <h3 className={`text-2xl font-black ${cfg.text} tracking-tight tabular-nums`}>{value}</h3>
-          )}
-          {sub && !loading && <p className="text-[10px] text-gray-400 font-medium">{sub}</p>}
-        </div>
-        <div className={`${cfg.bg} ${cfg.icon} p-2.5 rounded-xl`}>
-          <Icon size={20} strokeWidth={1.5} />
+    <div className={`bg-white border ${cfg.border} rounded-xl p-4 flex flex-col gap-3`}>
+      <div className="flex items-center justify-between">
+        <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider leading-none">{label}</p>
+        <div className={`${cfg.soft} p-1.5 rounded-lg`}>
+          <Icon size={15} strokeWidth={1.5} className={cfg.text} />
         </div>
       </div>
+      {loading ? (
+        <Skeleton className="h-7 w-28 rounded" />
+      ) : (
+        <p className={`text-xl font-bold ${cfg.text} tabular-nums leading-none`}>{value}</p>
+      )}
+      {sub && !loading && (
+        <p className="text-[10px] text-gray-400 leading-none">{sub}</p>
+      )}
     </div>
   );
 };
@@ -80,9 +80,11 @@ const MonthlyIncomePage = () => {
     staleTime: 60_000,
   });
 
-  const months     = data?.months     ?? [];
-  const summary    = data?.summary    ?? {};
-  const bestMonth  = summary.bestMonth;
+  const months      = data?.months     ?? [];
+  const summary     = data?.summary    ?? {};
+  const bestMonth   = summary.bestMonth;
+  const totalSalaries  = summary.totalSalaries   ?? 0;
+  const totalNetProfit = summary.totalNetProfit  ?? 0;
 
   const chartData = useMemo(() =>
     months.map((m) => ({
@@ -128,7 +130,7 @@ const MonthlyIncomePage = () => {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
         <KPICard
           loading={isLoading}
           label="Yillik jami tushum"
@@ -136,6 +138,22 @@ const MonthlyIncomePage = () => {
           icon={Wallet}
           color="green"
           sub={`${year}-yil uchun`}
+        />
+        <KPICard
+          loading={isLoading}
+          label="O'qituvchilarga"
+          value={formatMoneyFull(totalSalaries)}
+          icon={Users}
+          color="amber"
+          sub="Oyliklar jami"
+        />
+        <KPICard
+          loading={isLoading}
+          label="Sof foyda"
+          value={formatMoneyFull(totalNetProfit)}
+          icon={totalNetProfit >= 0 ? TrendingUp : TrendingDown}
+          color={totalNetProfit >= 0 ? "purple" : "amber"}
+          sub="Tushum − oyliklar"
         />
         <KPICard
           loading={isLoading}
@@ -206,6 +224,8 @@ const MonthlyIncomePage = () => {
               <tr className="bg-gray-50 text-left">
                 <th className="px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-wider">Oy</th>
                 <th className="px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-wider text-right">To&apos;langan</th>
+                <th className="px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-wider text-right">O&apos;qituvchilarga</th>
+                <th className="px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-wider text-right">Sof foyda</th>
                 <th className="px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-wider text-right">To&apos;lov soni</th>
                 <th className="px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-wider text-right">Kutilmoqda</th>
                 <th className="px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-wider text-right">Muddati o&apos;tgan</th>
@@ -217,6 +237,8 @@ const MonthlyIncomePage = () => {
                     <tr key={i}>
                       <td className="px-6 py-3.5"><Skeleton className="h-4 w-20 rounded" /></td>
                       <td className="px-6 py-3.5 text-right"><Skeleton className="h-4 w-24 rounded ml-auto" /></td>
+                      <td className="px-6 py-3.5 text-right"><Skeleton className="h-4 w-24 rounded ml-auto" /></td>
+                      <td className="px-6 py-3.5 text-right"><Skeleton className="h-4 w-24 rounded ml-auto" /></td>
                       <td className="px-6 py-3.5 text-right"><Skeleton className="h-4 w-10 rounded ml-auto" /></td>
                       <td className="px-6 py-3.5 text-right"><Skeleton className="h-4 w-24 rounded ml-auto" /></td>
                       <td className="px-6 py-3.5 text-right"><Skeleton className="h-4 w-24 rounded ml-auto" /></td>
@@ -224,6 +246,7 @@ const MonthlyIncomePage = () => {
                   ))
                 : months.map((m, i) => {
                     const isBest = m.month === bestMonth && m.paid > 0;
+                    const net = m.netProfit ?? (m.paid - (m.teacherSalary ?? 0));
                     return (
                       <tr
                         key={m.month}
@@ -245,6 +268,16 @@ const MonthlyIncomePage = () => {
                         </td>
                         <td className="px-6 py-3.5 text-right font-bold text-green-700 tabular-nums">
                           {m.paid > 0 ? formatMoneyFull(m.paid) : <span className="text-gray-300">—</span>}
+                        </td>
+                        <td className="px-6 py-3.5 text-right tabular-nums">
+                          {(m.teacherSalary ?? 0) > 0
+                            ? <span className="font-semibold text-amber-600">{formatMoneyFull(m.teacherSalary)}</span>
+                            : <span className="text-gray-300">—</span>}
+                        </td>
+                        <td className="px-6 py-3.5 text-right tabular-nums">
+                          {m.paid > 0
+                            ? <span className={`font-bold ${net >= 0 ? "text-purple-700" : "text-red-600"}`}>{formatMoneyFull(net)}</span>
+                            : <span className="text-gray-300">—</span>}
                         </td>
                         <td className="px-6 py-3.5 text-right tabular-nums">
                           {m.paidCount > 0 ? (
@@ -271,6 +304,14 @@ const MonthlyIncomePage = () => {
                   </td>
                   <td className="px-6 py-3.5 text-right font-black text-green-700 tabular-nums">
                     {formatMoneyFull(summary.totalPaid)}
+                  </td>
+                  <td className="px-6 py-3.5 text-right font-black text-amber-600 tabular-nums">
+                    {formatMoneyFull(totalSalaries)}
+                  </td>
+                  <td className="px-6 py-3.5 text-right font-black tabular-nums">
+                    <span className={totalNetProfit >= 0 ? "text-purple-700" : "text-red-600"}>
+                      {formatMoneyFull(totalNetProfit)}
+                    </span>
                   </td>
                   <td className="px-6 py-3.5 text-right font-black text-gray-700 tabular-nums">
                     {summary.totalPayments ?? 0}

@@ -16,13 +16,17 @@ import { paymentsAPI }    from "@/features/payments/api/payments.api";
 import { enrollmentsAPI } from "@/features/enrollments/api/enrollments.api";
 
 // Utils
-import { formatUzDate }   from "@/shared/utils/formatDate";
+import { formatUzDate }    from "@/shared/utils/formatDate";
 import { formatMonthLabel } from "@/features/payments/data/payments.data";
-import { formatPhone }    from "@/shared/utils/formatPhone";
-import { formatMoney }    from "@/shared/utils/formatNumber";
+import { formatPhone }     from "@/shared/utils/formatPhone";
+import { formatMoney }     from "@/shared/utils/formatNumber";
+
+// Hooks
+import useModal from "@/shared/hooks/useModal";
 
 // Components
-import Button from "@/shared/components/ui/button/Button";
+import Button               from "@/shared/components/ui/button/Button";
+import MarkPaymentPaidModal from "@/features/payments/components/MarkPaymentPaidModal";
 
 // Icons
 import {
@@ -34,6 +38,7 @@ import {
   LogOut,
   Wallet,
   TrendingDown,
+  CheckCircle,
 } from "lucide-react";
 
 // ─── Status configs ───────────────────────────────────────────────────────────
@@ -64,6 +69,7 @@ const PaymentStatusBadge = ({ status }) => {
 const UserPaymentsPage = () => {
   const { userId } = useParams();
   const navigate   = useNavigate();
+  const { openModal } = useModal();
 
   const { data: userData } = useQuery({
     queryKey: ["user", userId],
@@ -101,6 +107,7 @@ const UserPaymentsPage = () => {
 
   return (
     <div className="space-y-5">
+      <MarkPaymentPaidModal />
 
       {/* Header */}
       <div className="flex items-center gap-2 pb-4 border-b border-border">
@@ -224,18 +231,19 @@ const UserPaymentsPage = () => {
                 <th>Sana</th>
                 <th>Qabul qilgan</th>
                 <th>Izoh</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
               {paymentsLoading ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-sm text-gray-400">
+                  <td colSpan={8} className="py-12 text-center text-sm text-gray-400">
                     Yuklanmoqda...
                   </td>
                 </tr>
               ) : payments.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-16 text-center">
+                  <td colSpan={8} className="py-16 text-center">
                     <div className="flex flex-col items-center gap-2 text-gray-400">
                       <Receipt className="size-10 opacity-30" strokeWidth={1.5} />
                       <p className="text-sm">To'lovlar topilmadi</p>
@@ -243,31 +251,58 @@ const UserPaymentsPage = () => {
                   </td>
                 </tr>
               ) : (
-                payments.map((p, idx) => (
-                  <tr key={p._id}>
-                    <td className="text-center text-sm text-gray-400">{idx + 1}</td>
-                    <td className="text-center text-sm font-semibold text-gray-900 whitespace-nowrap">
-                      {formatMoney(p.amount)}
-                    </td>
-                    <td className="text-center">
-                      <PaymentStatusBadge status={p.status} />
-                    </td>
-                    <td className="text-center text-sm text-gray-500 whitespace-nowrap">
-                      {p.month ? formatMonthLabel(p.month) : "—"}
-                    </td>
-                    <td className="text-center text-sm text-gray-500 whitespace-nowrap">
-                      {p.paidAt ? formatUzDate(p.paidAt) : "—"}
-                    </td>
-                    <td className="text-center text-sm text-gray-500 whitespace-nowrap">
-                      {p.createdBy
-                        ? `${p.createdBy.firstName} ${p.createdBy.lastName}`
-                        : "—"}
-                    </td>
-                    <td className="text-sm text-gray-400 max-w-[180px] truncate">
-                      {p.note ?? "—"}
-                    </td>
-                  </tr>
-                ))
+                payments.map((p, idx) => {
+                  const isPending = p.status === "pending" || p.status === "overdue";
+                  return (
+                    <tr key={p._id}>
+                      <td className="text-center text-sm text-gray-400">{idx + 1}</td>
+                      <td className="text-center text-sm font-semibold text-gray-900 whitespace-nowrap">
+                        {formatMoney(p.amount)}
+                      </td>
+                      <td className="text-center">
+                        <PaymentStatusBadge status={p.status} />
+                      </td>
+                      <td className="text-center text-sm text-gray-500 whitespace-nowrap">
+                        {p.month ? formatMonthLabel(p.month) : "—"}
+                      </td>
+                      <td className="text-center text-sm text-gray-500 whitespace-nowrap">
+                        {p.paidAt ? formatUzDate(p.paidAt) : "—"}
+                      </td>
+                      <td className="text-center text-sm text-gray-500 whitespace-nowrap">
+                        {p.createdBy
+                          ? `${p.createdBy.firstName} ${p.createdBy.lastName}`
+                          : "—"}
+                      </td>
+                      <td className="text-sm text-gray-400 max-w-[180px] truncate">
+                        {p.note ?? "—"}
+                      </td>
+                      <td className="text-center">
+                        {isPending && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() =>
+                              openModal("markPaymentPaid", {
+                                ...p,
+                                studentName: fullName,
+                                studentPhone: user?.phone,
+                                totalDebt: stats.totalDebt,
+                                refetchKeys: [
+                                  ["payments", "user", userId],
+                                  ["enrollments", "user", userId],
+                                ],
+                              })
+                            }
+                            className="h-7 px-2.5 text-xs border-green-200 text-green-700 bg-green-50 hover:bg-green-100 whitespace-nowrap"
+                          >
+                            <CheckCircle className="size-3" />
+                            To'lash
+                          </Button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>

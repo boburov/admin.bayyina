@@ -36,16 +36,19 @@ import InputGroup from "@/shared/components/ui/input/InputGroup";
 import SelectField from "@/shared/components/ui/select/SelectField";
 
 // Icons
-import { Plus, Edit, Trash2, Key, Eye, Users, Search, X, History } from "lucide-react";
+import { Plus, Edit, Trash2, Key, Eye, Users, X, History, GraduationCap } from "lucide-react";
 
 // Modals
-import StudentHistoryModal from "@/features/users/components/StudentHistoryModal";
-import RecordDetailModal   from "@/features/records/components/RecordDetailModal";
+import StudentHistoryModal   from "@/features/users/components/StudentHistoryModal";
+import StudentDetailModal    from "@/features/users/components/StudentDetailModal";
+import RecordDetailModal     from "@/features/records/components/RecordDetailModal";
+import EnrollmentManageModal from "@/features/classes/components/EnrollmentManageModal";
 
 const UsersPage = () => {
   const { user: currentUser } = useAuth();
   const { openModal } = useModal();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [enrollmentPickerUserId, setEnrollmentPickerUserId] = useState(null);
 
   const currentPage = parseInt(searchParams.get("page") || "1", 10);
   const qParam = searchParams.get("q") || "";
@@ -146,10 +149,29 @@ const UsersPage = () => {
   const getGenderLabel = (gender) =>
     genderOptions.find((g) => g.value === gender)?.label ?? "-";
 
+  const openEnrollmentManage = (user, enrollment) => {
+    setEnrollmentPickerUserId(null);
+    openModal("enrollmentManage", {
+      enrollmentId:        String(enrollment._id),
+      studentName:         `${user.firstName} ${user.lastName}`,
+      currentGroupId:      String(enrollment.group?._id ?? enrollment.group),
+      currentStatus:       enrollment.status || "active",
+      currentDropReasonId: enrollment.dropReason ?? "",
+      studentId:           String(user._id),
+      discount:            enrollment.discount,
+      discountReason:      enrollment.discountReason,
+      paymentDay:          enrollment.paymentDay,
+      debt:                enrollment.debt,
+      balance:             enrollment.balance,
+    });
+  };
+
   return (
     <div>
       <StudentHistoryModal />
+      <StudentDetailModal />
       <RecordDetailModal />
+      <EnrollmentManageModal />
 
       {/* Page header */}
       <div className="mb-5 pb-4 border-b border-border">
@@ -262,7 +284,11 @@ const UsersPage = () => {
               </tr>
             ) : (
               users.map((user) => (
-                <tr key={user._id}>
+                <tr
+                  key={user._id}
+                  onClick={() => openModal("studentDetail", user)}
+                  className="cursor-pointer"
+                >
                   <td className="text-center text-sm font-medium text-gray-900">
                     {user.firstName} {user.lastName}
                   </td>
@@ -281,7 +307,7 @@ const UsersPage = () => {
                   <td className="text-center text-sm text-gray-500">
                     {formatUzDate(user.createdAt)}
                   </td>
-                  <td className="text-center">
+                  <td className="text-center" onClick={(e) => e.stopPropagation()}>
                     <div className="flex justify-center gap-2">
                       <Button
                         variant="ghost"
@@ -292,6 +318,57 @@ const UsersPage = () => {
                       >
                         <History className="size-4" strokeWidth={1.5} />
                       </Button>
+
+                      {/* Enrollment management — per active enrollment */}
+                      {(() => {
+                        const active = (user.enrollments ?? []).filter((e) => e.status === "active");
+                        if (active.length === 0) return null;
+                        if (active.length === 1) {
+                          return (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => openEnrollmentManage(user, active[0])}
+                              className="text-gray-500 hover:text-teal-600"
+                              title="Yozilishni boshqarish"
+                            >
+                              <GraduationCap className="size-4" strokeWidth={1.5} />
+                            </Button>
+                          );
+                        }
+                        return (
+                          <div className="relative">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() =>
+                                setEnrollmentPickerUserId(
+                                  enrollmentPickerUserId === user._id ? null : user._id,
+                                )
+                              }
+                              className="text-gray-500 hover:text-teal-600"
+                              title="Yozilishni boshqarish"
+                            >
+                              <GraduationCap className="size-4" strokeWidth={1.5} />
+                            </Button>
+                            {enrollmentPickerUserId === user._id && (
+                              <div className="absolute right-0 top-full mt-1 z-50 min-w-44 bg-white border border-gray-200 rounded-lg shadow-lg py-1">
+                                {active.map((e) => (
+                                  <button
+                                    key={e._id}
+                                    type="button"
+                                    onClick={() => openEnrollmentManage(user, e)}
+                                    className="w-full text-left px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 truncate"
+                                  >
+                                    {e.group?.name ?? "Guruh"}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })()}
+
                       <Button
                         variant="ghost"
                         size="icon"

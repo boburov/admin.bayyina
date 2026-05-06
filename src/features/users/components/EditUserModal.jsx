@@ -94,11 +94,6 @@ const Content = ({ close, isLoading, setIsLoading, ...user }) => {
   const handleEdit = async (e) => {
     e.preventDefault();
 
-    if (isStudent && selectedGroupIds.length === 0) {
-      toast.warning("Kamida bitta guruh tanlanishi kerak");
-      return;
-    }
-
     setIsLoading(true);
 
     try {
@@ -208,7 +203,7 @@ const Content = ({ close, isLoading, setIsLoading, ...user }) => {
       <div className="flex flex-col gap-1.5">
         <div className="ml-1 flex items-center justify-between">
           <label className="text-sm font-medium text-gray-700">
-            Guruhlar <span className="text-blue-500">*</span>
+            Guruhlar
           </label>
           {selectedGroupIds.length > 0 && (
             <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">

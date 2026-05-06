@@ -399,6 +399,20 @@ const EnrollmentsTab = () => {
 
 // ─── Records Tab ─────────────────────────────────────────────────────────────
 
+const YEAR_OPTIONS = (() => {
+  const currentYear = new Date().getFullYear();
+  return [currentYear - 1, currentYear, currentYear + 1].map((y) => ({ value: String(y), label: String(y) }));
+})();
+
+const MONTH_NUM_OPTIONS = [
+  { value: "01", label: "Yanvar" }, { value: "02", label: "Fevral" },
+  { value: "03", label: "Mart"   }, { value: "04", label: "Aprel"  },
+  { value: "05", label: "May"    }, { value: "06", label: "Iyun"   },
+  { value: "07", label: "Iyul"   }, { value: "08", label: "Avgust" },
+  { value: "09", label: "Sentyabr" }, { value: "10", label: "Oktyabr" },
+  { value: "11", label: "Noyabr" }, { value: "12", label: "Dekabr" },
+];
+
 const RecordsTab = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -406,7 +420,9 @@ const RecordsTab = () => {
   const currentPage = parseInt(searchParams.get("page") || "1", 10);
   const qParam = searchParams.get("q") || "";
   const statusParam = searchParams.get("status") || "";
-  const monthParam = searchParams.get("month") || "";
+  const yearParam  = searchParams.get("year")  || "";
+  const monthNum   = searchParams.get("monthNum") || "";
+  const monthParam = yearParam && monthNum ? `${yearParam}-${monthNum}` : "";
 
   const [inputQ, setInputQ] = useState(qParam);
 
@@ -449,12 +465,26 @@ const RecordsTab = () => {
     [searchParams, setSearchParams],
   );
 
-  const hasFilters = qParam || statusParam || monthParam;
+  const hasFilters = qParam || statusParam || yearParam || monthNum;
 
   const resetFilters = useCallback(() => {
     setInputQ("");
     setSearchParams({ tab: "records", page: "1" });
   }, [setSearchParams]);
+
+  const setYearFilter = useCallback((val) => {
+    const params = new URLSearchParams(searchParams);
+    if (val) { params.set("year", val); } else { params.delete("year"); params.delete("monthNum"); }
+    params.set("page", "1");
+    setSearchParams(params);
+  }, [searchParams, setSearchParams]);
+
+  const setMonthNumFilter = useCallback((val) => {
+    const params = new URLSearchParams(searchParams);
+    if (val) { params.set("monthNum", val); } else { params.delete("monthNum"); }
+    params.set("page", "1");
+    setSearchParams(params);
+  }, [searchParams, setSearchParams]);
 
   const goToPage = useCallback(
     (page) => {
@@ -483,11 +513,6 @@ const RecordsTab = () => {
 
   const payments = data?.payments ?? [];
 
-  const monthFilterOptions = monthOptions.map((o) => ({
-    value: o.value.slice(0, 7),
-    label: o.label,
-  }));
-
   return (
     <>
       {/* Filters */}
@@ -514,12 +539,24 @@ const RecordsTab = () => {
         </select>
 
         <select
-          value={monthParam}
-          onChange={(e) => setFilter("month", e.target.value)}
+          value={yearParam}
+          onChange={(e) => setYearFilter(e.target.value)}
           className="py-2 px-3 w-full sm:w-auto text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
         >
-          <option value="">Barcha oy</option>
-          {monthFilterOptions.map((o) => (
+          <option value="">Yil</option>
+          {YEAR_OPTIONS.map((o) => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
+
+        <select
+          value={monthNum}
+          onChange={(e) => setMonthNumFilter(e.target.value)}
+          disabled={!yearParam}
+          className="py-2 px-3 w-full sm:w-auto text-sm border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300 disabled:opacity-50"
+        >
+          <option value="">Oy</option>
+          {MONTH_NUM_OPTIONS.map((o) => (
             <option key={o.value} value={o.value}>{o.label}</option>
           ))}
         </select>

@@ -352,17 +352,15 @@ const LeadDetailModal = ({ lead, open, onClose, onSetStatus, onConvert }) => {
           {/* Non-converted actions */}
           {!isConverted && (
             <div className="space-y-3 pt-1">
-              {!isRejected && (
-                <Button
-                  type="button"
-                  variant="default"
-                  className="w-full bg-green-600 hover:bg-green-700"
-                  onClick={() => { onClose(); onConvert(lead); }}
-                >
-                  <GraduationCap size={16} />
-                  O'quvchi sifatida qabul qilish
-                </Button>
-              )}
+              <Button
+                type="button"
+                variant="default"
+                className="w-full bg-green-600 hover:bg-green-700"
+                onClick={() => { onClose(); onConvert(lead); }}
+              >
+                <GraduationCap size={16} />
+                O'quvchi sifatida qabul qilish
+              </Button>
               <StatusChangeSection lead={lead} onSetStatus={onSetStatus} />
             </div>
           )}

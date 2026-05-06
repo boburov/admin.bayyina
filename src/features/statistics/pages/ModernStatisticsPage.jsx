@@ -377,40 +377,39 @@ const ModernStatisticsPage = () => {
         </div>
       </div>
 
-      {/* ── Section 2b: Lead Deep Analytics ──────────────────────────── */}
+      {/* ── Section 2b: Sotuvlar Tahlili ─────────────────────────────── */}
       <div className="space-y-4">
-        <SectionHeader icon={BarChart2} title="Sotuvlar Chuqur Tahlili" sub="Kurs, yosh, manba va holat funeli bo'yicha" />
+        <SectionHeader icon={BarChart2} title="Sotuvlar Tahlili" sub="Holat funeli, kurs turi, yosh, manba va jins bo'yicha" />
 
-        {/* Status funnel */}
-        <Card className="!p-4 xs:!p-5 border-border">
-          <h3 className="text-xs font-medium text-gray-500 mb-5">Holat Funeli</h3>
-          {ll ? <CardLoader h={140} /> : (
-            <div className="space-y-3">
-              {leadFunnel.map((item) => {
-                const pct = maxFunnelCount > 0 ? Math.round((item.count / maxFunnelCount) * 100) : 0;
-                return (
-                  <div key={item.status} className="flex items-center gap-4">
-                    <span className="text-[11px] font-medium text-gray-500 w-28 shrink-0 truncate">{item.label}</span>
-                    <div className="flex-1 h-6 bg-gray-50  overflow-hidden border border-border">
-                      <div className="h-full  transition-all duration-700 flex items-center px-2.5"
-                        style={{ width: `${Math.max(pct, item.count > 0 ? 3 : 0)}%`, background: item.color }}>
-                        {item.count > 0 && pct > 12 && (
-                          <span className="text-[10px] font-bold text-white leading-none">{item.count}</span>
-                        )}
-                      </div>
-                    </div>
-                    <span className="text-sm font-semibold text-gray-800 tabular-nums w-8 text-right shrink-0">{item.count}</span>
+        {/* Status funnel — clean rectangular KPI row */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          {ll
+            ? Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="bg-white border border-border p-4 animate-pulse">
+                  <div className="h-3 w-16 bg-gray-100 rounded mb-3" />
+                  <div className="h-7 w-10 bg-gray-100 rounded" />
+                </div>
+              ))
+            : leadFunnel.map((item) => (
+                <div key={item.status} className="bg-white border border-border p-4 flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2.5 h-2.5 shrink-0" style={{ background: item.color }} />
+                    <span className="text-[11px] font-medium text-gray-500 truncate">{item.label}</span>
                   </div>
-                );
-              })}
-            </div>
-          )}
-        </Card>
+                  <p className="text-2xl font-bold text-gray-800 tabular-nums leading-none">{item.count}</p>
+                  <div className="h-1 bg-gray-100 overflow-hidden">
+                    <div className="h-full transition-all duration-700"
+                      style={{ width: `${maxFunnelCount > 0 ? Math.max(Math.round((item.count / maxFunnelCount) * 100), item.count > 0 ? 4 : 0) : 0}%`, background: item.color }} />
+                  </div>
+                </div>
+              ))
+          }
+        </div>
 
         {/* Course type + Age groups */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <Card className="!p-4 xs:!p-5 border-border">
-            <h3 className="text-xs font-medium text-gray-500 mb-5">Kurs Turi Bo'yicha</h3>
+          <div className="bg-white border border-border p-4 xs:p-5">
+            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-5">Kurs Turi Bo'yicha</h3>
             {ll ? <CardLoader h={200} /> : !(leads?.byCourseType?.length) ? <EmptyState /> : (
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={leads.byCourseType} layout="vertical"
@@ -425,10 +424,10 @@ const ModernStatisticsPage = () => {
                 </BarChart>
               </ResponsiveContainer>
             )}
-          </Card>
+          </div>
 
-          <Card className="!p-4 xs:!p-5 border-border">
-            <h3 className="text-xs font-medium text-gray-500 mb-5">Yosh Guruhlari</h3>
+          <div className="bg-white border border-border p-4 xs:p-5">
+            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-5">Yosh Guruhlari</h3>
             {ll ? <CardLoader h={200} /> : !(leads?.byAgeGroup?.some(g => g.count > 0)) ? <EmptyState /> : (
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={leads.byAgeGroup} margin={{ top: 0, right: 10, left: -20, bottom: 0 }}>
@@ -444,13 +443,13 @@ const ModernStatisticsPage = () => {
                 </BarChart>
               </ResponsiveContainer>
             )}
-          </Card>
+          </div>
         </div>
 
         {/* Source + Gender */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <Card className="lg:col-span-2 !p-4 xs:!p-5 border-border">
-            <h3 className="text-xs font-medium text-gray-500 mb-5">Manba Bo'yicha</h3>
+          <div className="lg:col-span-2 bg-white border border-border p-4 xs:p-5">
+            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-5">Manba Bo'yicha</h3>
             {ll ? <CardLoader h={200} /> : !sourceBarData.length ? <EmptyState /> : (
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={sourceBarData} layout="vertical"
@@ -465,10 +464,10 @@ const ModernStatisticsPage = () => {
                 </BarChart>
               </ResponsiveContainer>
             )}
-          </Card>
+          </div>
 
-          <Card className="!p-4 xs:!p-5 border-border">
-            <h3 className="text-xs font-medium text-gray-500 mb-4">Jins Taqsimoti</h3>
+          <div className="bg-white border border-border p-4 xs:p-5">
+            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">Jins Taqsimoti</h3>
             <div className="h-[160px]">
               {ll ? <CardLoader h={160} /> : !(leads?.byGender?.length) ? <EmptyState /> : (
                 <ResponsiveContainer width="100%" height="100%">
@@ -487,20 +486,20 @@ const ModernStatisticsPage = () => {
             <div className="flex justify-center gap-4 mt-2">
               {(leads?.byGender ?? []).map((g, i) => (
                 <div key={i} className="flex items-center gap-1.5">
-                  <div className="w-2 h-2 rounded-full" style={{ background: GENDER_PIE_COLORS[i] }} />
+                  <div className="w-2 h-2" style={{ background: GENDER_PIE_COLORS[i] }} />
                   <span className="text-[10px] font-medium text-gray-500">
                     {GENDER_LABELS[g.gender] ?? g.gender}: {g.count}
                   </span>
                 </div>
               ))}
             </div>
-          </Card>
+          </div>
         </div>
 
         {/* Rejection reasons (conditional) */}
         {(leads?.byRejectionReason?.length > 0) && (
-          <Card className="!p-4 xs:!p-5 border-border">
-            <h3 className="text-xs font-medium text-gray-500 mb-5">Rad Etish Sabablari</h3>
+          <div className="bg-white border border-border p-4 xs:p-5">
+            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-5">Rad Etish Sabablari</h3>
             <ResponsiveContainer width="100%" height={Math.min(leads.byRejectionReason.length * 40 + 16, 220)}>
               <BarChart data={leads.byRejectionReason} layout="vertical"
                 margin={{ top: 0, right: 36, left: 0, bottom: 0 }}>
@@ -513,7 +512,7 @@ const ModernStatisticsPage = () => {
                   label={{ position: "right", fontSize: 10, fill: "#9CA3AF", fontWeight: 600 }} />
               </BarChart>
             </ResponsiveContainer>
-          </Card>
+          </div>
         )}
       </div>
 

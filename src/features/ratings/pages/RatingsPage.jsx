@@ -70,6 +70,7 @@ const RatingsPage = () => {
   const [to,    setTo]       = useState(today);
   const [group, setGroup]    = useState("");
   const [applied, setApplied] = useState({ from: daysAgo(30), to: today, group: "" });
+  const [activePeriod, setActivePeriod] = useState(30);
 
   const { data: statsRes, isLoading, isError, refetch } = useQuery({
     queryKey: ["der-stats", applied],
@@ -112,7 +113,7 @@ const RatingsPage = () => {
             type="date"
             value={from}
             max={to}
-            onChange={(e) => setFrom(e.target.value)}
+            onChange={(e) => { setFrom(e.target.value); setActivePeriod(null); }}
             className="h-9 px-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brown-800"
           />
         </div>
@@ -123,15 +124,19 @@ const RatingsPage = () => {
             value={to}
             min={from}
             max={today}
-            onChange={(e) => setTo(e.target.value)}
+            onChange={(e) => { setTo(e.target.value); setActivePeriod(null); }}
             className="h-9 px-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brown-800"
           />
         </div>
         {periodOptions.map((opt) => (
           <button
             key={opt.from}
-            onClick={() => { setFrom(daysAgo(opt.from)); setTo(today); }}
-            className="h-9 px-3 w-full sm:w-auto text-xs border border-gray-200 rounded-md text-gray-600 hover:bg-gray-50 transition-colors"
+            onClick={() => { setFrom(daysAgo(opt.from)); setTo(today); setActivePeriod(opt.from); }}
+            className={`h-9 px-3 w-full sm:w-auto text-xs rounded-md font-medium transition-colors border ${
+              activePeriod === opt.from
+                ? "border-gray-900 bg-gray-900 text-white"
+                : "border-gray-200 text-gray-600 hover:bg-gray-50"
+            }`}
           >
             {opt.label}
           </button>

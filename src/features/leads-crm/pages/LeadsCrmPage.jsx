@@ -355,7 +355,7 @@ const LeadsCrmPage = () => {
                           onClick={(e) => e.stopPropagation()}
                         >
                           <div className="flex items-center justify-end gap-1.5">
-                            {!isConverted && !isRejected && (
+                            {!isConverted && (
                               <Button
                                 type="button"
                                 variant="outline"
