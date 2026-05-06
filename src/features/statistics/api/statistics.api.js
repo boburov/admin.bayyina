@@ -18,7 +18,8 @@ export const statisticsAPI = {
   getLeadManagers: (params) => http.get("/statistics/leads/managers", { params }),
   getMonthlyIncome:  (params) => http.get("/statistics/monthly-income", { params }),
   getInterestStats:  (params) => http.get("/statistics/interests", { params }),
-  getCourseAge:      (params) => http.get("/statistics/course-age", { params }),
-  getDropoutReasons: (params) => http.get("/statistics/dropout-reasons", { params }),
-  getFinance:        (params) => http.get("/statistics/finance", { params }),
+  getCourseAge:       (params) => http.get("/statistics/course-age", { params }),
+  getDropoutReasons:  (params) => http.get("/statistics/dropout-reasons", { params }),
+  getFinance:         (params) => http.get("/statistics/finance", { params }),
+  getLeadActivity:    (params) => http.get("/statistics/leads/activity", { params }),
 };

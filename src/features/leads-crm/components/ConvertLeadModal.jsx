@@ -20,12 +20,12 @@ const ConvertLeadModal = ({ open, lead, onClose, onSuccess }) => {
   const [passwordInput,  setPasswordInput]   = useState("");
 
   const { data: groupsData, isLoading: groupsLoading } = useQuery({
-    queryKey: ["classes"],
-    queryFn:  () => classesAPI.getAll({ limit: 200 }).then((r) => r.data),
+    queryKey: ["classes", "active"],
+    queryFn:  () => classesAPI.getAll({ limit: 200, isActive: true }).then((r) => r.data),
     enabled:  open,
   });
 
-  const allGroups     = groupsData?.groups ?? [];
+  const allGroups      = (groupsData?.groups ?? []).filter((g) => g.isActive !== false);
   const filteredGroups = allGroups.filter((g) =>
     g.name.toLowerCase().includes(groupSearch.toLowerCase())
   );

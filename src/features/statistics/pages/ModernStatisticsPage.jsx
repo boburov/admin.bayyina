@@ -24,6 +24,10 @@ import {
   LEAD_STATUS_COLORS,
   ENROLLMENT_STATUS_LABELS,
   LEAD_STATUS_LABELS,
+  LEAD_STATUS_FUNNEL_ORDER,
+  LEAD_STATUS_FUNNEL_COLORS,
+  LEAD_EVENT_TYPE_LABELS,
+  AGE_GROUP_COLORS,
   PAYMENT_STATUS_LABELS,
   GENDER_LABELS,
   formatMoney,
@@ -61,14 +65,13 @@ const toISO = (d) => d.toISOString().slice(0, 10);
 // ─── Sub-Components ───────────────────────────────────────────────────────────
 
 const SectionHeader = ({ icon: Icon, title, sub }) => (
-  <div className="flex items-center justify-between mb-6 group">
-    <div className="flex items-center gap-4">
-      <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-white border border-gray-100 shadow-sm text-brown-800 group-hover:scale-110 transition-transform">
-        {Icon && <Icon size={20} strokeWidth={1.5} />}
-      </div>
+  <div className="flex items-center gap-3 mb-5">
+    <div className="w-1 h-5 bg-brown-800 shrink-0" />
+    <div className="flex items-center gap-2">
+      {Icon && <Icon size={15} className="text-brown-800" strokeWidth={1.5} />}
       <div>
-        <h2 className="text-base font-bold text-gray-900 leading-none mb-1.5">{title}</h2>
-        {sub && <p className="text-xs text-gray-400 font-medium">{sub}</p>}
+        <h2 className="text-sm font-semibold text-gray-800">{title}</h2>
+        {sub && <p className="text-xs text-gray-400 mt-0.5">{sub}</p>}
       </div>
     </div>
   </div>
@@ -76,78 +79,72 @@ const SectionHeader = ({ icon: Icon, title, sub }) => (
 
 const KPICard = ({ label, value, sub, icon: Icon, color = "brown", loading, trend }) => {
   const configs = {
-    brown:  { bg: "bg-brown-50",  text: "text-brown-800",  icon: "text-brown-600", border: "border-brown-100" },
-    blue:   { bg: "bg-blue-50",   text: "text-blue-700",   icon: "text-blue-500",  border: "border-blue-100" },
-    green:  { bg: "bg-green-50",  text: "text-green-700",  icon: "text-green-500", border: "border-green-100" },
-    red:    { bg: "bg-red-50",    text: "text-red-700",    icon: "text-red-500",   border: "border-red-100" },
-    purple: { bg: "bg-purple-50", text: "text-purple-700", icon: "text-purple-500", border: "border-purple-100" },
-    amber:  { bg: "bg-amber-50",  text: "text-amber-700",  icon: "text-amber-500", border: "border-amber-100" },
+    brown:  { bg: "bg-brown-50/50",  text: "text-brown-800", icon: "text-brown-600" },
+    blue:   { bg: "bg-blue-50/50",   text: "text-blue-700",  icon: "text-blue-500"  },
+    green:  { bg: "bg-green-50/50",  text: "text-green-700", icon: "text-green-500" },
+    red:    { bg: "bg-red-50/50",    text: "text-red-700",   icon: "text-red-500"   },
+    purple: { bg: "bg-purple-50/50", text: "text-purple-700",icon: "text-purple-500"},
+    amber:  { bg: "bg-amber-50/50",  text: "text-amber-700", icon: "text-amber-500" },
   };
   const c = configs[color] ?? configs.brown;
 
   return (
-    <div className={`relative overflow-hidden bg-white border ${c.border} rounded-2xl p-5 shadow-sm hover:shadow-md transition-all`}>
-      <div className="flex justify-between items-start">
-        <div className="space-y-3">
-          <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">{label}</p>
-          {loading ? (
-            <Skeleton className="h-8 w-24 rounded-lg" />
-          ) : (
-            <div className="flex items-baseline gap-2">
-              <h3 className={`text-2xl font-black ${c.text} tracking-tight tabular-nums`}>{value}</h3>
-              {trend && (
-                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${trend > 0 ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
-                  {trend > 0 ? '+' : ''}{trend}%
-                </span>
-              )}
-            </div>
-          )}
-          {sub && !loading && <p className="text-[10px] text-gray-400 font-medium truncate">{sub}</p>}
-        </div>
-        <div className={`${c.bg} ${c.icon} p-2.5 rounded-xl`}>
-          <Icon size={20} strokeWidth={1.5} />
-        </div>
+    <div className="bg-white border border-border p-4 xs:p-5 flex items-center gap-4">
+      <div className={`${c.bg} ${c.icon} p-3 shrink-0`}>
+        <Icon size={20} strokeWidth={1.5} />
       </div>
-      <div className={`absolute bottom-0 left-0 h-1 w-full ${c.bg} opacity-50`} />
+      <div className="min-w-0 flex-1">
+        <p className="text-xs text-gray-500 truncate">{label}</p>
+        {loading ? (
+          <Skeleton className="h-7 w-28 mt-1" />
+        ) : (
+          <div className="flex items-baseline gap-2 mt-0.5">
+            <p className={`text-2xl font-bold leading-tight ${c.text} tabular-nums`}>{value}</p>
+            {trend && (
+              <span className={`text-[10px] font-semibold px-1.5 py-0.5 ${trend > 0 ? 'bg-green-50/70 text-green-600' : 'bg-red-50/70 text-red-600'}`}>
+                {trend > 0 ? '+' : ''}{trend}%
+              </span>
+            )}
+          </div>
+        )}
+        {sub && !loading && <p className="text-xs text-gray-400 mt-0.5 truncate">{sub}</p>}
+      </div>
     </div>
   );
 };
 
 const CardLoader = ({ h = 200 }) => (
-  <div className="flex flex-col items-center justify-center gap-3" style={{ height: h }}>
-    <div className="relative">
-      <div className="w-10 h-10 rounded-full border-2 border-gray-100" />
-      <div className="absolute top-0 left-0 w-10 h-10 rounded-full border-2 border-t-brown-800 animate-spin" />
-    </div>
-    <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest">Yuklanmoqda</span>
+  <div className="flex items-center justify-center" style={{ height: h }}>
+    <div className="w-6 h-6 border-2 border-gray-200 border-t-brown-800 rounded-full animate-spin" />
   </div>
 );
 
 const EmptyState = ({ text = "Ma'lumot mavjud emas" }) => (
-  <div className="flex flex-col items-center justify-center gap-3 py-12">
-    <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-200">
-      <BarChart2 size={24} strokeWidth={1.5} />
-    </div>
-    <p className="text-xs text-gray-400 font-medium uppercase tracking-tight">{text}</p>
+  <div className="flex flex-col items-center justify-center gap-2 py-10">
+    <BarChart2 size={28} className="text-gray-200" strokeWidth={1.5} />
+    <p className="text-xs text-gray-400">{text}</p>
   </div>
 );
 
 const ChartLegend = ({ items }) => (
-  <div className="flex flex-wrap gap-4 mb-6">
+  <div className="flex flex-wrap gap-4 mb-4">
     {items.map((item, i) => (
-      <div key={i} className="flex items-center gap-2">
-        <div className="w-3 h-1 rounded-full" style={{ background: item.color }} />
-        <span className="text-[11px] font-bold text-gray-500 uppercase tracking-tighter">{item.label}</span>
-      </div>
+      <span key={i} className="flex items-center gap-1.5 text-xs text-gray-500">
+        <span className="inline-block w-3 h-0.5" style={{ background: item.color }} />
+        {item.label}
+      </span>
     ))}
   </div>
 );
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
+const UZ_MONTHS_SHORT = ["Yan","Fev","Mar","Apr","May","Iyn","Iyl","Avg","Sen","Okt","Noy","Dek"];
+
 const ModernStatisticsPage = () => {
   const [dateRange, setDateRange] = useState(PRESETS[0].getDates());
   const [activePreset, setActivePreset] = useState(0);
+  const [activityDays, setActivityDays] = useState(30);
 
   const params = useMemo(() => ({
     ...(dateRange.startDate && { startDate: dateRange.startDate }),
@@ -190,6 +187,13 @@ const ModernStatisticsPage = () => {
     staleTime: 60_000,
   });
 
+  const { data: leadActivity, isLoading: lal } = useAppQuery({
+    queryKey: ["statistics", "leadActivity", activityDays],
+    queryFn:  () => statisticsAPI.getLeadActivity({ days: activityDays }),
+    select:   (r) => r.data,
+    staleTime: 60_000,
+  });
+
   // Derived Data
   const leadTrend = useMemo(() => (leads?.monthlyTrend ?? []).map((d) => ({
     label: formatStatMonth(d),
@@ -224,65 +228,70 @@ const ModernStatisticsPage = () => {
     { name: "Kelmagan", value: attendance.overall.absent },
   ] : [], [attendance]);
 
+  // Lead extended derived data
+  const leadFunnel = useMemo(() =>
+    LEAD_STATUS_FUNNEL_ORDER.map((s) => ({
+      status: s,
+      label:  LEAD_STATUS_LABELS[s] ?? s,
+      count:  leads?.byStatus?.find((b) => b.status === s)?.count ?? 0,
+      color:  LEAD_STATUS_FUNNEL_COLORS[s],
+    })), [leads]);
+
+  const maxFunnelCount = useMemo(() =>
+    Math.max(...leadFunnel.map((f) => f.count), 1), [leadFunnel]);
+
+  const activityTrend = useMemo(() =>
+    (leadActivity?.dailyActivity ?? []).map((d) => {
+      const [, m, day] = d.date.split("-");
+      return { label: `${parseInt(day)} ${UZ_MONTHS_SHORT[parseInt(m) - 1]}`, count: d.count };
+    }), [leadActivity]);
+
+  const totalActivity = useMemo(() =>
+    (leadActivity?.dailyActivity ?? []).reduce((s, d) => s + d.count, 0), [leadActivity]);
+
+  const sourceBarData = useMemo(() =>
+    [...(leads?.bySource ?? [])].sort((a, b) => b.count - a.count).slice(0, 8), [leads]);
+
   const applyPreset = (idx, preset) => {
     setActivePreset(idx);
     setDateRange(preset.getDates());
   };
 
   return (
-    <div className="max-w-[1600px] mx-auto space-y-12 pb-24">
-      
-      {/* ── Dashboard Header ─────────────────────────────────────────── */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-gray-100">
-        <div>
-          <div className="flex items-center gap-2 text-brown-800 mb-2">
-            <TrendingUp size={16} strokeWidth={2.5} />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Analitika markazi</span>
-          </div>
-          <h1 className="text-3xl font-black text-gray-900 tracking-tight">Tizim Statistikasi</h1>
-          <p className="text-sm text-gray-400 font-medium mt-1">O'quv markazi faoliyatining asosiy ko'rsatkichlari</p>
-        </div>
+    <div className="space-y-10 pb-12">
 
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex bg-gray-50 p-1 rounded-xl border border-gray-100">
+      {/* ── Dashboard Header ─────────────────────────────────────────── */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-border">
+        <div>
+          <h1 className="text-xl font-bold text-gray-900">Statistika</h1>
+          <p className="text-sm text-gray-400 mt-0.5">Barcha ko'rsatkichlar bir joyda</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex gap-1 border border-gray-200 p-0.5">
             {PRESETS.map((p, i) => (
-              <button
-                key={p.label}
-                onClick={() => applyPreset(i, p)}
-                className={`px-4 py-2 text-[11px] font-bold rounded-lg transition-all ${
-                  activePreset === i 
-                    ? "bg-white text-gray-900 shadow-sm ring-1 ring-gray-100" 
-                    : "text-gray-400 hover:text-gray-600"
-                }`}
-              >
+              <button key={p.label} onClick={() => applyPreset(i, p)}
+                className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+                  activePreset === i ? "bg-gray-900 text-white" : "text-gray-500 hover:text-gray-800"
+                }`}>
                 {p.label}
               </button>
             ))}
           </div>
-          
-          <div className="flex items-center gap-2 bg-white border border-gray-100 p-1 rounded-xl shadow-sm">
-            <div className="flex items-center gap-2 px-3">
-              <Calendar size={14} className="text-gray-300" />
-              <input 
-                type="date" 
-                value={dateRange.startDate} 
-                onChange={(e) => { setActivePreset(-1); setDateRange(prev => ({ ...prev, startDate: e.target.value })); }}
-                className="text-[11px] font-bold text-gray-600 focus:outline-none bg-transparent" 
-              />
-              <span className="text-gray-200">—</span>
-              <input 
-                type="date" 
-                value={dateRange.endDate} 
-                onChange={(e) => { setActivePreset(-1); setDateRange(prev => ({ ...prev, endDate: e.target.value })); }}
-                className="text-[11px] font-bold text-gray-600 focus:outline-none bg-transparent" 
-              />
-            </div>
+          <div className="flex items-center gap-2 border border-gray-200 px-3 h-8">
+            <Calendar size={13} className="text-gray-400" />
+            <input type="date" value={dateRange.startDate}
+              onChange={(e) => { setActivePreset(-1); setDateRange(prev => ({ ...prev, startDate: e.target.value })); }}
+              className="text-xs text-gray-600 focus:outline-none bg-transparent" />
+            <span className="text-gray-300 text-xs">—</span>
+            <input type="date" value={dateRange.endDate}
+              onChange={(e) => { setActivePreset(-1); setDateRange(prev => ({ ...prev, endDate: e.target.value })); }}
+              className="text-xs text-gray-600 focus:outline-none bg-transparent" />
           </div>
         </div>
       </div>
 
       {/* ── Section 1: Top Overview ──────────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard loading={ol} label="Jami Murojaatlar" value={overview?.totalLeads ?? 0} icon={UserPlus} color="blue" />
         <KPICard loading={ol} label="O'quvchilar Soni" value={overview?.totalActiveStudents ?? 0} icon={GraduationCap} color="brown" />
         <KPICard loading={ol} label="Oylik Daromad" value={formatMoneyFull(overview?.revenueThisMonth)} icon={Wallet} color="green" sub="Bu oydagi tushum" />
@@ -290,14 +299,14 @@ const ModernStatisticsPage = () => {
       </div>
 
       {/* ── Section 2: Leads & Conversions ────────────────────────────── */}
-      <div className="space-y-6">
+      <div className="space-y-4">
         <SectionHeader icon={UserPlus} title="Lidlar Analitikasi" sub="Murojaatlar dinamikasi va konversiya ko'rsatkichlari" />
         
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Card className="lg:col-span-2 min-h-[400px] !p-6 rounded-3xl shadow-sm border-gray-100">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <Card className="lg:col-span-2  !p-4 xs:!p-5 border-border">
             <div className="flex justify-between items-start mb-2">
-              <h3 className="text-sm font-bold text-gray-800 uppercase tracking-tight">Murojaatlar Trendi</h3>
-              <div className="flex items-center gap-1.5 text-[10px] font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded-full">
+              <h3 className="text-sm font-semibold text-gray-800 ">Murojaatlar Trendi</h3>
+              <div className="flex items-center gap-1.5 text-[10px] font-medium text-purple-600 bg-purple-50/60 border border-purple-100 px-2 py-1">
                 <ArrowUpRight size={10} />
                 {leads?.conversionRate ?? 0}% Konversiya
               </div>
@@ -333,8 +342,8 @@ const ModernStatisticsPage = () => {
             </div>
           </Card>
 
-          <Card className="!p-6 rounded-3xl shadow-sm border-gray-100 flex flex-col justify-between">
-            <h3 className="text-sm font-bold text-gray-800 uppercase tracking-tight mb-6">Holatlar Taqsimoti</h3>
+          <Card className="!p-4 xs:!p-5 border-border flex flex-col justify-between">
+            <h3 className="text-sm font-semibold text-gray-800  mb-4">Holatlar Taqsimoti</h3>
             <div className="h-[240px] w-full flex items-center justify-center">
               {ll ? <CardLoader h={240} /> : !leadStatusData.length ? <EmptyState /> : (
                 <ResponsiveContainer width="100%" height="100%">
@@ -358,9 +367,9 @@ const ModernStatisticsPage = () => {
             </div>
             <div className="grid grid-cols-2 gap-2 mt-4">
               {leadStatusData.slice(0, 4).map((item, i) => (
-                <div key={i} className="flex flex-col p-2 rounded-xl bg-gray-50 border border-gray-100">
-                  <span className="text-[9px] font-bold text-gray-400 uppercase leading-none mb-1.5">{item.name}</span>
-                  <span className="text-sm font-black text-gray-700">{item.value}</span>
+                <div key={i} className="flex flex-col p-2 bg-gray-50 border border-border">
+                  <span className="text-[9px] font-medium text-gray-500 leading-none mb-1.5">{item.name}</span>
+                  <span className="text-sm font-semibold text-gray-700">{item.value}</span>
                 </div>
               ))}
             </div>
@@ -368,13 +377,257 @@ const ModernStatisticsPage = () => {
         </div>
       </div>
 
+      {/* ── Section 2b: Lead Deep Analytics ──────────────────────────── */}
+      <div className="space-y-4">
+        <SectionHeader icon={BarChart2} title="Sotuvlar Chuqur Tahlili" sub="Kurs, yosh, manba va holat funeli bo'yicha" />
+
+        {/* Status funnel */}
+        <Card className="!p-4 xs:!p-5 border-border">
+          <h3 className="text-xs font-medium text-gray-500 mb-5">Holat Funeli</h3>
+          {ll ? <CardLoader h={140} /> : (
+            <div className="space-y-3">
+              {leadFunnel.map((item) => {
+                const pct = maxFunnelCount > 0 ? Math.round((item.count / maxFunnelCount) * 100) : 0;
+                return (
+                  <div key={item.status} className="flex items-center gap-4">
+                    <span className="text-[11px] font-medium text-gray-500 w-28 shrink-0 truncate">{item.label}</span>
+                    <div className="flex-1 h-6 bg-gray-50  overflow-hidden border border-border">
+                      <div className="h-full  transition-all duration-700 flex items-center px-2.5"
+                        style={{ width: `${Math.max(pct, item.count > 0 ? 3 : 0)}%`, background: item.color }}>
+                        {item.count > 0 && pct > 12 && (
+                          <span className="text-[10px] font-bold text-white leading-none">{item.count}</span>
+                        )}
+                      </div>
+                    </div>
+                    <span className="text-sm font-semibold text-gray-800 tabular-nums w-8 text-right shrink-0">{item.count}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </Card>
+
+        {/* Course type + Age groups */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <Card className="!p-4 xs:!p-5 border-border">
+            <h3 className="text-xs font-medium text-gray-500 mb-5">Kurs Turi Bo'yicha</h3>
+            {ll ? <CardLoader h={200} /> : !(leads?.byCourseType?.length) ? <EmptyState /> : (
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={leads.byCourseType} layout="vertical"
+                  margin={{ top: 0, right: 36, left: 0, bottom: 0 }}>
+                  <CartesianGrid horizontal={false} {...GRID_STYLE} />
+                  <XAxis type="number" axisLine={false} tickLine={false} tick={TICK_STYLE} allowDecimals={false} />
+                  <YAxis type="category" dataKey="course" axisLine={false} tickLine={false}
+                    tick={{ fontSize: 11, fill: "#6B7280", fontWeight: 600 }} width={100} />
+                  <Tooltip {...TT_STYLE} formatter={(v) => [v, "Murojaat"]} />
+                  <Bar dataKey="count" fill={CHART_COLORS.blue} radius={0} maxBarSize={16}
+                    label={{ position: "right", fontSize: 10, fill: "#9CA3AF", fontWeight: 600 }} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </Card>
+
+          <Card className="!p-4 xs:!p-5 border-border">
+            <h3 className="text-xs font-medium text-gray-500 mb-5">Yosh Guruhlari</h3>
+            {ll ? <CardLoader h={200} /> : !(leads?.byAgeGroup?.some(g => g.count > 0)) ? <EmptyState /> : (
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={leads.byAgeGroup} margin={{ top: 0, right: 10, left: -20, bottom: 0 }}>
+                  <CartesianGrid vertical={false} {...GRID_STYLE} />
+                  <XAxis dataKey="ageGroup" axisLine={false} tickLine={false} dy={10} tick={TICK_STYLE} />
+                  <YAxis axisLine={false} tickLine={false} tick={TICK_STYLE} allowDecimals={false} />
+                  <Tooltip {...TT_STYLE} formatter={(v) => [v, "Murojaat"]} />
+                  <Bar dataKey="count" radius={0} maxBarSize={64}>
+                    {(leads?.byAgeGroup ?? []).map((_, i) => (
+                      <Cell key={i} fill={AGE_GROUP_COLORS[i % AGE_GROUP_COLORS.length]} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </Card>
+        </div>
+
+        {/* Source + Gender */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <Card className="lg:col-span-2 !p-4 xs:!p-5 border-border">
+            <h3 className="text-xs font-medium text-gray-500 mb-5">Manba Bo'yicha</h3>
+            {ll ? <CardLoader h={200} /> : !sourceBarData.length ? <EmptyState /> : (
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={sourceBarData} layout="vertical"
+                  margin={{ top: 0, right: 36, left: 0, bottom: 0 }}>
+                  <CartesianGrid horizontal={false} {...GRID_STYLE} />
+                  <XAxis type="number" axisLine={false} tickLine={false} tick={TICK_STYLE} allowDecimals={false} />
+                  <YAxis type="category" dataKey="source" axisLine={false} tickLine={false}
+                    tick={{ fontSize: 11, fill: "#6B7280", fontWeight: 600 }} width={100} />
+                  <Tooltip {...TT_STYLE} formatter={(v) => [v, "Murojaat"]} />
+                  <Bar dataKey="count" fill={CHART_COLORS.teal} radius={0} maxBarSize={16}
+                    label={{ position: "right", fontSize: 10, fill: "#9CA3AF", fontWeight: 600 }} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </Card>
+
+          <Card className="!p-4 xs:!p-5 border-border">
+            <h3 className="text-xs font-medium text-gray-500 mb-4">Jins Taqsimoti</h3>
+            <div className="h-[160px]">
+              {ll ? <CardLoader h={160} /> : !(leads?.byGender?.length) ? <EmptyState /> : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={(leads.byGender ?? []).map(g => ({ name: GENDER_LABELS[g.gender] ?? g.gender, value: g.count }))}
+                      innerRadius={48} outerRadius={68} paddingAngle={4} dataKey="value" stroke="none">
+                      {(leads?.byGender ?? []).map((_, i) => (
+                        <Cell key={i} fill={GENDER_PIE_COLORS[i % GENDER_PIE_COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip {...TT_STYLE} />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+            <div className="flex justify-center gap-4 mt-2">
+              {(leads?.byGender ?? []).map((g, i) => (
+                <div key={i} className="flex items-center gap-1.5">
+                  <div className="w-2 h-2 rounded-full" style={{ background: GENDER_PIE_COLORS[i] }} />
+                  <span className="text-[10px] font-medium text-gray-500">
+                    {GENDER_LABELS[g.gender] ?? g.gender}: {g.count}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </div>
+
+        {/* Rejection reasons (conditional) */}
+        {(leads?.byRejectionReason?.length > 0) && (
+          <Card className="!p-4 xs:!p-5 border-border">
+            <h3 className="text-xs font-medium text-gray-500 mb-5">Rad Etish Sabablari</h3>
+            <ResponsiveContainer width="100%" height={Math.min(leads.byRejectionReason.length * 40 + 16, 220)}>
+              <BarChart data={leads.byRejectionReason} layout="vertical"
+                margin={{ top: 0, right: 36, left: 0, bottom: 0 }}>
+                <CartesianGrid horizontal={false} {...GRID_STYLE} />
+                <XAxis type="number" axisLine={false} tickLine={false} tick={TICK_STYLE} allowDecimals={false} />
+                <YAxis type="category" dataKey="reason" axisLine={false} tickLine={false}
+                  tick={{ fontSize: 11, fill: "#6B7280", fontWeight: 600 }} width={140} />
+                <Tooltip {...TT_STYLE} formatter={(v) => [v, "Murojaat"]} />
+                <Bar dataKey="count" fill={CHART_COLORS.red} radius={0} maxBarSize={16}
+                  label={{ position: "right", fontSize: 10, fill: "#9CA3AF", fontWeight: 600 }} />
+              </BarChart>
+            </ResponsiveContainer>
+          </Card>
+        )}
+      </div>
+
+      {/* ── Section 2c: Lead Activity ─────────────────────────────────── */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <SectionHeader icon={Activity} title="Faollik Tahlili" sub="Murojaatlar bo'yicha harakatlar tarixi" />
+          <div className="flex bg-gray-50 p-1 border border-border -mt-6">
+            {[7, 14, 30].map((d) => (
+              <button key={d} onClick={() => setActivityDays(d)}
+                className={`px-3 py-1.5 text-[11px] font-medium transition-all ${
+                  activityDays === d
+                    ? "bg-white text-gray-900 border border-border"
+                    : "text-gray-400 hover:text-gray-600"
+                }`}>
+                {d} kun
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* Activity area chart */}
+          <Card className="lg:col-span-2 !p-4 xs:!p-5 border-border">
+            <div className="flex justify-between items-start mb-4">
+              <h3 className="text-xs font-medium text-gray-500 ">
+                So'nggi {activityDays} kun
+              </h3>
+              <span className="text-[10px] font-medium text-blue-600 bg-blue-50/60 border border-blue-100 px-2 py-1">
+                {totalActivity} ta harakat
+              </span>
+            </div>
+            <div className="h-[200px]">
+              {lal ? <CardLoader h={200} /> : !activityTrend.length ? <EmptyState /> : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={activityTrend} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="actGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%"  stopColor={CHART_COLORS.blue} stopOpacity={0.12} />
+                        <stop offset="95%" stopColor={CHART_COLORS.blue} stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid vertical={false} {...GRID_STYLE} />
+                    <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "#9CA3AF", fontWeight: 600 }}
+                      dy={10} interval={activityDays <= 14 ? 1 : Math.floor(activityDays / 7)} />
+                    <YAxis axisLine={false} tickLine={false} tick={TICK_STYLE} allowDecimals={false} />
+                    <Tooltip {...TT_STYLE} formatter={(v) => [v, "Harakat"]} />
+                    <Area type="monotone" dataKey="count" stroke={CHART_COLORS.blue} strokeWidth={2.5}
+                      fill="url(#actGrad)" dot={false} activeDot={{ r: 4, strokeWidth: 2, stroke: "#fff" }} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+          </Card>
+
+          {/* Event type freq */}
+          <Card className="!p-4 xs:!p-5 border-border">
+            <h3 className="text-xs font-medium text-gray-500 mb-5">Harakat Turlari</h3>
+            {lal ? <CardLoader h={180} /> : !(leadActivity?.byEventType?.length) ? <EmptyState /> : (
+              <div className="space-y-4">
+                {leadActivity.byEventType.map((e) => {
+                  const max = leadActivity.byEventType[0]?.count || 1;
+                  const pct = Math.round((e.count / max) * 100);
+                  return (
+                    <div key={e.eventType}>
+                      <div className="flex justify-between mb-1.5">
+                        <span className="text-[11px] font-medium text-gray-600 truncate flex-1 pr-2">
+                          {LEAD_EVENT_TYPE_LABELS[e.eventType] ?? e.eventType}
+                        </span>
+                        <span className="text-[11px] font-semibold text-gray-800 tabular-nums shrink-0">{e.count}</span>
+                      </div>
+                      <div className="h-1.5 bg-gray-100 overflow-hidden">
+                        <div className="h-full bg-blue-500/80 transition-all duration-700"
+                          style={{ width: `${pct}%` }} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </Card>
+        </div>
+
+        {/* Status transitions */}
+        {(leadActivity?.statusTransitions?.length > 0) && (
+          <Card className="!p-4 xs:!p-5 border-border">
+            <h3 className="text-xs font-medium text-gray-500 mb-4">Holat O'tish Zanjiri</h3>
+            <div className="flex flex-wrap gap-2">
+              {leadActivity.statusTransitions.map((t, i) => (
+                <div key={i} className="flex items-center gap-2 bg-gray-50 border border-border px-3 py-2">
+                  <span className="text-[11px] font-medium px-2 py-0.5"
+                    style={{ background: LEAD_STATUS_FUNNEL_COLORS[t.from] + "15", color: LEAD_STATUS_FUNNEL_COLORS[t.from] }}>
+                    {LEAD_STATUS_LABELS[t.from] ?? t.from}
+                  </span>
+                  <span className="text-gray-300 text-xs">→</span>
+                  <span className="text-[11px] font-medium px-2 py-0.5"
+                    style={{ background: LEAD_STATUS_FUNNEL_COLORS[t.to] + "15", color: LEAD_STATUS_FUNNEL_COLORS[t.to] }}>
+                    {LEAD_STATUS_LABELS[t.to] ?? t.to}
+                  </span>
+                  <span className="text-sm font-semibold text-gray-700 ml-1 tabular-nums">{t.count}</span>
+                </div>
+              ))}
+            </div>
+          </Card>
+        )}
+      </div>
+
       {/* ── Section 3: Revenue Analytics ─────────────────────────────── */}
-      <div className="space-y-6">
+      <div className="space-y-4">
         <SectionHeader icon={TrendingUp} title="Moliyaviy Ko'rsatkichlar" sub="Oylik tushumlar va to'lovlar dinamikasi" />
         
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Card className="lg:col-span-2 !p-6 rounded-3xl shadow-sm border-gray-100">
-            <h3 className="text-sm font-bold text-gray-800 uppercase tracking-tight mb-8">Daromad Grafigi</h3>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <Card className="lg:col-span-2 !p-4 xs:!p-5 border-border">
+            <h3 className="text-sm font-semibold text-gray-800  mb-5">Daromad Grafigi</h3>
             <div className="h-[300px] w-full">
               {rl ? <CardLoader h={300} /> : !revenueTrend.length ? <EmptyState /> : (
                 <ResponsiveContainer width="100%" height="100%">
@@ -383,46 +636,46 @@ const ModernStatisticsPage = () => {
                     <XAxis dataKey="label" axisLine={false} tickLine={false} tick={TICK_STYLE} dy={10} />
                     <YAxis axisLine={false} tickLine={false} tick={TICK_STYLE} tickFormatter={formatMoney} />
                     <Tooltip {...TT_STYLE} formatter={(v) => formatMoneyFull(v)} />
-                    <Bar dataKey="amount" fill={CHART_COLORS.green} radius={[6, 6, 0, 0]} barSize={40} />
+                    <Bar dataKey="amount" fill={CHART_COLORS.green} radius={0} barSize={40} />
                   </BarChart>
                 </ResponsiveContainer>
               )}
             </div>
           </Card>
 
-          <div className="space-y-6">
-            <Card className="!p-6 rounded-3xl shadow-sm border-gray-100 bg-brown-800 text-white">
+          <div className="space-y-4">
+            <Card className="!p-4 xs:!p-5 border-border bg-brown-800 text-white">
               <div className="flex justify-between items-start mb-4">
-                <div className="p-2 bg-white/10 rounded-xl text-white/80">
+                <div className="p-2 bg-white/10 text-white/80">
                   <Info size={18} />
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Kutilmoqda</span>
+                <span className="text-[10px] font-medium text-white/40">Kutilmoqda</span>
               </div>
-              <p className="text-xs font-bold text-white/60 mb-1">Taxminiy oylik tushum</p>
-              <h4 className="text-2xl font-black tabular-nums">{formatMoneyFull(revenue?.expectedMonthlyRevenue)}</h4>
+              <p className="text-xs font-medium text-white/60 mb-1">Taxminiy oylik tushum</p>
+              <h4 className="text-2xl font-semibold tabular-nums">{formatMoneyFull(revenue?.expectedMonthlyRevenue)}</h4>
               <div className="mt-6 pt-6 border-t border-white/10 flex items-center justify-between">
                 <div>
-                  <p className="text-[10px] font-bold text-white/40 uppercase">Jami yig'ilgan</p>
-                  <p className="text-sm font-black tabular-nums">{formatMoneyFull(revenue?.totalCollected)}</p>
+                  <p className="text-[10px] font-medium text-white/40">Jami yig'ilgan</p>
+                  <p className="text-sm font-semibold tabular-nums">{formatMoneyFull(revenue?.totalCollected)}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] font-bold text-white/40 uppercase">To'lovlar soni</p>
-                  <p className="text-sm font-black tabular-nums">{revenue?.totalPaymentsCount ?? 0}</p>
+                  <p className="text-[10px] font-medium text-white/40">To'lovlar soni</p>
+                  <p className="text-sm font-semibold tabular-nums">{revenue?.totalPaymentsCount ?? 0}</p>
                 </div>
               </div>
             </Card>
 
-            <Card className="!p-6 rounded-3xl shadow-sm border-gray-100">
-              <h3 className="text-sm font-bold text-gray-800 uppercase tracking-tight mb-4">Qarzlar miqdori</h3>
+            <Card className="!p-4 xs:!p-5 border-border">
+              <h3 className="text-sm font-semibold text-gray-800  mb-4">Qarzlar miqdori</h3>
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-red-50 text-red-500 flex items-center justify-center shrink-0">
+                <div className="w-12 h-12 bg-red-50 text-red-500 flex items-center justify-center shrink-0">
                   <AlertCircle size={24} strokeWidth={1.5} />
                 </div>
                 <div>
-                  <p className="text-2xl font-black text-red-600 tabular-nums leading-none mb-1">
+                  <p className="text-2xl font-bold text-red-600 tabular-nums leading-none mb-1">
                     {formatMoneyFull(revenue?.totalOutstandingDebt)}
                   </p>
-                  <p className="text-[10px] font-bold text-gray-400 uppercase">Umumiy qarzdorlik</p>
+                  <p className="text-[10px] font-medium text-gray-500">Umumiy qarzdorlik</p>
                 </div>
               </div>
             </Card>
@@ -431,14 +684,14 @@ const ModernStatisticsPage = () => {
       </div>
 
       {/* ── Section 4: Students & Attendance ─────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 pt-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-6">
         
         {/* Student Demographics */}
-        <div className="space-y-6">
+        <div className="space-y-4">
           <SectionHeader icon={Users} title="O'quvchilar tarkibi" sub="Jins va guruhlar bo'yicha tahlil" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <Card className="!p-6 rounded-3xl shadow-sm border-gray-100 min-h-[300px]">
-              <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Jins taqsimoti</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Card className="!p-4 xs:!p-5 border-border ">
+              <h3 className="text-xs font-medium text-gray-500 mb-4">Jins taqsimoti</h3>
               <div className="h-[180px]">
                 {sl ? <CardLoader h={180} /> : (
                   <ResponsiveContainer width="100%" height="100%">
@@ -459,30 +712,30 @@ const ModernStatisticsPage = () => {
                   </ResponsiveContainer>
                 )}
               </div>
-              <div className="flex justify-center gap-6 mt-2">
+              <div className="flex justify-center gap-4 mt-2">
                 {genderData.map((item, i) => (
                   <div key={i} className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full" style={{ background: GENDER_PIE_COLORS[i] }} />
-                    <span className="text-[10px] font-bold text-gray-600 uppercase">{item.name}: {item.value}</span>
+                    <span className="text-[10px] font-medium text-gray-600">{item.name}: {item.value}</span>
                   </div>
                 ))}
               </div>
             </Card>
 
-            <Card className="!p-6 rounded-3xl shadow-sm border-gray-100 max-h-[300px] overflow-hidden">
-              <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Guruhlar hajmi</h3>
+            <Card className="!p-4 xs:!p-5 border-border max-h-[300px] overflow-hidden">
+              <h3 className="text-xs font-medium text-gray-500 mb-4">Guruhlar hajmi</h3>
               <div className="space-y-3 overflow-y-auto max-h-[200px] pr-2 custom-scrollbar">
                 {students?.studentsPerGroup?.slice(0, 8).map((g, i) => (
                   <div key={i} className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-gray-600 truncate max-w-[120px]">{g.groupName}</span>
+                    <span className="text-xs font-medium text-gray-600 truncate max-w-[120px]">{g.groupName}</span>
                     <div className="flex items-center gap-2">
-                      <div className="w-24 h-1.5 bg-gray-50 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-brown-400 rounded-full" 
-                          style={{ width: `${Math.min((g.studentCount / 20) * 100, 100)}%` }} 
+                      <div className="w-24 h-1.5 bg-gray-100 overflow-hidden">
+                        <div
+                          className="h-full bg-brown-400/70"
+                          style={{ width: `${Math.min((g.studentCount / 20) * 100, 100)}%` }}
                         />
                       </div>
-                      <span className="text-[10px] font-black text-gray-800 tabular-nums">{g.studentCount}</span>
+                      <span className="text-[10px] font-semibold text-gray-700 tabular-nums">{g.studentCount}</span>
                     </div>
                   </div>
                 ))}
@@ -492,12 +745,12 @@ const ModernStatisticsPage = () => {
         </div>
 
         {/* Attendance Insights */}
-        <div className="space-y-6">
+        <div className="space-y-4">
           <SectionHeader icon={Activity} title="Davomat Ko'rsatkichlari" sub="Darslarda qatnashish trendi" />
-          <Card className="!p-6 rounded-3xl shadow-sm border-gray-100 min-h-[300px]">
-            <div className="flex justify-between items-start mb-6">
-              <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">Oylik Davomat %</h3>
-              <div className="text-xl font-black text-purple-600">{attendance?.overall?.attendanceRate ?? 0}%</div>
+          <Card className="!p-4 xs:!p-5 border-border ">
+            <div className="flex justify-between items-start mb-4">
+              <h3 className="text-xs font-medium text-gray-500 ">Oylik Davomat %</h3>
+              <div className="text-xl font-bold text-purple-600">{attendance?.overall?.attendanceRate ?? 0}%</div>
             </div>
             <div className="h-[200px]">
               {al ? <CardLoader h={200} /> : (
@@ -522,14 +775,6 @@ const ModernStatisticsPage = () => {
           </Card>
         </div>
 
-      </div>
-
-      {/* ── Footer ─────────────────────────────────────────────────── */}
-      <div className="pt-12 flex items-center justify-center border-t border-gray-100">
-        <div className="flex items-center gap-2 text-gray-300">
-          <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-          <span className="text-[10px] font-black uppercase tracking-[0.3em]">Haqiqiy vaqt rejimi</span>
-        </div>
       </div>
 
     </div>

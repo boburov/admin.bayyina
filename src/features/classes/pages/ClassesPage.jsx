@@ -8,7 +8,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { classesAPI } from "@/features/classes/api/classes.api";
 
 // TanStack Query
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 // Router
 import { Link, useSearchParams } from "react-router-dom";
@@ -37,10 +37,14 @@ import {
   School,
   Search,
   X,
+  PowerOff,
+  Power,
 } from "lucide-react";
 
 const Classes = () => {
   const { openModal } = useModal();
+  const qc = useQueryClient();
+  const [togglingId, setTogglingId] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
 
   const currentPage = parseInt(searchParams.get("page") || "1", 10);
@@ -127,6 +131,19 @@ const Classes = () => {
   const getDayLabel = (value) =>
     daysOptions.find((d) => d.value === value)?.label ?? value;
 
+  const handleToggleActive = async (group) => {
+    setTogglingId(group._id);
+    try {
+      await classesAPI.toggleActive(group._id);
+      qc.invalidateQueries({ queryKey: ["admin-groups"] });
+      toast.success(group.isActive === false ? "Guruh faollashtirildi" : "Guruh o'chirildi");
+    } catch {
+      toast.error("Xatolik yuz berdi");
+    } finally {
+      setTogglingId(null);
+    }
+  };
+
   return (
     <div>
       {/* Page header */}
@@ -186,8 +203,18 @@ const Classes = () => {
         </div>
       ) : (
         <div className={`grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 transition-opacity duration-200 ${isFetching ? "opacity-60 pointer-events-none" : "opacity-100"}`}>
-          {groups.map((group) => (
-            <Card key={group._id}>
+          {groups.map((group) => {
+            const isDisabled = group.isActive === false;
+            return (
+            <Card key={group._id} className={isDisabled ? "opacity-60" : ""}>
+              {/* Disabled badge */}
+              {isDisabled && (
+                <div className="flex items-center gap-1.5 text-[10px] font-medium text-red-600 bg-red-50 border border-red-100 px-2 py-0.5 w-fit mb-2">
+                  <PowerOff className="size-3" strokeWidth={1.5} />
+                  Yopiq
+                </div>
+              )}
+
               {/* Top row — name + actions */}
               <div className="flex justify-between items-start mb-3">
                 <Link
@@ -199,6 +226,22 @@ const Classes = () => {
                 </Link>
 
                 <div className="flex gap-1 shrink-0">
+                  <button
+                    onClick={() => handleToggleActive(group)}
+                    disabled={togglingId === group._id}
+                    aria-label={isDisabled ? "Faollashtirish" : "O'chirish"}
+                    title={isDisabled ? "Guruhni faollashtirish" : "Guruhni yopish"}
+                    className={`p-1.5 rounded transition-colors ${
+                      isDisabled
+                        ? "text-green-500 hover:text-green-700 hover:bg-green-50"
+                        : "text-gray-400 hover:text-orange-600 hover:bg-orange-50"
+                    } disabled:opacity-40`}
+                  >
+                    {isDisabled
+                      ? <Power className="size-4" strokeWidth={1.5} />
+                      : <PowerOff className="size-4" strokeWidth={1.5} />
+                    }
+                  </button>
                   <button
                     onClick={() => openModal("editClass", group)}
                     aria-label="Tahrirlash"
@@ -255,7 +298,8 @@ const Classes = () => {
                 </span>
               </div>
             </Card>
-          ))}
+            );
+          })}
         </div>
       )}
 

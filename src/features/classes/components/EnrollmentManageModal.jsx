@@ -129,11 +129,11 @@ const Content = ({
   // Groups for transfer — fetched only when status stays "active"
   const { data: groupsData, isLoading: groupsLoading } = useQuery({
     queryKey: ["all-groups-for-transfer"],
-    queryFn:  () => classesAPI.getAll({ limit: 200 }).then((res) => res.data),
+    queryFn:  () => classesAPI.getAll({ limit: 200, isActive: true }).then((res) => res.data),
     enabled:  status === "active",
   });
   const allGroups = (groupsData?.groups ?? [])
-    .filter((g) => g._id !== currentGroupId)
+    .filter((g) => g._id !== currentGroupId && g.isActive !== false)
     .map((g) => ({ value: g._id, label: g.name }));
 
   // ── Derived flags ─────────────────────────────────────────────────────────

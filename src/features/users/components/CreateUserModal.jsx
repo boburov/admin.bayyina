@@ -71,11 +71,11 @@ const Content = ({ close, isLoading, setIsLoading, defaultRole }) => {
 
 
   const { data: groupsData, isLoading: groupsLoading } = useQuery({
-    queryKey: ["classes"],
-    queryFn: () => classesAPI.getAll({ limit: 200 }).then((res) => res.data),
+    queryKey: ["classes", "active"],
+    queryFn: () => classesAPI.getAll({ limit: 200, isActive: true }).then((res) => res.data),
   });
 
-  const allGroups = groupsData?.groups ?? [];
+  const allGroups = (groupsData?.groups ?? []).filter((g) => g.isActive !== false);
   const filteredGroups = allGroups.filter((g) =>
     g.name.toLowerCase().includes(groupSearch.toLowerCase()),
   );

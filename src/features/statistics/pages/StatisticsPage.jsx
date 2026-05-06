@@ -19,6 +19,10 @@ import {
   LEAD_STATUS_COLORS,
   ENROLLMENT_STATUS_LABELS,
   LEAD_STATUS_LABELS,
+  LEAD_STATUS_FUNNEL_ORDER,
+  LEAD_STATUS_FUNNEL_COLORS,
+  LEAD_EVENT_TYPE_LABELS,
+  AGE_GROUP_COLORS,
   GENDER_LABELS,
   formatMoneyFull,
   TOOLTIP_STYLE,
@@ -203,6 +207,7 @@ const DateFilter = ({ value, onChange }) => {
 const StatisticsPage = () => {
   const [dateRange, setDateRange] = useState({ startDate: "", endDate: "" });
   const [dropoutPeriod, setDropoutPeriod] = useState("1y");
+  const [activityDays, setActivityDays] = useState(30);
   const financeYear = new Date().getFullYear();
 
   const params = {
@@ -241,6 +246,13 @@ const StatisticsPage = () => {
   const { data: attendance, isLoading: al } = useAppQuery({
     queryKey: ["statistics", "attendance", params],
     queryFn:  () => statisticsAPI.getAttendance(params),
+    select:   (r) => r.data,
+    staleTime: 60_000,
+  });
+
+  const { data: leadActivity, isLoading: lal } = useAppQuery({
+    queryKey: ["statistics", "leadActivity", activityDays],
+    queryFn:  () => statisticsAPI.getLeadActivity({ days: activityDays }),
     select:   (r) => r.data,
     staleTime: 60_000,
   });
@@ -319,6 +331,24 @@ const attTrend = (attendance?.monthlyTrend ?? []).map((d) => ({
 const totalAtt    = (attendance?.overall?.total ?? 0);
   const totalGender = studentGenderDonut.reduce((s, e) => s + e.value, 0);
 
+  // ── Leads extended derived ───────────────────────────────────────────────
+  const leadFunnel = LEAD_STATUS_FUNNEL_ORDER.map((s) => ({
+    status: s,
+    label:  LEAD_STATUS_LABELS[s] ?? s,
+    count:  leads?.byStatus?.find((b) => b.status === s)?.count ?? 0,
+    color:  LEAD_STATUS_FUNNEL_COLORS[s],
+  }));
+  const maxFunnelCount = Math.max(...leadFunnel.map((f) => f.count), 1);
+
+  const activityTrend = (leadActivity?.dailyActivity ?? []).map((d) => {
+    const [, m, day] = d.date.split("-");
+    return { label: `${parseInt(day)} ${UZ_MONTHS[parseInt(m) - 1]}`, count: d.count };
+  });
+
+  const totalActivity = (leadActivity?.dailyActivity ?? []).reduce((s, d) => s + d.count, 0);
+
+  const sourceBarData = [...(leads?.bySource ?? [])].sort((a, b) => b.count - a.count).slice(0, 10);
+
   return (
     <div className="space-y-10 pb-12">
 
@@ -354,24 +384,20 @@ const totalAtt    = (attendance?.overall?.total ?? 0);
       </div>
 
       {/* ── 3. Leads ──────────────────────────────────────────────────── */}
-      <div>
-        <SecHeader icon={UserPlus} title="Sotuvlar tahlili" sub="Murojaatlar dinamikasi va holat taqsimoti" />
+      <div className="space-y-4">
+        <SecHeader icon={UserPlus} title="Sotuvlar tahlili" sub="Murojaatlar dinamikasi, holat va konversiya tahlili" />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-
-          {/* Leads KPIs */}
-          <div className="lg:col-span-3 grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <KpiCard loading={ll} label="Jami sotuvlar"   value={leads?.totalLeads ?? 0}         icon={Users}        color="blue"   />
-            <KpiCard loading={ll} label="Qabul qilindi"  value={leads?.byStatus?.find(s=>s.status==="converted")?.count ?? 0}  icon={CheckCircle2} color="green"  />
-            <KpiCard loading={ll} label="Bekor qilindi"  value={leads?.byStatus?.find(s=>s.status==="rejected")?.count ?? 0}   icon={XCircle}      color="red"    />
-            <KpiCard loading={ll} label="Konversiya"     value={`${leads?.conversionRate ?? 0}%`}                              icon={ArrowUpRight}  color="purple" />
-          </div>
+        {/* KPIs */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <KpiCard loading={ll} label="Jami sotuvlar"  value={leads?.totalLeads ?? 0}                                             icon={Users}        color="blue"   />
+          <KpiCard loading={ll} label="Qabul qilindi"  value={leads?.byStatus?.find(s=>s.status==="converted")?.count ?? 0}       icon={CheckCircle2} color="green"  />
+          <KpiCard loading={ll} label="Bekor qilindi"  value={leads?.byStatus?.find(s=>s.status==="rejected")?.count ?? 0}        icon={XCircle}      color="red"    />
+          <KpiCard loading={ll} label="Konversiya"     value={`${leads?.conversionRate ?? 0}%`}                                   icon={ArrowUpRight} color="purple" />
         </div>
 
+        {/* Row: trend + status donut */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-
-          {/* Line chart — monthly trend */}
-          <Card title="Sotuvlar dinamikasi (6 oy)" className="lg:col-span-2 h-72">
+          <Card title="Oylik sotuvlar dinamikasi" className="lg:col-span-2 h-72">
             {ll ? <CardLoader h={220} /> : !leadTrend.length ? <Empty /> : (
               <>
                 <div className="flex items-center gap-4 mb-3">
@@ -385,8 +411,7 @@ const totalAtt    = (attendance?.overall?.total ?? 0);
                     <YAxis axisLine={false} tickLine={false} tick={TICK} allowDecimals={false} />
                     <Tooltip contentStyle={TT.contentStyle} labelStyle={TT.labelStyle}
                       formatter={(v, n) => [v, n === "total" ? "Jami" : "Qabul qilindi"]}
-                      cursor={{ stroke: "#E5E7EB", strokeWidth: 1 }}
-                    />
+                      cursor={{ stroke: "#E5E7EB", strokeWidth: 1 }} />
                     <Line type="monotone" dataKey="total"     stroke={CHART_COLORS.blue}  strokeWidth={2.5} dot={false} activeDot={{ r: 5, strokeWidth: 2, stroke: "#fff" }} />
                     <Line type="monotone" dataKey="converted" stroke={CHART_COLORS.green} strokeWidth={2.5} dot={false} activeDot={{ r: 5, strokeWidth: 2, stroke: "#fff" }} />
                   </LineChart>
@@ -395,17 +420,220 @@ const totalAtt    = (attendance?.overall?.total ?? 0);
             )}
           </Card>
 
-          {/* Donut — status distribution */}
           <Card title="Holat taqsimoti">
             {ll ? <CardLoader h={180} /> : (
-              <Donut
-                data={leadStatusDonut} total={totalLead}
-                colors={LEAD_STATUS_COLORS}
-                labelMap={LEAD_STATUS_LABELS}
-                loading={false}
-              />
+              <Donut data={leadStatusDonut} total={totalLead} colors={LEAD_STATUS_COLORS} labelMap={LEAD_STATUS_LABELS} loading={false} />
             )}
           </Card>
+        </div>
+
+        {/* Row: status funnel */}
+        <Card title="Holat funeli (murojaat yulagi)">
+          {ll ? <CardLoader h={160} /> : (
+            <div className="space-y-2.5">
+              {leadFunnel.map((item) => {
+                const pct = maxFunnelCount > 0 ? Math.round((item.count / maxFunnelCount) * 100) : 0;
+                return (
+                  <div key={item.status} className="flex items-center gap-3">
+                    <span className="text-xs text-gray-500 w-32 shrink-0 truncate">{item.label}</span>
+                    <div className="flex-1 h-5 bg-gray-100 rounded-sm overflow-hidden">
+                      <div className="h-full rounded-sm transition-all duration-500 flex items-center px-2"
+                        style={{ width: `${Math.max(pct, item.count > 0 ? 2 : 0)}%`, background: item.color }}>
+                        {item.count > 0 && pct > 10 && (
+                          <span className="text-[10px] font-semibold text-white leading-none">{item.count}</span>
+                        )}
+                      </div>
+                    </div>
+                    <span className="text-xs font-bold text-gray-700 tabular-nums w-8 text-right shrink-0">{item.count}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </Card>
+
+        {/* Row: course type + age groups */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <Card title="Kurs turi bo'yicha murojaatlar" className="h-72">
+            {ll ? <CardLoader h={220} /> : !(leads?.byCourseType?.length) ? <Empty /> : (
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={leads.byCourseType} layout="vertical"
+                  margin={{ top: 4, right: 40, left: 0, bottom: 4 }}>
+                  <CartesianGrid horizontal={false} {...GRID} />
+                  <XAxis type="number" axisLine={false} tickLine={false} tick={TICK} allowDecimals={false} />
+                  <YAxis type="category" dataKey="course" axisLine={false} tickLine={false}
+                    tick={{ fontSize: 11, fill: "#6B7280" }} width={100} />
+                  <Tooltip contentStyle={TT.contentStyle} formatter={(v) => [v, "Murojaat"]} />
+                  <Bar dataKey="count" fill={CHART_COLORS.blue} radius={[0,3,3,0]} maxBarSize={18}
+                    label={{ position: "right", fontSize: 10, fill: "#9CA3AF" }} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </Card>
+
+          <Card title="Yosh guruhlari bo'yicha murojaatlar" className="h-72">
+            {ll ? <CardLoader h={220} /> : !(leads?.byAgeGroup?.some(g => g.count > 0)) ? <Empty /> : (
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={leads.byAgeGroup} margin={{ top: 4, right: 16, left: -8, bottom: 8 }}>
+                  <CartesianGrid vertical={false} {...GRID} />
+                  <XAxis dataKey="ageGroup" axisLine={false} tickLine={false} dy={10} tick={TICK} />
+                  <YAxis axisLine={false} tickLine={false} tick={TICK} allowDecimals={false} />
+                  <Tooltip contentStyle={TT.contentStyle} formatter={(v) => [v, "Murojaat"]} />
+                  <Bar dataKey="count" radius={[4,4,0,0]} maxBarSize={60}>
+                    {(leads?.byAgeGroup ?? []).map((_, i) => (
+                      <Cell key={i} fill={AGE_GROUP_COLORS[i % AGE_GROUP_COLORS.length]} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </Card>
+        </div>
+
+        {/* Row: source + gender + rejection reasons */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <Card title="Manba bo'yicha" className="h-72 lg:col-span-2">
+            {ll ? <CardLoader h={220} /> : !sourceBarData.length ? <Empty /> : (
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={sourceBarData} layout="vertical"
+                  margin={{ top: 4, right: 40, left: 0, bottom: 4 }}>
+                  <CartesianGrid horizontal={false} {...GRID} />
+                  <XAxis type="number" axisLine={false} tickLine={false} tick={TICK} allowDecimals={false} />
+                  <YAxis type="category" dataKey="source" axisLine={false} tickLine={false}
+                    tick={{ fontSize: 11, fill: "#6B7280" }} width={90} />
+                  <Tooltip contentStyle={TT.contentStyle} formatter={(v) => [v, "Murojaat"]} />
+                  <Bar dataKey="count" fill={CHART_COLORS.teal} radius={[0,3,3,0]} maxBarSize={18}
+                    label={{ position: "right", fontSize: 10, fill: "#9CA3AF" }} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </Card>
+
+          <Card title="Jins taqsimoti">
+            {ll ? <CardLoader h={180} /> : (
+              <Donut data={genderDonut} total={genderDonut.reduce((s,e)=>s+e.value,0)}
+                colors={GENDER_PIE_COLORS} labelMap={GENDER_LABELS} loading={false} />
+            )}
+          </Card>
+        </div>
+
+        {/* Rejection reasons (if data exists) */}
+        {(leads?.byRejectionReason?.length > 0) && (
+          <Card title="Rad etish sabablari">
+            {ll ? <CardLoader h={180} /> : (
+              <ResponsiveContainer width="100%" height={Math.min(leads.byRejectionReason.length * 36 + 24, 220)}>
+                <BarChart data={leads.byRejectionReason} layout="vertical"
+                  margin={{ top: 4, right: 40, left: 0, bottom: 4 }}>
+                  <CartesianGrid horizontal={false} {...GRID} />
+                  <XAxis type="number" axisLine={false} tickLine={false} tick={TICK} allowDecimals={false} />
+                  <YAxis type="category" dataKey="reason" axisLine={false} tickLine={false}
+                    tick={{ fontSize: 11, fill: "#6B7280" }} width={130} />
+                  <Tooltip contentStyle={TT.contentStyle} formatter={(v) => [v, "Murojaat"]} />
+                  <Bar dataKey="count" fill={CHART_COLORS.red} radius={[0,3,3,0]} maxBarSize={18}
+                    label={{ position: "right", fontSize: 10, fill: "#9CA3AF" }} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </Card>
+        )}
+
+        {/* Activity section */}
+        <div className="pt-2">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <div className="w-1 h-5 bg-brown-800 rounded-full shrink-0" />
+              <h3 className="text-sm font-semibold text-gray-800">Faollik tahlili</h3>
+            </div>
+            <div className="flex gap-1 border border-gray-200 rounded-md p-0.5">
+              {[7, 14, 30].map((d) => (
+                <button key={d} onClick={() => setActivityDays(d)}
+                  className={`px-2.5 py-1 text-xs font-medium rounded transition-colors ${
+                    activityDays === d ? "bg-gray-900 text-white" : "text-gray-500 hover:text-gray-800"
+                  }`}>
+                  {d} kun
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            {/* Activity line chart */}
+            <Card className="lg:col-span-2 h-64"
+              title={`So'nggi ${activityDays} kun faolligi`}
+              headerRight={<span className="text-xs text-gray-400">{totalActivity} ta harakat</span>}>
+              {lal ? <CardLoader h={190} /> : !activityTrend.length ? <Empty /> : (
+                <ResponsiveContainer width="100%" height={190}>
+                  <AreaChart data={activityTrend} margin={{ top: 4, right: 8, left: -20, bottom: 8 }}>
+                    <defs>
+                      <linearGradient id="activityGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%"   stopColor={CHART_COLORS.blue} stopOpacity={0.15} />
+                        <stop offset="100%" stopColor={CHART_COLORS.blue} stopOpacity={0.02} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid vertical={false} {...GRID} />
+                    <XAxis dataKey="label" axisLine={false} tickLine={false} dy={10} tick={{ fontSize: 10, fill: "#9CA3AF" }}
+                      interval={activityDays <= 14 ? 1 : Math.floor(activityDays / 8)} />
+                    <YAxis axisLine={false} tickLine={false} tick={TICK} allowDecimals={false} />
+                    <Tooltip contentStyle={TT.contentStyle} formatter={(v) => [v, "Harakat"]} />
+                    <Area type="monotone" dataKey="count" stroke={CHART_COLORS.blue} fill="url(#activityGrad)"
+                      strokeWidth={2} dot={false} activeDot={{ r: 4, strokeWidth: 2, stroke: "#fff" }} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              )}
+            </Card>
+
+            {/* Event type frequency */}
+            <div className="space-y-4">
+              <Card title="Harakat turlari">
+                {lal ? <CardLoader h={100} /> : !(leadActivity?.byEventType?.length) ? <Empty /> : (
+                  <div className="space-y-2.5">
+                    {leadActivity.byEventType.map((e, i) => {
+                      const max = leadActivity.byEventType[0]?.count || 1;
+                      const pct = Math.round((e.count / max) * 100);
+                      return (
+                        <div key={e.eventType}>
+                          <div className="flex justify-between mb-1">
+                            <span className="text-xs text-gray-600 truncate flex-1 pr-2">
+                              {LEAD_EVENT_TYPE_LABELS[e.eventType] ?? e.eventType}
+                            </span>
+                            <span className="text-xs font-bold text-gray-800 tabular-nums shrink-0">{e.count}</span>
+                          </div>
+                          <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                            <div className="h-full rounded-full bg-blue-500 transition-all duration-500"
+                              style={{ width: `${pct}%` }} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </Card>
+            </div>
+          </div>
+
+          {/* Status transitions */}
+          {(leadActivity?.statusTransitions?.length > 0) && (
+            <Card title="Holat o'tish zanjiri" className="mt-4">
+              {lal ? <CardLoader h={80} /> : (
+                <div className="flex flex-wrap gap-2">
+                  {leadActivity.statusTransitions.map((t, i) => (
+                    <div key={i} className="flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-md px-2.5 py-1.5">
+                      <span className="text-xs font-medium px-1.5 py-0.5 rounded"
+                        style={{ background: LEAD_STATUS_FUNNEL_COLORS[t.from] + "20", color: LEAD_STATUS_FUNNEL_COLORS[t.from] }}>
+                        {LEAD_STATUS_LABELS[t.from] ?? t.from}
+                      </span>
+                      <span className="text-gray-300 text-xs">→</span>
+                      <span className="text-xs font-medium px-1.5 py-0.5 rounded"
+                        style={{ background: LEAD_STATUS_FUNNEL_COLORS[t.to] + "20", color: LEAD_STATUS_FUNNEL_COLORS[t.to] }}>
+                        {LEAD_STATUS_LABELS[t.to] ?? t.to}
+                      </span>
+                      <span className="text-xs font-bold text-gray-700 ml-1">{t.count}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Card>
+          )}
         </div>
       </div>
 

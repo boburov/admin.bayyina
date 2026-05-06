@@ -51,6 +51,29 @@ export const PAYMENT_STATUS_LABELS = {
   overdue: "Muddati o'tgan",
 };
 
+export const LEAD_STATUS_FUNNEL_ORDER = [
+  "new", "contacted", "interested", "scheduled", "converted", "rejected",
+];
+
+export const LEAD_STATUS_FUNNEL_COLORS = {
+  new:       "#3b82f6",
+  contacted: "#6366f1",
+  interested:"#f59e0b",
+  scheduled: "#8b5cf6",
+  converted: "#22c55e",
+  rejected:  "#ef4444",
+};
+
+export const LEAD_EVENT_TYPE_LABELS = {
+  LEAD_CREATED:        "Murojaat yaratildi",
+  LEAD_UPDATED:        "Murojaat yangilandi",
+  LEAD_STATUS_CHANGED: "Holat o'zgardi",
+  LEAD_DELETED:        "Murojaat o'chirildi",
+  LEAD_LINK_CLICKED:   "Havola bosildi",
+};
+
+export const AGE_GROUP_COLORS = ["#3b82f6", "#22c55e", "#f59e0b", "#8b5cf6"];
+
 export const GENDER_LABELS = {
   male:   "Erkak",
   female: "Ayol",

@@ -11,4 +11,5 @@ export const classesAPI = {
     http.get(`/groups/${id}/export`, { responseType: "blob" }),
   exportAll: () => http.get("/groups/export", { responseType: "blob" }),
   sendMessage: (id, data) => http.post(`/groups/${id}/send-message`, data),
+  toggleActive: (id) => http.patch(`/groups/${id}/toggle-active`),
 };
